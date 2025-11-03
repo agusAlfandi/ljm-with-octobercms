@@ -1,0 +1,26 @@
+fields:
+    image_1:
+        label: 'Image 1'
+        type: fileupload
+        mode: image
+        imageWidth: 200
+        imageHeight: 200
+        span: auto
+    image_2:
+        label: 'Image 2'
+        type: fileupload
+        mode: image
+        imageWidth: 200
+        imageHeight: 200
+        span: auto
+    image_3:
+        label: 'Image 3'
+        type: fileupload
+        mode: image
+        imageWidth: 200
+        imageHeight: 200
+        span: auto
+    updated_at:
+        label: 'Updated at'
+        span: auto
+        type: datepicker

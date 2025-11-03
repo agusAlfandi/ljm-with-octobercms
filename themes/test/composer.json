@@ -1,8 +1,0 @@
-{
-    "name": "agus test/tabler-theme",
-    "type": "october-theme",
-    "description": "Test",
-    "require": {
-        "composer/installers": "~1.0"
-    }
-}

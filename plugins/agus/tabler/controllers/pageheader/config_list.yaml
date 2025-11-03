@@ -1,0 +1,12 @@
+list: $/agus/tabler/models/page_header/columns.yaml
+modelClass: Agus\Tabler\Models\Page_header
+title: Pageheader
+noRecordsMessage: 'backend::lang.list.no_records'
+showSetup: true
+showCheckboxes: true
+recordsPerPage: 20
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: 'backend::lang.list.search_prompt'
+recordUrl: 'agus/tabler/pageheader/update/:id'

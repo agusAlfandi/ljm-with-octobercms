@@ -1,0 +1,10 @@
+name: Pageheader
+form: $/agus/tabler/models/page_header/fields.yaml
+modelClass: Agus\Tabler\Models\Page_header
+defaultRedirect: agus/tabler/pageheader
+create:
+    redirect: 'agus/tabler/pageheader/update/:id'
+    redirectClose: agus/tabler/pageheader
+update:
+    redirect: agus/tabler/pageheader
+    redirectClose: agus/tabler/pageheader

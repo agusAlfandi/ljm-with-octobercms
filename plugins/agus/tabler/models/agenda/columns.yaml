@@ -1,0 +1,16 @@
+columns:
+    title:
+        label: title
+        type: text
+    description:
+        label: description
+        type: text
+    created_at:
+        label: created_at
+        type: datetime
+    updated_at:
+        label: updated_at
+        type: datetime
+    is_active:
+        label: is_active
+        type: text

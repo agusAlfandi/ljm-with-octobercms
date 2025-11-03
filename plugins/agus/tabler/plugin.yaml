@@ -4,3 +4,13 @@ plugin:
     author: Agus
     icon: oc-icon-adjust
     homepage: ''
+navigation:
+    menu-agenda:
+        label: Agenda
+        url: agus/tabler/agenda
+        icon: icon-calendar
+        iconSvg: ''
+    menu-page-header:
+        label: 'Page header'
+        url: agus/tabler/pageheader
+        icon: icon-image

@@ -1,0 +1,11 @@
+name: Agenda
+modelClass: Agus\Tabler\Models\Agenda
+form: $/agus/tabler/models/agenda/fields.yaml
+defaultRedirect: agus/tabler/agenda
+create:
+    redirect: 'agus/tabler/agenda/update/:id'
+    redirectClose: agus/tabler/agenda
+update:
+    redirect: agus/tabler/agenda
+    redirectClose: agus/tabler/agenda
+preview: {  }
