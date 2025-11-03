@@ -1,0 +1,35 @@
+v1.0.1:
+    - 'Initialize plugin'
+v1.0.2:
+    - 'Created table agus_tabler_'
+    - builder_table_create_agus_tabler_.php
+v1.0.3:
+    - 'Created table agus_tabler_home_page_header'
+    - builder_table_create_agus_tabler_home_page_header.php
+v1.0.4:
+    - 'Created table agus_tabler_media_publikasi_ljm'
+    - builder_table_create_agus_tabler_media_publikasi_ljm.php
+v1.0.5:
+    - 'Created table agus_tabler_agenda_ljm'
+    - builder_table_create_agus_tabler_agenda_ljm.php
+v1.0.6:
+    - 'Created table agus_tabler_informasi_publik'
+    - builder_table_create_agus_tabler_informasi_publik.php
+v1.0.7:
+    - 'Created table agus_tabler_page_footer'
+    - builder_table_create_agus_tabler_page_footer.php
+v1.0.8:
+    - 'Updated table agus_tabler_page_footer'
+    - builder_table_update_agus_tabler_page_footer.php
+v1.0.9:
+    - 'Updated table agus_tabler_media_publikasi_ljm'
+    - builder_table_update_agus_tabler_media_publikasi_ljm.php
+v1.0.10:
+    - 'Updated table agus_tabler_informasi_publik'
+    - builder_table_update_agus_tabler_informasi_publik.php
+v1.0.11:
+    - 'Updated table agus_tabler_home_page_header'
+    - builder_table_update_agus_tabler_home_page_header.php
+v1.0.12:
+    - 'Updated table agus_tabler_agenda_ljm'
+    - builder_table_update_agus_tabler_agenda_ljm.php

@@ -1,0 +1,27 @@
+url = "/"
+layout = "app"
+title = "Home - Lembaga Penjamin Mutu"
+id = "home"
+==
+{#
+  Instructions for admin:
+  Edit content blocks in Backend > Pages > Content
+  Available blocks:
+  - page_header: Header slider dengan 3 gambar
+  - media_ljm: Section Media & Publikasi LJM dengan cards aktivitas
+  - agenda_ljm: Section Agenda LPM dengan cards berita/dokumentasi
+  - informasi_publik: Section timeline sertifikat akreditasi
+  - page_footer: Footer slider dengan 3 gambar
+#}
+
+<!-- Media & Publikasi LJM Section -->
+{% partial 'media-ljm' %}
+
+<!-- Agenda LPM Section -->
+{% partial 'agenda-ljm' %}
+
+<!-- Keterbukaan Informasi Publik Section -->
+{% partial 'informasi-publik' %}
+
+<!-- Page Footer Slider -->
+{% partial 'page-footer' %}

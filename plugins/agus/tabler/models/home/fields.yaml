@@ -1,0 +1,13 @@
+fields:
+    image_1:
+        label: 'Image 1'
+        span: auto
+        type: text
+    image_2:
+        label: 'Image 2'
+        span: auto
+        type: text
+    image_3:
+        label: 'Image 3'
+        span: auto
+        type: text

@@ -1,0 +1,40 @@
+
+{% if this.page.id != 'home' %}
+<div class="page-header d-print-none" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-bottom: 1px solid #dee2e6;">
+  <div class="container-xl">
+    <div class="row g-2 align-items-center py-3">
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb breadcrumb-arrows mb-0" style="background: transparent; padding: 0;">
+            <li class="breadcrumb-item">
+              <a href="/" class="text-decoration-none text-muted">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <polyline points="5,12 3,12 12,3 21,12 19,12"/>
+                  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/>
+                  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>
+                </svg>
+                Beranda
+              </a>
+            </li>
+            {% set segments = this.page.url|split('/') %}
+            {% for i, seg in segments %}
+              {% if seg and i > 0 %}
+                {% if i < segments|length - 1 %}
+                  <li class="breadcrumb-item">
+                    <span class="text-muted">{{ seg|title|replace({'-':' '}) }}</span>
+                  </li>
+                {% else %}
+                  <li class="breadcrumb-item active" aria-current="page">
+                    <span class="fw-bold text-primary">{{ this.page.title ?? seg|title|replace({'-':' '}) }}</span>
+                  </li>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

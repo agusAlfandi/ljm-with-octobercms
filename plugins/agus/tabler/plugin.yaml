@@ -1,0 +1,6 @@
+plugin:
+    name: 'agus.tabler::lang.plugin.name'
+    description: 'agus.tabler::lang.plugin.description'
+    author: Agus
+    icon: oc-icon-adjust
+    homepage: ''
