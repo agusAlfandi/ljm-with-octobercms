@@ -8,51 +8,25 @@
       <hr class="section-divider-mobile flex-grow-1 border border-secondary opacity-50 ms-3">
     </div>
     <div class="timeline-horizontal position-relative py-4" style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
-      <div class="d-flex flex-row justify-content-center align-items-end" style="gap:24px; min-width:max-content; padding:0 1rem;">
-        <!-- Timeline Item 1 -->
-        <div class="text-center" style="min-width:100px; max-width:120px; flex-shrink:0;">
-          <div class="fw-bold mb-2 small">2015 - 2020</div>
-          <div class="position-relative">
-            <span class="bg-primary rounded-circle d-inline-block" style="width:20px;height:20px;"></span>
-            <div style="height:3px;width:80px;background:#bdbdbd;position:absolute;top:8px;left:20px;"></div>
+          <div class="d-flex flex-row justify-content-center align-items-end" style="gap:24px; min-width:max-content; padding:0 1rem;">
+              {% set colors = ['primary', 'success', 'warning', 'danger', 'info', 'secondary'] %}
+              {% for info in getInformasiPublik() %}
+              <div class="text-center" style="min-width:100px; max-width:120px; flex-shrink:0;">
+                <div class="fw-bold mb-2 small">{{ info.title }}</div>
+                <div class="position-relative" style="height:24px;">
+              <span class="bg-{{ colors[loop.index0 % colors|length] }} rounded-circle d-inline-block" style="width:20px;height:20px;"></span>
+              {% if not loop.last %}
+              <div style="height:3px;width:80px;background:#bdbdbd;position:absolute;top:8px;left:20px;"></div>
+              {% endif %}
+                </div>
+                <div class="mt-2 text-muted small">
+                  {{ info.sub_title }}<br>
+                  {% if info.file %}
+                    <a href="{{ info.file.getPath() }}" target="_blank" class="btn btn-link btn-sm p-0">Lihat File</a>
+                  {% endif %}
+                </div>
+              </div>
+              {% endfor %}
           </div>
-
-   <div class="mt-2 text-muted small">UDB SERTIFIKAT <br>
-     <a href="/sertifikat/2022-2026.pdf" target="_blank" class="btn btn-link btn-sm p-0">Lihat Sertifikat</a>
-   </div>
-        </div>
-        <!-- Timeline Item 2 -->
-        <div class="text-center" style="min-width:100px; max-width:120px; flex-shrink:0;">
-          <div class="fw-bold mb-2 small">2016 - 2021</div>
-          <div class="position-relative">
-            <span class="bg-success rounded-circle d-inline-block" style="width:20px;height:20px;"></span>
-            <div style="height:3px;width:80px;background:#bdbdbd;position:absolute;top:8px;left:20px;"></div>
-          </div>
-          <div class="mt-2 text-muted small">UDB SERTIFIKAT <br>
-     <a href="/sertifikat/2015-2020.pdf" target="_blank" class="btn btn-link btn-sm p-0">Lihat Sertifikat</a>
-   </div>
-        </div>
-        <!-- Timeline Item 3 -->
-        <div class="text-center" style="min-width:100px; max-width:120px; flex-shrink:0;">
-          <div class="fw-bold mb-2 small">2021 - 2026</div>
-          <div class="position-relative">
-            <span class="bg-warning rounded-circle d-inline-block" style="width:20px;height:20px;"></span>
-            <div style="height:3px;width:80px;background:#bdbdbd;position:absolute;top:8px;left:20px;"></div>
-          </div>
-           <div class="mt-2 text-muted small">UDB SERTIFIKAT <br>
-     <a href="/sertifikat/2016-2021.pdf" target="_blank" class="btn btn-link btn-sm p-0">Lihat Sertifikat</a>
-   </div>
-        </div>
-        <!-- Timeline Item 4 -->
-        <div class="text-center" style="min-width:100px; max-width:120px; flex-shrink:0;">
-          <div class="fw-bold mb-2 small">2022 - 2026</div>
-          <div class="position-relative">
-            <span class="bg-danger rounded-circle d-inline-block" style="width:20px;height:20px;"></span>
-          </div>
-          <div class="mt-2 text-muted small">UDB SERTIFIKAT <br>
-     <a href="/sertifikat/2021-2026.pdf" target="_blank" class="btn btn-link btn-sm p-0">Lihat Sertifikat</a>
-   </div>
-        </div>
-      </div>
     </div>
   </div>

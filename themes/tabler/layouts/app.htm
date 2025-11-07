@@ -120,7 +120,25 @@
     <!-- END GLOBAL MANDATORY SCRIPTS -->
     <!-- BEGIN DEMO SCRIPTS -->
     {# <script src="./preview/js/demo.min.js?1756745708" defer></script> #}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js"></script>
+    <script>
+      window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          var grid = document.querySelector('[data-masonry]');
+          if (grid && typeof Masonry !== 'undefined') {
+            var msnry = new Masonry(grid, {
+              itemSelector: '.col-sm-6',
+              percentPosition: true
+            });
+
+            // Re-layout after short delay
+            setTimeout(function() {
+              msnry.layout();
+            }, 200);
+          }
+        }, 100);
+      });
+    </script>
 
 </body>
 </html>

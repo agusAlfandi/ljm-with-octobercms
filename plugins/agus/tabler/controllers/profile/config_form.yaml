@@ -1,0 +1,10 @@
+name: Profile
+form: $/agus/tabler/models/profile/fields.yaml
+modelClass: Agus\Tabler\Models\Profile
+defaultRedirect: agus/tabler/profile
+create:
+    redirect: 'agus/tabler/profile/update/:id'
+    redirectClose: agus/tabler/profile
+update:
+    redirect: agus/tabler/profile
+    redirectClose: agus/tabler/profile

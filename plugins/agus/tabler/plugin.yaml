@@ -5,12 +5,37 @@ plugin:
     icon: oc-icon-adjust
     homepage: ''
 navigation:
-    menu-agenda:
-        label: Agenda
-        url: agus/tabler/agenda
-        icon: icon-calendar
-        iconSvg: ''
-    menu-page-header:
-        label: 'Page header'
-        url: agus/tabler/pageheader
-        icon: icon-image
+    main-menu:
+        label: Home
+        url: agus
+        icon: icon-home
+        sideMenu:
+            menu-agenda:
+                label: Agenda
+                url: agus/tabler/agenda
+                icon: icon-calendar
+            menu-page-header:
+                label: 'Page header'
+                url: agus/tabler/pageheader
+                icon: icon-image
+            menu-media-ljm:
+                label: 'Media Ljm'
+                url: agus/tabler/medialjm
+                icon: icon-newspaper-o
+            side-informasi-publik:
+                label: 'Informasi Publik'
+                url: agus/tabler/informasipublik
+                icon: icon-file
+            menu-page-footer:
+                label: 'Page footer'
+                url: agus/tabler/pagefooter
+                icon: icon-image
+    main-menu-item:
+        label: 'Tentang kami'
+        url: agus
+        icon: icon-life-ring
+        sideMenu:
+            menu-struktur-organisasi:
+                label: 'Struktur organisasi'
+                url: agus/tabler/strukturorganisasi
+                icon: icon-sitemap

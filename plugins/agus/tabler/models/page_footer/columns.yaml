@@ -1,0 +1,22 @@
+columns:
+    image_1:
+        label: 'Image 1'
+        type: text
+        select: file_name
+        relation: image_1
+    image_2:
+        label: 'Image 2'
+        type: text
+        select: file_name
+        relation: image_2
+    image_3:
+        label: 'Image 3'
+        type: text
+        select: file_name
+        relation: image_3
+    created_at:
+        label: 'Created'
+        type: datetime
+    updated_at:
+        label: 'Updated'
+        type: datetime

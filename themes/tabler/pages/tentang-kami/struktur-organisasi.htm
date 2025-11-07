@@ -1,8 +1,8 @@
 url = "/tentang-kami/struktur-organisasi"
 layout = "app"
 title = "Struktur Organisasi"
-id = "tentang-kami/struktur-organisasi"
 ==
+{% set strukturOrganisasi = getStrukturOrganisasi() %}
 <div class="container-xl py-4">
   <div class="row justify-content-center">
     <div class="col-12 col-md-10 col-lg-8">
@@ -11,7 +11,11 @@ id = "tentang-kami/struktur-organisasi"
           <h4 class="mb-0">Struktur Organisasi LJM</h4>
         </div>
         <div class="card-body text-center">
-          <img src="{{ 'assets/img/struktur-organisasi.png'|theme }}" alt="Struktur Organisasi LJM" class="img-fluid rounded shadow-sm" style="max-width:100%;height:auto;">
+          {% if strukturOrganisasi and strukturOrganisasi.file %}
+            <img src="{{ strukturOrganisasi.file.path }}" alt="Struktur Organisasi LJM" class="img-fluid rounded shadow-sm" style="max-width:100%;height:auto;">
+          {% else %}
+            <img src="{{ 'assets/img/struktur-organisasi.png'|theme }}" alt="Struktur Organisasi LJM" class="img-fluid rounded shadow-sm" style="max-width:100%;height:auto;">
+          {% endif %}
         </div>
       </div>
     </div>

@@ -1,0 +1,12 @@
+columns:
+    file:
+        label: 'Gambar'
+        type: text
+        select: file_name
+        relation: file
+    created_at:
+        label: 'Created'
+        type: datetime
+    updated_at:
+        label: 'Updated'
+        type: datetime

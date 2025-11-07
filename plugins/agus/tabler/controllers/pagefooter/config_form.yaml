@@ -1,0 +1,10 @@
+name: Pagefooter
+form: $/agus/tabler/models/page_footer/fields.yaml
+modelClass: Agus\Tabler\Models\Page_footer
+defaultRedirect: agus/tabler/pagefooter
+create:
+    redirect: 'agus/tabler/pagefooter/update/:id'
+    redirectClose: agus/tabler/pagefooter
+update:
+    redirect: agus/tabler/pagefooter
+    redirectClose: agus/tabler/pagefooter

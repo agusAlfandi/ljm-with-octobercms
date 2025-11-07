@@ -69,7 +69,22 @@ class Plugin extends PluginBase
                 },
                 'getPageHeader' => function() {
                     return \Agus\Tabler\Models\Page_header::first();
-                }
+                },
+                'getMediaLjm' => function() {
+                    return \Agus\Tabler\Models\Media_ljm::all();
+                },
+                'getInformasiPublik' => function() {
+                    return \Agus\Tabler\Models\Informasi_publik::all();
+                },
+                'getPageFooter' => function() {
+                    return \Agus\Tabler\Models\Page_footer::first();
+                },
+                'getProfile' => function() {
+                    return \Agus\Tabler\Models\Profile::first();
+                },
+                'getStrukturOrganisasi' => function() {
+                    return \Agus\Tabler\Models\Struktur_organisasi::first();
+                },
             ]
         ];
     }

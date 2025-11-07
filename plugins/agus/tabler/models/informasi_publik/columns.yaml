@@ -1,0 +1,18 @@
+columns:
+    title:
+        label: title
+        type: text
+    sub_title:
+        label: sub_title
+        type: text
+    file:
+        label: file
+        type: text
+        select: file_name
+        relation: file
+    created_at:
+        label: created_at
+        type: datetime
+    updated_at:
+        label: updated_at
+        type: datetime

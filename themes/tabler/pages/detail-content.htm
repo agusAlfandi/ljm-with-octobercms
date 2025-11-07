@@ -1,0 +1,62 @@
+url = "/detail-content/:type/:id"
+title = "detail-content"
+layout = "app"
+==
+<?php
+function onStart()
+{
+    $id = $this->param('id');
+
+    // Get media detail from database
+    $this['mediaDetail'] = \Agus\Tabler\Models\Media_ljm::find($id);
+
+    // If not found, redirect to 404
+    if (!$this['mediaDetail']) {
+        return Response::make('Not Found', 404);
+    }
+}
+?>
+==
+
+<div class="row justify-content-center">
+    <div class="col-md-9 col-lg-8">
+        {% if mediaDetail %}
+        <div class="card shadow-lg border-0">
+            <div class="d-flex gap-4 card-header bg-primary text-white">
+                <h2 class="card-title mb-0">{{ mediaDetail.title }}</h2>
+                <small class="text-white-50">{{ mediaDetail.updated_at|date('d M Y H:i') }}</small>
+            </div>
+            <div class="card-body">
+                <div class="content fs-5">
+                    {{ mediaDetail.description|raw }}
+                </div>
+            </div>
+            <div class="card-footer bg-white">
+                <a href="/" class="btn btn-outline-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon align-middle me-1">
+                        <polyline points="15,18 9,12 15,6"></polyline>
+                    </svg>
+                    Kembali ke Home
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty my-5">
+            <div class="empty-img mb-3"><img src="{{ 'assets/static/illustrations/undraw_printing_invoices_5r4r.svg'|theme }}" height="128" alt="">
+            </div>
+            <p class="empty-title">Konten tidak ditemukan</p>
+            <p class="empty-subtitle text-muted">
+                Maaf, konten yang Anda cari tidak ditemukan atau telah dihapus.
+            </p>
+            <div class="empty-action">
+                <a href="/" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon align-middle me-1">
+                        <polyline points="15,18 9,12 15,6"></polyline>
+                    </svg>
+                    Kembali ke Home
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>

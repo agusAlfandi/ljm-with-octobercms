@@ -1,0 +1,9 @@
+fields:
+    file:
+        label: 'Gambar Struktur Organisasi'
+        type: fileupload
+        mode: image
+        imageWidth: 200
+        imageHeight: 200
+        span: full
+        comment: 'Upload gambar struktur organisasi dalam format JPG, PNG, atau GIF'

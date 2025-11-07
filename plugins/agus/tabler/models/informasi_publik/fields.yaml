@@ -1,0 +1,23 @@
+fields:
+    title:
+        label: Title
+        span: auto
+        type: text
+    sub_title:
+        label: 'Sub title'
+        span: auto
+        type: text
+    file:
+        label: File
+        span: auto
+        type: fileupload
+        mode: file
+        fileTypes: doc,docx,pdf,ppt,pptx
+    created_at:
+        label: 'Created at'
+        span: auto
+        type: datepicker
+    updated_at:
+        label: 'Updated at'
+        span: auto
+        type: datepicker

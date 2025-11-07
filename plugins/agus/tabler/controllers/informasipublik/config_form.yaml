@@ -1,0 +1,11 @@
+name: InformasiPublik
+modelClass: Agus\Tabler\Models\Informasi_publik
+form: $/agus/tabler/models/informasi_publik/fields.yaml
+defaultRedirect: agus/tabler/informasipublik
+create:
+    redirect: 'agus/tabler/informasipublik/update/:id'
+    redirectClose: agus/tabler/informasipublik
+update:
+    redirect: agus/tabler/informasipublik
+    redirectClose: agus/tabler/informasipublik
+preview: {  }

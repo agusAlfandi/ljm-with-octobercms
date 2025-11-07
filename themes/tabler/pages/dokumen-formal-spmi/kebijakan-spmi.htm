@@ -1,0 +1,26 @@
+url = "/dokumen-formal-spmi/kebijakan-spmi"
+layout = "app"
+title = "kebijakan spmi"
+id = "dokumen-spmi/kebijakan-spmi"
+==
+<div class="container-xl py-4">
+	<div class="card shadow-sm">
+		<div class="card-body">
+			<h3 class="mb-4">{{ this.page.title }}</h3>
+			{#
+			  Instructions for admin:
+			  - Edit the page in Backend (CMS > Pages > kebijakan-spmi)
+			  - Put the main HTML/text content into the page Content area (this.page.content)
+			  - Upload/select an image in the View Bag -> header_image (use the media picker)
+			#}
+			<div class="mb-3">
+				{{ this.page.content|raw }}
+			</div>
+			{% if this.page.header_image %}
+			<div class="mb-3 text-center">
+				<img src="{{ this.page.header_image|media }}" alt="Gambar Kebijakan SPMI" class="img-fluid rounded shadow-sm" style="max-width:100%;height:auto;">
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</div>

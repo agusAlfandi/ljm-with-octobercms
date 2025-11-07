@@ -1,0 +1,24 @@
+fields:
+    visi:
+        label: 'Visi'
+        type: textarea
+        span: full
+        size: large
+    misi:
+        label: 'Misi'
+        type: textarea
+        span: full
+        size: large
+        comment: 'Pisahkan setiap poin misi dengan baris baru'
+    tujuan:
+        label: 'Tujuan'
+        type: textarea
+        span: full
+        size: large
+        comment: 'Pisahkan setiap poin tujuan dengan baris baru'
+    sasaran:
+        label: 'Sasaran'
+        type: textarea
+        span: full
+        size: large
+        comment: 'Pisahkan setiap poin sasaran dengan baris baru'

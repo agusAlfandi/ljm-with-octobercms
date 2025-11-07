@@ -1,0 +1,19 @@
+columns:
+    visi:
+        label: visi
+        type: text
+    misi:
+        label: misi
+        type: text
+    tujuan:
+        label: tujuan
+        type: text
+    sasaran:
+        label: sasaran
+        type: text
+    created_at:
+        label: created_at
+        type: datetime
+    updated_at:
+        label: updated_at
+        type: datetime

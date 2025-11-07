@@ -1,0 +1,10 @@
+name: Medialjm
+form: $/agus/tabler/models/media_ljm/fields.yaml
+modelClass: Agus\Tabler\Models\Media_ljm
+defaultRedirect: agus/tabler/medialjm
+create:
+    redirect: 'agus/tabler/medialjm/update/:id'
+    redirectClose: agus/tabler/medialjm
+update:
+    redirect: agus/tabler/medialjm
+    redirectClose: agus/tabler/medialjm

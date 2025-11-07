@@ -1,0 +1,10 @@
+name: Strukturorganisasi
+form: $/agus/tabler/models/struktur_organisasi/fields.yaml
+modelClass: Agus\Tabler\Models\Struktur_organisasi
+defaultRedirect: agus/tabler/strukturorganisasi
+create:
+    redirect: 'agus/tabler/strukturorganisasi/update/:id'
+    redirectClose: agus/tabler/strukturorganisasi
+update:
+    redirect: agus/tabler/strukturorganisasi
+    redirectClose: agus/tabler/strukturorganisasi

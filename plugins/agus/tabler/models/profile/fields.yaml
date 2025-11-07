@@ -1,0 +1,25 @@
+fields:
+    visi:
+        label: Visi
+        span: auto
+        type: textarea
+    misi:
+        label: Misi
+        span: auto
+        type: textarea
+    tujuan:
+        label: Tujuan
+        span: auto
+        type: textarea
+    sasaran:
+        label: Sasaran
+        span: auto
+        type: textarea
+    created_at:
+        label: 'Created at'
+        span: auto
+        type: datepicker
+    updated_at:
+        label: 'Updated at'
+        span: auto
+        type: datepicker
