@@ -1,0 +1,41 @@
+url = "/implementasi-spmi/audit-mutu-internal"
+title = "Audit Mutu Internal"
+layout = "app"
+==
+<div class="container-xl py-4">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a href="#tabs-ami" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">
+                        <!-- Icon Audit (Clipboard Check) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="9" y="4" width="6" height="2" rx="1"/><rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 14l2 2l4 -4"/></svg>
+                        Audit Mutu Internal (AMI)
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a href="#tabs-tujuan" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">
+                        <!-- Icon Target/Goal (Target) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="3"/><path d="M12 7v5l3 3"/></svg>
+                        Tujuan
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content">
+                <div class="tab-pane active show" id="tabs-ami" role="tabpanel">
+                    <div class="text-muted">
+                        {% content 'audit-mutu-internal/audit-mutu-internal.htm' %}
+                    </div>
+                </div>
+                <div class="tab-pane" id="tabs-tujuan" role="tabpanel">
+                    <div class="text-muted">
+                        {% content 'audit-mutu-internal/tujuan.htm' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% content 'audit-mutu-internal/audit-mutu-internal-pdf.htm' %}
