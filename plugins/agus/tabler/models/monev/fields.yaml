@@ -1,0 +1,16 @@
+fields:
+    title:
+        label: Title
+        span: auto
+        type: text
+    file:
+        label: File
+        span: auto
+        type: fileupload
+        mode: file
+        fileTypes: doc,docx,pdf,ppt,pptx
+    category:
+        label: Category
+        span: auto
+        type: dropdown
+        options: Agus\Tabler\Models\Monev::getCategoryOptions

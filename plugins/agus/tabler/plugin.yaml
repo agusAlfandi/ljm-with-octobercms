@@ -39,3 +39,12 @@ navigation:
                 label: 'Struktur organisasi'
                 url: agus/tabler/strukturorganisasi
                 icon: icon-sitemap
+    menu-implementasi-spmi:
+        label: 'implementasi spmi'
+        url: agus
+        icon: icon-life-ring
+        sideMenu:
+            menu-monev:
+                label: monev
+                url: agus/tabler/monev
+                icon: icon-sitemap

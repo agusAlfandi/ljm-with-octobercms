@@ -17,7 +17,7 @@ class Agenda extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'menu-agenda');
+        BackendMenu::setContext('Agus.Tabler', 'main-menu', 'menu-agenda');
     }
 
 }

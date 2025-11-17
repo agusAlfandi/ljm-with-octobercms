@@ -37,21 +37,15 @@ class Plugin extends PluginBase
             'functions' => [
                 'getAgendas' => function($limit = 5) {
                     try {
-                        // Debug: cek apakah model bisa diakses
                         $agendas = \Agus\Tabler\Models\Agenda::orderBy('created_at', 'desc')
-                                                             ->limit($limit)
-                                                             ->get();
-
-                        // Jika ada data, return data real
+                            ->limit($limit)
+                            ->get();
                         if ($agendas->count() > 0) {
                             return $agendas;
                         }
                     } catch (\Exception $e) {
-                        // Log error untuk debugging
                         \Log::error('Error loading agendas: ' . $e->getMessage());
                     }
-
-                    // Fallback jika tidak ada data atau error
                     return collect([
                         (object)[
                             'title' => 'Workshop Akreditasi',
@@ -84,6 +78,11 @@ class Plugin extends PluginBase
                 },
                 'getStrukturOrganisasi' => function() {
                     return \Agus\Tabler\Models\Struktur_organisasi::first();
+                },
+                'getAllMonevByCategory' => function() {
+                    return \Agus\Tabler\Models\Monev::all()->groupBy(function($item) {
+                        return strtolower(trim($item->category));
+                    });
                 },
             ]
         ];

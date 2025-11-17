@@ -1,0 +1,12 @@
+columns:
+    title:
+        label: title
+        type: text
+    file:
+        label: file
+        type: text
+        select: file_name
+        relation: file
+    category:
+        label: category
+        type: text

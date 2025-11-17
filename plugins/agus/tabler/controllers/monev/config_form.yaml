@@ -1,0 +1,10 @@
+name: Monev
+form: $/agus/tabler/models/monev/fields.yaml
+modelClass: Agus\Tabler\Models\Monev
+defaultRedirect: agus/tabler/monev
+create:
+    redirect: 'agus/tabler/monev/update/:id'
+    redirectClose: agus/tabler/monev
+update:
+    redirect: agus/tabler/monev
+    redirectClose: agus/tabler/monev

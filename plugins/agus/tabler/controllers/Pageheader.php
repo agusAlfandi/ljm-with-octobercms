@@ -17,7 +17,7 @@ class Pageheader extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'menu-page-header');
+        BackendMenu::setContext('Agus.Tabler',  'main-menu', 'menu-page-header');
     }
 
 }

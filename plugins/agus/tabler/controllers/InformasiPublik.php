@@ -17,7 +17,7 @@ class InformasiPublik extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'menu');
+        BackendMenu::setContext('Agus.Tabler', 'main-menu');
     }
 
 }
