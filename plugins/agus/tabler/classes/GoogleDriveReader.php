@@ -96,6 +96,10 @@ class GoogleDriveReader
         $result = [];
 
         foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Skip folder "Keterbukaan Informasi Publik" agar tidak tampil di menu Monev
+            if ($category === 'Keterbukaan Informasi Publik') {
+                continue;
+            }
             $files = self::getFilesFromFolder($folderId);
 
             // Filter only PDF files

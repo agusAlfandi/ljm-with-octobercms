@@ -9,12 +9,10 @@ columns:
         valueFrom: display_category
         sortable: true
         searchable: false
-    file:
-        label: 'File PDF'
+    file_name:
+        label: 'Nama File'
         type: text
-        select: file_name
-        relation: file
-        searchable: false
+        searchable: true
     created_at:
         label: Dibuat
         type: datetime

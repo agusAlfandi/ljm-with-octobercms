@@ -16,8 +16,15 @@ fields:
         required: true
         comment: File akan diupload ke folder Google Drive sesuai kategori yang dipilih
 
+    file_name:
+        label: File yang Sudah Diupload
+        span: full
+        type: text
+        disabled: true
+        comment: Nama file yang sudah diupload ke Google Drive (readonly)
+
     file:
-        label: Upload File PDF
+        label: Upload File PDF Baru
         span: full
         type: fileupload
         mode: file
@@ -27,4 +34,4 @@ fields:
         thumbOptions:
             mode: crop
             extension: auto
-        comment: Upload file PDF (maksimal 10MB). File akan otomatis diupload ke Google Drive.
+        comment: Upload file PDF baru (maksimal 10MB). File akan otomatis diupload ke Google Drive dan mengganti file lama.

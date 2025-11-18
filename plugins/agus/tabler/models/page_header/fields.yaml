@@ -20,7 +20,3 @@ fields:
         imageWidth: 200
         imageHeight: 200
         span: auto
-    updated_at:
-        label: 'Updated at'
-        span: auto
-        type: datepicker

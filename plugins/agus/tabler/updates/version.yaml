@@ -174,3 +174,6 @@ v1.0.58:
 v1.0.59:
     - 'Updated table agus_tabler_informasi_publik'
     - builder_table_update_agus_tabler_informasi_publik_5.php
+v1.0.60:
+    - 'Updated table agus_tabler_monev'
+    - builder_table_update_agus_tabler_monev_4.php

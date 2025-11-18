@@ -6,11 +6,3 @@ fields:
         imageWidth: 200
         imageHeight: 200
         span: auto
-    created_at:
-        label: 'Created at'
-        span: auto
-        type: datepicker
-    updated_at:
-        label: 'Updated at'
-        span: auto
-        type: datepicker
