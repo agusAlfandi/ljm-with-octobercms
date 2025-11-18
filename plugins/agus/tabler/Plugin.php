@@ -1,5 +1,6 @@
 <?php namespace Agus\Tabler;
 
+use Backend\Facades\Backend;
 use System\Classes\PluginBase;
 
 /**
@@ -35,6 +36,46 @@ class Plugin extends PluginBase
     {
         return [
             'functions' => [
+                'getInformasiPublikFiles' => function() {
+                    // Ambil data dari database
+                    $records = \Agus\Tabler\Models\Informasi_publik::all();
+
+                    // Ambil file dari Google Drive
+                    $category = 'Keterbukaan Informasi Publik';
+                    $categoryKey = \Agus\Tabler\Classes\GoogleDriveUploader::normalizeCategoryName($category);
+                    $folderId = \Agus\Tabler\Classes\GoogleDriveReader::FOLDER_IDS[$categoryKey] ?? null;
+
+                    if (!$folderId) {
+                        \Log::error('Folder ID not found for Informasi Publik', ['categoryKey' => $categoryKey]);
+                        return [];
+                    }
+
+                    $driveFiles = \Agus\Tabler\Classes\GoogleDriveReader::getFilesFromFolder($folderId);
+
+                    // Map file Google Drive berdasarkan nama file untuk lookup cepat
+                    $driveFilesMap = [];
+                    foreach ($driveFiles as $driveFile) {
+                        $driveFilesMap[$driveFile['name']] = $driveFile;
+                    }
+
+                    // Gabungkan data database dengan Google Drive
+                    $result = [];
+                    foreach ($records as $record) {
+                        if ($record->file_name && isset($driveFilesMap[$record->file_name])) {
+                            $driveFile = $driveFilesMap[$record->file_name];
+                            $result[] = [
+                                'title' => $record->title,
+                                'sub_title' => $record->sub_title,
+                                'file_name' => $record->file_name,
+                                'file_id' => $driveFile['id'],
+                                'file_url' => $driveFile['url'],
+                                'created_at' => $record->created_at,
+                            ];
+                        }
+                    }
+
+                    return $result;
+                },
                 'getAgendas' => function($limit = 5) {
                     try {
                         $agendas = \Agus\Tabler\Models\Agenda::orderBy('created_at', 'desc')
@@ -80,9 +121,11 @@ class Plugin extends PluginBase
                     return \Agus\Tabler\Models\Struktur_organisasi::first();
                 },
                 'getAllMonevByCategory' => function() {
-                    return \Agus\Tabler\Models\Monev::all()->groupBy(function($item) {
-                        return strtolower(trim($item->category));
-                    });
+                    return \Agus\Tabler\Models\Monev::all()->groupBy('category_label');
+                },
+                'getMonevPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllMonevFiles();
                 },
             ]
         ];
@@ -93,5 +136,84 @@ class Plugin extends PluginBase
      */
     public function registerSettings()
     {
+    }
+
+    /**
+     * registerNavigation used by the backend.
+     */
+    public function registerNavigation()
+    {
+        return [
+            'main-menu' => [
+                'label' => 'LJM Management',
+                'icon' => 'icon-home',
+                'url' => Backend::url('agus/tabler/pageheader'),
+                'permissions' => ['agus.tabler.*'],
+                'order' => 100,
+                'sideMenu' => [
+                    'menu-page-header' => [
+                        'label' => 'Page Header',
+                        'icon' => 'icon-header',
+                        'url' => Backend::url('agus/tabler/pageheader'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                    'menu-page-footer' => [
+                        'label' => 'Page Footer',
+                        'icon' => 'icon-footer',
+                        'url' => Backend::url('agus/tabler/pagefooter'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                    'menu-agenda' => [
+                        'label' => 'Agenda',
+                        'icon' => 'icon-calendar',
+                        'url' => Backend::url('agus/tabler/agenda'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                    'menu-media-ljm' => [
+                        'label' => 'Media LJM',
+                        'icon' => 'icon-picture-o',
+                        'url' => Backend::url('agus/tabler/medialjm'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                    'menu-informasi-publik' => [
+                        'label' => 'Informasi Publik',
+                        'icon' => 'icon-info',
+                        'url' => Backend::url('agus/tabler/informasipublik'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                ]
+            ],
+            'main-menu-item' => [
+                'label' => 'Tentang Kami',
+                'icon' => 'icon-info-circle',
+                'url' => Backend::url('agus/tabler/profile'),
+                'permissions' => ['agus.tabler.*'],
+                'order' => 200,
+                'sideMenu' => [
+                    'menu-struktur-organisasi' => [
+                        'label' => 'Struktur Organisasi',
+                        'icon' => 'icon-sitemap',
+                        'url' => Backend::url('agus/tabler/strukturorganisasi'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                ]
+            ],
+            'menu-implementasi-spmi' => [
+                'label' => 'Implementasi SPMI',
+                'icon' => 'icon-clipboard',
+                'iconSvg' => 'plugins/agus/tabler/assets/images/clipboard-list.svg',
+                'url' => Backend::url('agus/tabler/monev'),
+                'permissions' => ['agus.tabler.*'],
+                'order' => 500,
+                'sideMenu' => [
+                    'menu-beban-belajar-mhs' => [
+                        'label' => 'Monitoring dan Evaluasi',
+                        'icon' => 'icon-file-pdf-o',
+                        'url' => Backend::url('agus/tabler/monev'),
+                        'permissions' => ['agus.tabler.monev'],
+                    ],
+                ]
+            ],
+        ];
     }
 }

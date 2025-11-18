@@ -7,17 +7,25 @@ fields:
         label: 'Sub title'
         span: auto
         type: text
+    file_name:
+        label: Nama File di Google Drive
+        span: full
+        type: text
+        disabled: true
+        comment: Nama file PDF yang sudah diupload ke Google Drive. Untuk mengganti file, upload file baru di bawah.
+        trigger:
+            action: hide
+            field: file_name
+            condition: value[]
     file:
-        label: File
-        span: auto
+        label: Upload File PDF Baru
+        span: full
         type: fileupload
         mode: file
-        fileTypes: doc,docx,pdf,ppt,pptx
-    created_at:
-        label: 'Created at'
-        span: auto
-        type: datepicker
-    updated_at:
-        label: 'Updated at'
-        span: auto
-        type: datepicker
+        fileTypes: pdf
+        maxFilesize: 10
+        useCaption: false
+        thumbOptions:
+            mode: crop
+            extension: auto
+        comment: Upload file PDF (maksimal 10MB). File akan otomatis diupload ke Google Drive dan mengganti file lama jika ada.

@@ -1,0 +1,13 @@
+{% set options = {
+    1: 'Beban Belajar Mahasiswa',
+    2: 'Monev Dosen',
+    3: 'Monev Kehadiran Mahasiswa',
+    4: 'Monev Materi dengan RPS',
+    5: 'Monev Nilai',
+    6: 'Monev UTS UAS -- RPS'
+} %}
+{% if record.category is numeric %}
+    {{ options[record.category] ?: 'Kategori Tidak Diketahui' }}
+{% else %}
+    {{ record.category|title }}
+{% endif %}

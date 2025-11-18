@@ -1,16 +1,30 @@
 fields:
     title:
-        label: Title
-        span: auto
+        label: Judul Dokumen
+        span: full
         type: text
+        placeholder: 'Contoh: Monev-Dosen-2024-2025'
+        comment: Nama file yang akan diupload ke Google Drive (tanpa ekstensi .pdf)
+        required: true
+
+    category:
+        label: Kategori
+        span: full
+        type: dropdown
+        placeholder: '-- Pilih Kategori --'
+        options: Agus\Tabler\Models\Monev::getCategoryOptions
+        required: true
+        comment: File akan diupload ke folder Google Drive sesuai kategori yang dipilih
+
     file:
-        label: File
-        span: auto
+        label: Upload File PDF
+        span: full
         type: fileupload
         mode: file
-        fileTypes: doc,docx,pdf,ppt,pptx
-    category:
-        label: Category
-        span: auto
-        type: dropdown
-        options: Agus\Tabler\Models\Monev::getCategoryOptions
+        fileTypes: pdf
+        maxFilesize: 10
+        useCaption: false
+        thumbOptions:
+            mode: crop
+            extension: auto
+        comment: Upload file PDF (maksimal 10MB). File akan otomatis diupload ke Google Drive.

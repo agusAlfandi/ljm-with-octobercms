@@ -1,0 +1,8 @@
+{% if record.file %}
+    <a href="{{ record.file.path }}" target="_blank" class="btn btn-outline-primary btn-sm">
+        <i class="icon-download"></i>
+        {{ record.file.file_name }}
+    </a>
+{% else %}
+    <span class="text-muted">No file</span>
+{% endif %}

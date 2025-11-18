@@ -9,7 +9,7 @@ class BuilderTableDeleteAgusTablerInformasiPublik2 extends Migration
     {
         Schema::dropIfExists('agus_tabler_informasi_publik');
     }
-    
+
     public function down()
     {
         Schema::create('agus_tabler_informasi_publik', function($table)

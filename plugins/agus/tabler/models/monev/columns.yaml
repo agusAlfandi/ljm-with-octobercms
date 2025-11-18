@@ -1,12 +1,27 @@
 columns:
     title:
-        label: title
+        label: 'Judul Dokumen'
         type: text
+        searchable: true
+    category:
+        label: Kategori
+        type: text
+        valueFrom: display_category
+        sortable: true
+        searchable: false
     file:
-        label: file
+        label: 'File PDF'
         type: text
         select: file_name
         relation: file
-    category:
-        label: category
-        type: text
+        searchable: false
+    created_at:
+        label: Dibuat
+        type: datetime
+        format: 'd M Y H:i'
+        width: 150px
+    updated_at:
+        label: Diperbarui
+        type: datetime
+        format: 'd M Y H:i'
+        width: 150px
