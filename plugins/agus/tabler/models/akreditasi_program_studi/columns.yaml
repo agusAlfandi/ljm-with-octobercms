@@ -1,0 +1,22 @@
+columns:
+    program_studi:
+        label: program_studi
+        type: text
+    status_peringkat:
+        label: status_peringkat
+        type: text
+    nomor_sk:
+        label: nomor_sk
+        type: text
+    tanggal_sk:
+        label: tanggal_sk
+        type: text
+    kadaluarsa_sk:
+        label: kadaluarsa_sk
+        type: text
+    created_at:
+        label: created_at
+        type: datetime
+    updated_at:
+        label: updated_at
+        type: datetime

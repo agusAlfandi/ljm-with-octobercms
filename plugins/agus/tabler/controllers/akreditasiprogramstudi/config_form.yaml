@@ -1,0 +1,10 @@
+name: Akreditasiprogramstudi
+form: $/agus/tabler/models/akreditasi_program_studi/fields.yaml
+modelClass: Agus\Tabler\Models\Akreditasi_program_studi
+defaultRedirect: agus/tabler/akreditasiprogramstudi
+create:
+    redirect: 'agus/tabler/akreditasiprogramstudi/update/:id'
+    redirectClose: agus/tabler/akreditasiprogramstudi
+update:
+    redirect: agus/tabler/akreditasiprogramstudi
+    redirectClose: agus/tabler/akreditasiprogramstudi

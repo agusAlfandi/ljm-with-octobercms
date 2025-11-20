@@ -48,3 +48,12 @@ navigation:
                 label: monev
                 url: agus/tabler/monev
                 icon: icon-sitemap
+    main-menu-akreditasi:
+        label: Akreditasi
+        url: /agus
+        icon: icon-book
+        sideMenu:
+            menu-akreditasi-program-studi:
+                label: 'Akreditasi program studi'
+                url: /agus/tabler/akreditasiprogramstudi
+                icon: icon-slack

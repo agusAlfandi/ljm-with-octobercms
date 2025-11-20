@@ -39,10 +39,10 @@ class Informasi_publik extends Model
         // Ambil data lama dari database sebelum update
         $oldFileName = $this->getOriginal('file_name');
 
-        \Log::info('Checking for old file to delete', [
-            'old_file_name' => $oldFileName,
-            'new_file_exists' => !empty($this->file)
-        ]);
+        // \Log::info('Checking for old file to delete', [
+        //     'old_file_name' => $oldFileName,
+        //     'new_file_exists' => !empty($this->file)
+        // ]);
 
         if ($oldFileName) {
             // Hapus file lama di Google Drive
@@ -55,10 +55,10 @@ class Informasi_publik extends Model
 
                 if ($existingFile) {
                     \Agus\Tabler\Classes\GoogleDriveUploader::delete($existingFile['id']);
-                    \Log::info('Old file deleted from Google Drive before update', [
-                        'fileId' => $existingFile['id'],
-                        'fileName' => $oldFileName
-                    ]);
+                    // \Log::info('Old file deleted from Google Drive before update', [
+                    //     'fileId' => $existingFile['id'],
+                    //     'fileName' => $oldFileName
+                    // ]);
                 } else {
                     \Log::warning('Old file not found in Google Drive', [
                         'fileName' => $oldFileName,
@@ -74,12 +74,12 @@ class Informasi_publik extends Model
         // Gunakan deferred binding untuk memastikan file sudah attached
         if ($this->file()->withDeferred($this->sessionKey)->count() > 0) {
             $file = $this->file()->withDeferred($this->sessionKey)->first();
-            \Log::info('afterSave Informasi Publik (deferred)', [
-                'id' => $this->id,
-                'file_id' => $file ? $file->id : null,
-                'file_path' => $file ? $file->getPath() : null,
-                'old_file_name' => $this->getOriginal('file_name')
-            ]);
+            // \Log::info('afterSave Informasi Publik (deferred)', [
+            //     'id' => $this->id,
+            //     'file_id' => $file ? $file->id : null,
+            //     'file_path' => $file ? $file->getPath() : null,
+            //     'old_file_name' => $this->getOriginal('file_name')
+            // ]);
             if ($file) {
                 // Jika ada file baru, hapus file lama di Google Drive dulu
                 $this->deleteOldFileIfExists();
@@ -87,11 +87,11 @@ class Informasi_publik extends Model
                 $this->uploadFileToGoogleDrive($file);
             }
         } elseif ($this->file) {
-            \Log::info('afterSave Informasi Publik (committed)', [
-                'id' => $this->id,
-                'file_id' => $this->file->id,
-                'old_file_name' => $this->getOriginal('file_name')
-            ]);
+            // \Log::info('afterSave Informasi Publik (committed)', [
+            //     'id' => $this->id,
+            //     'file_id' => $this->file->id,
+            //     'old_file_name' => $this->getOriginal('file_name')
+            // ]);
             // Jika ada file baru, hapus file lama di Google Drive dulu
             $this->deleteOldFileIfExists();
             // Upload file baru
@@ -109,11 +109,11 @@ class Informasi_publik extends Model
         $filePath = $file->getLocalPath();
         if (file_exists($filePath)) {
             @unlink($filePath);
-            \Log::info('Local file deleted after upload', ['file_path' => $filePath]);
+            // \Log::info('Local file deleted after upload', ['file_path' => $filePath]);
         }
         // Hapus relasi file di OctoberCMS
         $file->delete();
-        \Log::info('File relation deleted after upload', ['file_id' => $file->id]);
+        // \Log::info('File relation deleted after upload', ['file_id' => $file->id]);
     }
 
     /**
@@ -125,20 +125,20 @@ class Informasi_publik extends Model
             $filePath = $file->getLocalPath();
             $fileName = $file->file_name;
             $category = 'Keterbukaan Informasi Publik';
-            \Log::info('Uploading Informasi Publik to Google Drive', [
-                'filePath' => $filePath,
-                'fileName' => $fileName,
-                'category' => $category
-            ]);
+            // \Log::info('Uploading Informasi Publik to Google Drive', [
+            //     'filePath' => $filePath,
+            //     'fileName' => $fileName,
+            //     'category' => $category
+            // ]);
             $result = GoogleDriveUploader::uploadToCategory($filePath, $category, $fileName);
             if (isset($result['fileId'])) {
-                \Log::info('File Informasi Publik uploaded to Google Drive', [
-                    'fileId' => $result['fileId'],
-                    'fileName' => $result['fileName'] ?? $fileName,
-                    'category' => $category,
-                    'folderId' => $result['folderId'] ?? null,
-                    'folderName' => $result['folderName'] ?? null
-                ]);
+                // \Log::info('File Informasi Publik uploaded to Google Drive', [
+                //     'fileId' => $result['fileId'],
+                //     'fileName' => $result['fileName'] ?? $fileName,
+                //     'category' => $category,
+                //     'folderId' => $result['folderId'] ?? null,
+                //     'folderName' => $result['folderName'] ?? null
+                // ]);
                 // Simpan nama file yang diupload ke kolom file_name
                 $uploadedFileName = $result['fileName'] ?? $fileName;
                 if (!preg_match('/\.pdf$/i', $uploadedFileName)) {
@@ -147,9 +147,9 @@ class Informasi_publik extends Model
                 $this->file_name = $uploadedFileName;
                 $this->save();
 
-                \Log::info('File name saved to database', [
-                    'file_name' => $this->file_name
-                ]);
+                // \Log::info('File name saved to database', [
+                // //     'file_name' => $this->file_name
+                // ]);
                 // Hapus file lokal dan relasi setelah upload sukses
                 $this->deleteLocalFileRelation($file);
             } else {
@@ -179,40 +179,40 @@ class Informasi_publik extends Model
                 $category = 'Keterbukaan Informasi Publik';
                 $categoryKey = \Agus\Tabler\Classes\GoogleDriveUploader::normalizeCategoryName($category);
 
-                \Log::info('afterDelete Informasi Publik - Debug', [
-                    'original_category' => $category,
-                    'normalized_category' => $categoryKey,
-                    'file_name' => $this->file_name,
-                    'available_keys' => array_keys(\Agus\Tabler\Classes\GoogleDriveReader::FOLDER_IDS)
-                ]);
+                // \Log::info('afterDelete Informasi Publik - Debug', [
+                //     'original_category' => $category,
+                //     'normalized_category' => $categoryKey,
+                //     'file_name' => $this->file_name,
+                //     'available_keys' => array_keys(\Agus\Tabler\Classes\GoogleDriveReader::FOLDER_IDS)
+                // ]);
 
                 $folderId = \Agus\Tabler\Classes\GoogleDriveReader::FOLDER_IDS[$categoryKey] ?? null;
 
-                \Log::info('afterDelete Informasi Publik - Folder lookup', [
-                    'categoryKey' => $categoryKey,
-                    'folderId' => $folderId
-                ]);
+                // \Log::info('afterDelete Informasi Publik - Folder lookup', [
+                //     'categoryKey' => $categoryKey,
+                //     'folderId' => $folderId
+                // ]);
 
                 if ($folderId) {
                     $fileName = $this->file_name;
 
-                    \Log::info('afterDelete Informasi Publik - Searching file', [
-                        'folderId' => $folderId,
-                        'fileName' => $fileName
-                    ]);
+                    // \Log::info('afterDelete Informasi Publik - Searching file', [
+                    //     'folderId' => $folderId,
+                    //     'fileName' => $fileName
+                    // ]);
 
                     $existingFile = \Agus\Tabler\Classes\GoogleDriveReader::findFileByName($folderId, $fileName);
 
-                    \Log::info('afterDelete Informasi Publik - File search result', [
-                        'existingFile' => $existingFile
-                    ]);
+                    // \Log::info('afterDelete Informasi Publik - File search result', [
+                    //     'existingFile' => $existingFile
+                    // ]);
 
                     if ($existingFile) {
                         \Agus\Tabler\Classes\GoogleDriveUploader::delete($existingFile['id']);
-                        \Log::info('File deleted from Google Drive', [
-                            'fileId' => $existingFile['id'],
-                            'fileName' => $fileName
-                        ]);
+                        // \Log::info('File deleted from Google Drive', [
+                        //     'fileId' => $existingFile['id'],
+                        //     'fileName' => $fileName
+                        // ]);
                     } else {
                         \Log::warning('File not found in Google Drive folder', [
                             'folderId' => $folderId,

@@ -51,10 +51,10 @@ class Monev extends Model
         // Ambil data lama dari database sebelum update
         $oldFileName = $this->getOriginal('file_name');
 
-        \Log::info('Checking for old file to delete', [
-            'old_file_name' => $oldFileName,
-            'new_file_exists' => !empty($this->file)
-        ]);
+        // \Log::info('Checking for old file to delete', [
+        //     'old_file_name' => $oldFileName,
+        //     'new_file_exists' => !empty($this->file)
+        // ]);
 
         if ($oldFileName) {
             // Hapus file lama di Google Drive menggunakan category dari model
@@ -66,17 +66,17 @@ class Monev extends Model
 
                 if ($existingFile) {
                     GoogleDriveUploader::delete($existingFile['id']);
-                    \Log::info('Old file deleted from Google Drive before update', [
-                        'fileId' => $existingFile['id'],
-                        'fileName' => $oldFileName,
-                        'category' => $this->category_label
-                    ]);
+                    // \Log::info('Old file deleted from Google Drive before update', [
+                    //     'fileId' => $existingFile['id'],
+                    //     'fileName' => $oldFileName,
+                    //     'category' => $this->category_label
+                    // ]);
                 } else {
-                    \Log::warning('Old file not found in Google Drive', [
-                        'fileName' => $oldFileName,
-                        'folderId' => $folderId,
-                        'category' => $this->category_label
-                    ]);
+                    // \Log::warning('Old file not found in Google Drive', [
+                    //     'fileName' => $oldFileName,
+                    //     'folderId' => $folderId,
+                    //     'category' => $this->category_label
+                    // ]);
                 }
             }
         }
@@ -96,13 +96,13 @@ class Monev extends Model
         if ($this->file()->withDeferred($this->sessionKey)->count() > 0) {
             $file = $this->file()->withDeferred($this->sessionKey)->first();
 
-            \Log::info('afterSave with deferred file', [
-                'id' => $this->id,
-                'title' => $this->title,
-                'category' => $this->category,
-                'file_id' => $file ? $file->id : null,
-                'file_path' => $file ? $file->getPath() : null
-            ]);
+            // \Log::info('afterSave with deferred file', [
+            //     'id' => $this->id,
+            //     'title' => $this->title,
+            //     'category' => $this->category,
+            //     'file_id' => $file ? $file->id : null,
+            //     'file_path' => $file ? $file->getPath() : null
+            // ]);
 
             if ($file && $this->category && $this->title) {
                 // Hapus file lama jika ada sebelum upload file baru
@@ -112,12 +112,12 @@ class Monev extends Model
         }
         // Jika file sudah committed (bukan deferred)
         elseif ($this->file && $this->category && $this->title) {
-            \Log::info('afterSave with committed file', [
-                'id' => $this->id,
-                'title' => $this->title,
-                'category' => $this->category,
-                'file_id' => $this->file->id
-            ]);
+            // \Log::info('afterSave with committed file', [
+            //     'id' => $this->id,
+            //     'title' => $this->title,
+            //     'category' => $this->category,
+            //     'file_id' => $this->file->id
+            // ]);
 
             // Hapus file lama jika ada sebelum upload file baru
             $this->deleteOldFileIfExists();
@@ -134,12 +134,12 @@ class Monev extends Model
             $filePath = $file->getLocalPath();
             $fileName = $file->file_name; // Gunakan nama file asli, bukan title
 
-            \Log::info('Uploading file to Google Drive', [
-                'filePath' => $filePath,
-                'fileName' => $fileName,
-                'title' => $this->title,
-                'category' => $this->category
-            ]);
+            // \Log::info('Uploading file to Google Drive', [
+            //     'filePath' => $filePath,
+            //     'fileName' => $fileName,
+            //     'title' => $this->title,
+            //     'category' => $this->category
+            // ]);
 
             // Upload dengan nama file asli
             $result = GoogleDriveUploader::uploadToCategory($filePath, $this->category_label, $fileName);
@@ -159,14 +159,14 @@ class Monev extends Model
                 // Reset flag
                 $this->isUploadingToGoogleDrive = false;
 
-                \Log::info('File successfully uploaded to Google Drive', [
-                    'fileId' => $result['fileId'],
-                    'fileName' => $uploadedFileName,
-                    'category' => $this->category,
-                    'categoryName' => $this->category_label,
-                    'folderId' => $result['folderId'] ?? null,
-                    'folderName' => $result['folderName'] ?? null
-                ]);
+                // \Log::info('File successfully uploaded to Google Drive', [
+                //     'fileId' => $result['fileId'],
+                //     'fileName' => $uploadedFileName,
+                //     'category' => $this->category,
+                //     'categoryName' => $this->category_label,
+                //     'folderId' => $result['folderId'] ?? null,
+                //     'folderName' => $result['folderName'] ?? null
+                // ]);
 
                 // Hapus file lokal dan relasi setelah upload sukses
                 $this->deleteLocalFileRelation($file, $filePath);
@@ -252,11 +252,11 @@ class Monev extends Model
 
                     if ($existingFile) {
                         GoogleDriveUploader::delete($existingFile['id']);
-                        \Log::info('File deleted from Google Drive', [
-                            'fileId' => $existingFile['id'],
-                            'fileName' => $this->file_name,
-                            'category' => $this->category_label
-                        ]);
+                        // \Log::info('File deleted from Google Drive', [
+                        //     'fileId' => $existingFile['id'],
+                        //     'fileName' => $this->file_name,
+                        //     'category' => $this->category_label
+                        // ]);
                     } else {
                         \Log::warning('File not found in Google Drive for deletion', [
                             'fileName' => $this->file_name,

@@ -177,3 +177,6 @@ v1.0.59:
 v1.0.60:
     - 'Updated table agus_tabler_monev'
     - builder_table_update_agus_tabler_monev_4.php
+v1.0.61:
+    - 'Created table agus_tabler_akreditasi_program_studi'
+    - builder_table_create_agus_tabler_akreditasi_program_studi.php

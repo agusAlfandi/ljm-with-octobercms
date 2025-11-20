@@ -1,0 +1,80 @@
+url = "/akreditasi/akreditasi-program-studi"
+title = "Akreditasi Program Studi"
+layout = "app"
+==
+
+{% set akreditasiList = getAkreditasi() %}
+<div class="row row-deck row-cards">
+        <div class="col-12">
+            <div class="card">
+                <div class="col-12">
+                <div class="card">
+                  <div class="card-header d-flex justify-content-between">
+                    <h3 class="card-title">SK dan Sertifikat Akreditasi Program Studi - Universitas Duta Bangsa Surakarta</h3>
+                  </div>
+
+                  <div class="table-responsive p-2">
+                    <table id="jadwalTable" class="table table-selectable card-table table-vcenter nowrap datatable" style="width:100%">
+                      <thead>
+                        <tr>
+                          <th class="w-1"></th>
+                          <th class="w-1">No.</th>
+                          <th>Program Studi</th>
+                          <th>Status & Peringkat</th>
+                          <th>Nomor SK</th>
+                          <th>Tanggal SK</th>
+                          <th>Tanggal Kadaluarsa</th>
+                        </tr>
+                      </thead>
+                        <tbody>
+                        {% for item in akreditasiList %}
+                        <tr>
+                            <td></td>
+                            <td><span class="text-secondary">{{ loop.index }}</span></td>
+                            <td class="text-wrap text-justify">{{ item.program_studi }}</td>
+                            <td>{{ item.status_peringkat }}</td>
+                            <td>{{ item.nomor_sk }}</td>
+                            <td>{{ item.tanggal_sk ? item.tanggal_sk|date('d M Y') }}</td>
+                            <td>{{ item.kadaluarsa_sk ? item.kadaluarsa_sk|date('d M Y') }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">Tidak ada data akreditasi program studi.</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+                </div>
+            </div>
+        </div>
+
+<script>
+// Tunggu semua script selesai dimuat
+window.addEventListener('load', function() {
+    if (typeof $ !== 'undefined' && $.fn.DataTable) {
+        $('#jadwalTable').DataTable({
+            responsive: true,
+            order: [[1, 'asc']],
+            pageLength: 10,
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Tidak ada data",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Berikutnya",
+                    previous: "Sebelumnya"
+                },
+                zeroRecords: "Tidak ada data yang sesuai"
+            }
+        });
+    }
+});
+</script>

@@ -2,6 +2,8 @@
 
 use Backend\Facades\Backend;
 use System\Classes\PluginBase;
+use Agus\Tabler\Models\Akreditasi;
+use Agus\Tabler\Models\Akreditasi_program_studi;
 
 /**
  * Plugin class
@@ -127,6 +129,9 @@ class Plugin extends PluginBase
                     // Otomatis ambil file dari Google Drive
                     return \Agus\Tabler\Classes\GoogleDriveReader::getAllMonevFiles();
                 },
+                'getAkreditasi' => function() {
+                    return Akreditasi_program_studi::all();
+                }
             ]
         ];
     }
@@ -211,6 +216,21 @@ class Plugin extends PluginBase
                         'icon' => 'icon-file-pdf-o',
                         'url' => Backend::url('agus/tabler/monev'),
                         'permissions' => ['agus.tabler.monev'],
+                    ],
+                ]
+            ],
+            'menu-akreditasi' => [
+                'label' => 'Akreditasi',
+                'icon' => 'icon-certificate',
+                'url' => Backend::url('agus/tabler/akreditasiprogramstudi'),
+                'permissions' => ['agus.tabler.*'],
+                'order' => 600,
+                'sideMenu' => [
+                    'menu-akreditasi-program-studi' => [
+                        'label' => 'Akreditasi Program Studi',
+                        'icon' => 'icon-graduation-cap',
+                        'url' => Backend::url('agus/tabler/akreditasiprogramstudi'),
+                        'permissions' => ['agus.tabler.*'],
                     ],
                 ]
             ],

@@ -1,0 +1,21 @@
+fields:
+    program_studi:
+        label: 'Program studi'
+        span: auto
+        type: text
+    status_peringkat:
+        label: 'Status peringkat'
+        span: auto
+        type: text
+    nomor_sk:
+        label: 'Nomor sk'
+        span: auto
+        type: text
+    tanggal_sk:
+        label: 'Tanggal sk'
+        span: auto
+        type: datepicker
+    kadaluarsa_sk:
+        label: 'Kadaluarsa sk'
+        span: auto
+        type: datepicker

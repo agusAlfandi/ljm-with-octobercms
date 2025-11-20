@@ -4,7 +4,7 @@ use Backend;
 use BackendMenu;
 use Backend\Classes\Controller;
 
-class Monev extends Controller
+class Akreditasiprogramstudi extends Controller
 {
     public $implement = [
         \Backend\Behaviors\FormController::class,
@@ -17,7 +17,7 @@ class Monev extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'menu-beban-belajar-mhs');
+        BackendMenu::setContext('Agus.Tabler', 'main-menu-akreditasi', 'menu-akreditasi-program-studi');
     }
 
 }
