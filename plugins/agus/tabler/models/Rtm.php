@@ -1,20 +1,21 @@
 <?php namespace Agus\Tabler\Models;
 
 use Model;
-use Agus\Tabler\Classes\GoogleDriveUploader;
 use Agus\Tabler\Classes\GoogleDriveReader;
+use Agus\Tabler\Classes\GoogleDriveUploader;
 
 /**
  * Model
  */
-class Monev extends Model
+class Rtm extends Model
 {
     use \October\Rain\Database\Traits\Validation;
+
 
     /**
      * @var string table in the database used by the model.
      */
-    public $table = 'agus_tabler_monev';
+    public $table = 'agus_tabler_rtm';
 
     /**
      * @var array rules for validation.
@@ -23,7 +24,7 @@ class Monev extends Model
     ];
 
     /**
-     * @var array Attributes that are mass assignable.
+     * @var array
      */
     protected $fillable = [
         'title',
@@ -38,49 +39,42 @@ class Monev extends Model
         'file' => 'System\Models\File'
     ];
 
+      /**
+     * @return array
+     */
+
+    public static function getCategoryOptions() {
+        return [
+            1 => 'Periode 2021/2022 rtm',
+            2 => 'Periode 2022/2023 rtm',
+            3 => 'Periode 2023/2024 rtm',
+            4 => 'Periode 2024/2025 rtm',
+        ];
+    }
+
+     /**
+     * Get category label attribute (accessor)
+     */
+    public function getCategoryLabelAttribute()
+    {
+        $options = self::getCategoryOptions();
+        return isset($options[$this->category]) ? $options[$this->category] : 'Kategori Tidak Diketahui';
+    }
+
     /**
+     * Get display category attribute (accessor)
+     */
+    public function getDisplayCategoryAttribute()
+    {
+        $options = self::getCategoryOptions();
+        return isset($options[$this->category]) ? $options[$this->category] : 'Kategori Tidak Diketahui';
+    }
+
+     /**
      * @var bool Flag to prevent recursive afterSave calls
      */
     protected $isUploadingToGoogleDrive = false;
 
-    /**
-     * Hapus file lama di Google Drive sebelum upload file baru
-     */
-    protected function deleteOldFileIfExists()
-    {
-        // Ambil data lama dari database sebelum update
-        $oldFileName = $this->getOriginal('file_name');
-
-        // \Log::info('Checking for old file to delete', [
-        //     'old_file_name' => $oldFileName,
-        //     'new_file_exists' => !empty($this->file)
-        // ]);
-
-        if ($oldFileName) {
-            // Hapus file lama di Google Drive menggunakan category dari model
-            $categoryName = GoogleDriveUploader::normalizeCategoryName($this->category_label);
-            $folderId = GoogleDriveReader::FOLDER_IDS[$categoryName] ?? null;
-
-            if ($folderId) {
-                $existingFile = GoogleDriveReader::findFileByName($folderId, $oldFileName);
-
-                if ($existingFile) {
-                    GoogleDriveUploader::delete($existingFile['id']);
-                    // \Log::info('Old file deleted from Google Drive before update', [
-                    //     'fileId' => $existingFile['id'],
-                    //     'fileName' => $oldFileName,
-                    //     'category' => $this->category_label
-                    // ]);
-                } else {
-                    // \Log::warning('Old file not found in Google Drive', [
-                    //     'fileName' => $oldFileName,
-                    //     'folderId' => $folderId,
-                    //     'category' => $this->category_label
-                    // ]);
-                }
-            }
-        }
-    }
 
     /**
      * afterSave - trigger upload setelah semua relasi tersimpan
@@ -187,33 +181,44 @@ class Monev extends Model
     }
 
     /**
-     * Get the available category options.
-     *
-     * @return array
+     * Hapus file lama di Google Drive sebelum upload file baru
      */
-    public static function getCategoryOptions()
+    protected function deleteOldFileIfExists()
     {
-        return [
-            1 => 'Beban Belajar Mahasiswa',
-            2 => 'Monev Dosen',
-            3 => 'Monev Kehadiran Mahasiswa',
-            4 => 'Monev Materi dengan RPS',
-            5 => 'Monev Nilai',
-            6 => 'Monev UTS UAS -- RPS',
-        ];
+        // Ambil data lama dari database sebelum update
+        $oldFileName = $this->getOriginal('file_name');
+
+        // \Log::info('Checking for old file to delete', [
+        //     'old_file_name' => $oldFileName,
+        //     'new_file_exists' => !empty($this->file)
+        // ]);
+
+        if ($oldFileName) {
+            // Hapus file lama di Google Drive menggunakan category dari model
+            $categoryName = GoogleDriveUploader::normalizeCategoryName($this->category_label);
+            $folderId = GoogleDriveReader::FOLDER_IDS[$categoryName] ?? null;
+
+            if ($folderId) {
+                $existingFile = GoogleDriveReader::findFileByName($folderId, $oldFileName);
+
+                if ($existingFile) {
+                    GoogleDriveUploader::delete($existingFile['id']);
+                    // \Log::info('Old file deleted from Google Drive before update', [
+                    //     'fileId' => $existingFile['id'],
+                    //     'fileName' => $oldFileName,
+                    //     'category' => $this->category_label
+                    // ]);
+                } else {
+                    // \Log::warning('Old file not found in Google Drive', [
+                    //     'fileName' => $oldFileName,
+                    //     'folderId' => $folderId,
+                    //     'category' => $this->category_label
+                    // ]);
+                }
+            }
+        }
     }
 
-    public function getCategoryLabelAttribute()
-    {
-        $options = self::getCategoryOptions();
-        return isset($options[$this->category]) ? $options[$this->category] : 'Kategori Tidak Diketahui';
-    }
-
-    public function getDisplayCategoryAttribute()
-    {
-        $options = self::getCategoryOptions();
-        return isset($options[$this->category]) ? $options[$this->category] : 'Kategori Tidak Diketahui';
-    }
 
     /**
      * Hapus relasi file lokal setelah upload sukses
@@ -269,4 +274,5 @@ class Monev extends Model
             }
         }
     }
+
 }

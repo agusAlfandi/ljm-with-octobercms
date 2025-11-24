@@ -1,8 +1,6 @@
 fields:
     file:
         label: 'Upload File PDF'
-        span: full
-        type: fileupload
         mode: file
         fileTypes: pdf
         maxFilesize: 10
@@ -10,6 +8,8 @@ fields:
         thumbOptions:
             mode: crop
             extension: auto
+        span: full
+        type: fileupload
         comment: 'Upload file PDF (maksimal 10MB). Nama file akan otomatis mengisi judul dokumen.'
         attributes:
             data-request: onFileUpload
@@ -25,7 +25,7 @@ fields:
         span: full
         type: dropdown
         placeholder: '-- Pilih Kategori --'
-        options: 'Agus\Tabler\Models\Monev::getCategoryOptions'
+        options: 'Agus\Tabler\Models\Rtm::getCategoryOptions'
         required: true
         comment: 'File akan diupload ke folder Google Drive sesuai kategori yang dipilih'
     file_name:

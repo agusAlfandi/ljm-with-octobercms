@@ -29,6 +29,9 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
+        return [
+            \Agus\Tabler\Components\SurveyAccordion::class => 'surveyAccordion'
+        ];
     }
 
     /**
@@ -48,7 +51,7 @@ class Plugin extends PluginBase
                     $folderId = \Agus\Tabler\Classes\GoogleDriveReader::FOLDER_IDS[$categoryKey] ?? null;
 
                     if (!$folderId) {
-                        \Log::error('Folder ID not found for Informasi Publik', ['categoryKey' => $categoryKey]);
+                        // \Log::error('Folder ID not found for Informasi Publik', ['categoryKey' => $categoryKey]);
                         return [];
                     }
 
@@ -131,7 +134,15 @@ class Plugin extends PluginBase
                 },
                 'getAkreditasi' => function() {
                     return Akreditasi_program_studi::all();
-                }
+                },
+                'getAmiPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllAmiFiles();
+                },
+                'getRtmPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllRtmFiles();
+                },
             ]
         ];
     }
@@ -206,7 +217,6 @@ class Plugin extends PluginBase
             'menu-implementasi-spmi' => [
                 'label' => 'Implementasi SPMI',
                 'icon' => 'icon-clipboard',
-                'iconSvg' => 'plugins/agus/tabler/assets/images/clipboard-list.svg',
                 'url' => Backend::url('agus/tabler/monev'),
                 'permissions' => ['agus.tabler.*'],
                 'order' => 500,
@@ -216,6 +226,24 @@ class Plugin extends PluginBase
                         'icon' => 'icon-file-pdf-o',
                         'url' => Backend::url('agus/tabler/monev'),
                         'permissions' => ['agus.tabler.monev'],
+                    ],
+                    'menu-ami' => [
+                        'label' => 'Audit Mutu Internal',
+                        'icon' => 'icon-file-pdf-o',
+                        'url' => Backend::url('agus/tabler/ami'),
+                        'permissions' => ['agus.tabler.ami'],
+                    ],
+                     'menu-rtm' => [
+                        'label' => 'Rapat Tinjauan Manajemen',
+                        'icon' => 'icon-file-pdf-o',
+                        'url' => Backend::url('agus/tabler/rtm'),
+                        'permissions' => ['agus.tabler.rtm'],
+                    ],
+                      'menu-grafik-kepuasan' => [
+                        'label' => 'Grafik Kepuasan',
+                        'icon' => 'icon-file-pdf-o',
+                        'url' => Backend::url('agus/tabler/grafikkepuasan'),
+                        'permissions' => ['agus.tabler.grafikkepuasan'],
                     ],
                 ]
             ],

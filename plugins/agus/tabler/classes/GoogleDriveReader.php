@@ -19,6 +19,18 @@ class GoogleDriveReader
         'Monev Nilai' => '1RPAFgjL3Z-vvCLx7l8CXbTNeeBqBoMZE',
         'Monev UTS UAS -- RPS' => '1V2ykjb_UKurnaCgi6wsW1kEwSFI_vyTv',
         'Keterbukaan Informasi Publik' => '1PZ9L9NVjiKLOgIAfq8nJxqyaXHIibFOi',
+        'Periode 2021/2022 ami' => '1JieEkkFcqb0ThMxDNoO4SbQwcRnDJf6k',
+        'Periode 2022/2023 ami' => '1FdFs5FPnGP7C1Ba_My7gyfogR8YFurFv',
+        'Periode 2023/2024 ami' => '16fhw19FrHiA1Fjz-NozyLx5YMRu1fNe6',
+        'Periode 2024/2025 ami' => '1l2qRjMSPynnnWPSTOuxrwnH09SO34O5v',
+        'Periode 2021/2022 rtm' => '1n-4nkhv8BhcPhLLZn-nRATRl2krj9tte',
+        'Periode 2022/2023 rtm' => '1OUl8We-qUopDAp2VZvYV0zgkPRmcvX75',
+        'Periode 2023/2024 rtm' => '1_tdIRZd_MJ6xd3dIkvTEOoCSbpf27sKL',
+        'Periode 2024/2025 rtm' => '1gwT5tEayLaj85i_JmUQ9mGzzvQMOYhSF',
+        'Periode 2021/2022 grafik kepuasan' => '1AaEPBqFwB5v-gKdDdBhzC7GOzpA1y6UM',
+        'Periode 2022/2023 grafik kepuasan' => '1FO1GFMA4Z2sM8qHMRy2Dl0tadPsgrRo2',
+        'Periode 2023/2024 grafik kepuasan' => '1Kdkg7uMN6gXX9wYCs204QlKcyNFbxlbn',
+        'Periode 2024/2025 grafik kepuasan' => '1rRS-auZQeEKipy9p43PMUWO9YdFWyjfl',
     ];
 
     /**
@@ -31,6 +43,19 @@ class GoogleDriveReader
         4 => 'Monev Materi dengan RPS',
         5 => 'Monev Nilai',
         6 => 'Monev UTS UAS -- RPS',
+        7 => 'Keterbukaan Informasi Publik',
+        8 => 'Periode 2021/2022 ami',
+        9 => 'Periode 2022/2023 ami',
+        10 => 'Periode 2023/2024 ami',
+        11 => 'Periode 2024/2025 ami',
+        12 => 'Periode 2021/2022 rtm',
+        13 => 'Periode 2022/2023 rtm',
+        14 => 'Periode 2023/2024 rtm',
+        15 => 'Periode 2024/2025 rtm',
+        16 => 'Periode 2021/2022 grafik kepuasan',
+        17 => 'Periode 2022/2023 grafik kepuasan',
+        18 => 'Periode 2023/2024 grafik kepuasan',
+        19 => 'Periode 2024/2025 grafik kepuasan',
     ];
 
     /**
@@ -43,10 +68,10 @@ class GoogleDriveReader
     {
         $url = self::WEB_APP_URL . '?action=list&folderId=' . urlencode($folderId);
 
-        \Log::info('Fetching files from Google Drive', [
-            'url' => $url,
-            'folderId' => $folderId
-        ]);
+        // \Log::info('Fetching files from Google Drive', [
+        //     'url' => $url,
+        //     'folderId' => $folderId
+        // ]);
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -59,27 +84,27 @@ class GoogleDriveReader
         $curlError = curl_error($ch);
         curl_close($ch);
 
-        \Log::info('Google Drive API Response', [
-            'httpCode' => $httpCode,
-            'curlError' => $curlError,
-            'response' => $result
-        ]);
+        // \Log::info('Google Drive API Response', [
+        //     'httpCode' => $httpCode,
+        //     'curlError' => $curlError,
+        //     'response' => $result
+        // ]);
 
         if ($httpCode !== 200) {
-            \Log::error('Google Drive API error: HTTP ' . $httpCode, [
-                'curlError' => $curlError,
-                'response' => $result
-            ]);
+            // \Log::error('Google Drive API error: HTTP ' . $httpCode, [
+            //     'curlError' => $curlError,
+            //     'response' => $result
+            // ]);
             return [];
         }
 
         $data = json_decode($result, true);
 
         if (!$data || !isset($data['success']) || !$data['success']) {
-            \Log::error('Google Drive API error: ' . ($data['error'] ?? 'Unknown error'), [
-                'response' => $result,
-                'decoded' => $data
-            ]);
+            // \Log::error('Google Drive API error: ' . ($data['error'] ?? 'Unknown error'), [
+            //     'response' => $result,
+            //     'decoded' => $data
+            // ]);
             return [];
         }
 
@@ -97,7 +122,7 @@ class GoogleDriveReader
 
         foreach (self::FOLDER_IDS as $category => $folderId) {
             // Skip folder "Keterbukaan Informasi Publik" agar tidak tampil di menu Monev
-            if ($category === 'Keterbukaan Informasi Publik') {
+            if ($category === 'Keterbukaan Informasi Publik' || strpos($category, 'Periode') === 0) {
                 continue;
             }
             $files = self::getFilesFromFolder($folderId);
@@ -119,6 +144,129 @@ class GoogleDriveReader
                 // Hilangkan ekstensi untuk tampilan
                 $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
 
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllAmiFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'ami'
+            if (strpos($category, 'Periode') !== 0 || substr($category, -3) !== 'ami') {
+                continue;
+            }
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllRtmFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'rtm'
+            if (strpos($category, 'Periode') !== 0 || substr($category, -3) !== 'rtm') {
+                continue;
+            }
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+     /**
+     * Get all PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllGrfKpsFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'rtm'
+            if (strpos($category, 'Periode') !== 0 || substr($category, -3) !== 'kps') {
+                continue;
+            }
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
                 return [
                     'title' => $displayName,
                     'fileId' => $file['id'],

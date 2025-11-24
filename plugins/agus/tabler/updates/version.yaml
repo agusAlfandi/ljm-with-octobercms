@@ -180,3 +180,24 @@ v1.0.60:
 v1.0.61:
     - 'Created table agus_tabler_akreditasi_program_studi'
     - builder_table_create_agus_tabler_akreditasi_program_studi.php
+v1.0.62:
+    - 'Created table agus_tabler_ami'
+    - builder_table_create_agus_tabler_ami.php
+v1.0.63:
+    - 'Created table agus_tabler_rtm'
+    - builder_table_create_agus_tabler_rtm.php
+v1.0.64:
+    - 'Created table agus_tabler_grafik_kepuasan'
+    - builder_table_create_agus_tabler_grafik_kepuasan.php
+v1.0.65:
+    - 'Created table agus_tabler_survei_kepuasan'
+    - builder_table_create_agus_tabler_survei_kepuasan.php
+v1.0.66:
+    - 'Created table agus_tabler_monev_survei_kepuasan'
+    - builder_table_create_agus_tabler_monev_survei_kepuasan.php
+v1.0.67:
+    - 'Created table agus_tabler_rtm_kepuasan'
+    - builder_table_create_agus_tabler_rtm_kepuasan.php
+v1.0.68:
+    - 'Updated table agus_tabler_grafik_kepuasan'
+    - builder_table_update_agus_tabler_grafik_kepuasan.php

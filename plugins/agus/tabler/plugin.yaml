@@ -42,12 +42,24 @@ navigation:
     menu-implementasi-spmi:
         label: 'implementasi spmi'
         url: agus
-        icon: icon-life-ring
+        icon: icon-asterisk
         sideMenu:
+            menu-ami:
+                label: AMI
+                url: agus/tabler/ami
+                icon: icon-skype
             menu-monev:
                 label: monev
                 url: agus/tabler/monev
                 icon: icon-sitemap
+            side-menu-rtm:
+                label: 'Rapat tinjauan manajemen'
+                url: agus/tabler/rtm
+                icon: icon-skype
+            side-menu-grafik-kepuasan:
+                label: 'Grafik Kepuasan'
+                url: agus/tabler/grafikkepuasan
+                icon: icon-skype
     main-menu-akreditasi:
         label: Akreditasi
         url: /agus

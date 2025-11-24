@@ -4,7 +4,7 @@ use Backend;
 use BackendMenu;
 use Backend\Classes\Controller;
 
-class Monev extends Controller
+class Rtm extends Controller
 {
     public $implement = [
         \Backend\Behaviors\FormController::class,
@@ -17,7 +17,7 @@ class Monev extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'menu-beban-belajar-mhs');
+        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'side-menu-rtm');
     }
 
     /**
@@ -26,7 +26,7 @@ class Monev extends Controller
     public function formExtendFields($form)
     {
         // Add custom CSS/JS assets
-        $form->addJs('/plugins/agus/tabler/assets/js/monev-form.js');
+        $form->addJs('/plugins/agus/tabler/assets/js/rtm-form.js');
     }
 
 }

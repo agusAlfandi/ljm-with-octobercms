@@ -4,7 +4,7 @@ use Backend;
 use BackendMenu;
 use Backend\Classes\Controller;
 
-class Monev extends Controller
+class GrafikKepuasan extends Controller
 {
     public $implement = [
         \Backend\Behaviors\FormController::class,
@@ -17,16 +17,13 @@ class Monev extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'menu-beban-belajar-mhs');
+        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'side-menu-grafik-kepuasan');
     }
 
-    /**
-     * Extend form to add custom JavaScript for auto-fill title from file upload
-     */
     public function formExtendFields($form)
     {
         // Add custom CSS/JS assets
-        $form->addJs('/plugins/agus/tabler/assets/js/monev-form.js');
+        $form->addJs('/plugins/agus/tabler/assets/js/grk-kps.js');
     }
 
 }

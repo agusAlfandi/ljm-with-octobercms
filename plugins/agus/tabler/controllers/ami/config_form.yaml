@@ -1,0 +1,10 @@
+name: Ami
+form: $/agus/tabler/models/ami_documents/fields.yaml
+modelClass: Agus\Tabler\Models\Ami_documents
+defaultRedirect: agus/tabler/ami
+create:
+    redirect: 'agus/tabler/ami/update/:id'
+    redirectClose: agus/tabler/ami
+update:
+    redirect: agus/tabler/ami
+    redirectClose: agus/tabler/ami

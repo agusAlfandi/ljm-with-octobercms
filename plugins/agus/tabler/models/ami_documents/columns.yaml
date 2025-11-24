@@ -1,0 +1,25 @@
+columns:
+    title:
+        label: 'Judul Dokumen'
+        type: text
+        searchable: true
+    category:
+        label: Kategori
+        type: text
+        valueFrom: display_category
+        sortable: false
+        searchable: false
+    file_name:
+        label: 'Nama File'
+        type: text
+        searchable: true
+    created_at:
+        label: Dibuat
+        type: datetime
+        format: 'd M Y H:i'
+        width: 150px
+    updated_at:
+        label: Diperbarui
+        type: datetime
+        format: 'd M Y H:i'
+        width: 150px

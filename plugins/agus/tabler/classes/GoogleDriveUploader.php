@@ -39,28 +39,28 @@ class GoogleDriveUploader
             $fileName = basename($filePath);
         }
 
-        \Log::info('Uploading to Google Drive', [
-            'category' => $category,
-            'categoryName' => $categoryName,
-            'folderId' => $folderId,
-            'fileName' => $fileName
-        ]);
+        // \Log::info('Uploading to Google Drive', [
+        //     'category' => $category,
+        //     'categoryName' => $categoryName,
+        //     'folderId' => $folderId,
+        //     'fileName' => $fileName
+        // ]);
 
         // Cek apakah sudah ada file dengan nama yang sama di folder
         $existingFile = GoogleDriveReader::findFileByName($folderId, $fileName);
 
         if ($existingFile) {
-            \Log::info('Found existing file with same name, deleting...', [
-                'fileName' => $fileName,
-                'fileId' => $existingFile['id']
-            ]);
+            // \Log::info('Found existing file with same name, deleting...', [
+            //     'fileName' => $fileName,
+            //     'fileId' => $existingFile['id']
+            // ]);
 
             // Hapus file lama
             try {
                 self::delete($existingFile['id']);
-                \Log::info('Old file deleted successfully', [
-                    'fileId' => $existingFile['id']
-                ]);
+                // \Log::info('Old file deleted successfully', [
+                //     'fileId' => $existingFile['id']
+                // ]);
             } catch (\Exception $e) {
                 \Log::warning('Failed to delete old file, continuing with upload', [
                     'error' => $e->getMessage()
@@ -95,9 +95,20 @@ class GoogleDriveUploader
             'monev materi dengan rps' => 'Monev Materi dengan RPS',
             'monev nilai' => 'Monev Nilai',
             'monev uas uts rps' => 'Monev UTS UAS -- RPS',
-            'monev uts uas -- rps' => 'Monev UTS UAS -- RPS',
             'keterbukaan informasi publik' => 'Keterbukaan Informasi Publik',
             'informasi publik' => 'Keterbukaan Informasi Publik',
+            'periode 2021/2022' => 'Periode 2021/2022 ami',
+            'periode 2022/2023' => 'Periode 2022/2023 ami',
+            'periode 2023/2024' => 'Periode 2023/2024 ami',
+            'periode 2024/2025' => 'Periode 2024/2025 ami',
+            'periode 2021/2022 rtm' => 'Periode 2021/2022 rtm',
+            'periode 2022/2023 rtm' => 'Periode 2022/2023 rtm',
+            'periode 2023/2024 rtm' => 'Periode 2023/2024 rtm',
+            'periode 2024/2025 rtm' => 'Periode 2024/2025 rtm',
+            'periode 2021/2022 grafik kepuasan' => 'Periode 2021/2022 grafik kepuasan',
+            'periode 2022/2023 grafik kepuasan' => 'Periode 2022/2023 grafik kepuasan',
+            'periode 2023/2024 grafik kepuasan' => 'Periode 2023/2024 grafik kepuasan',
+            'periode 2024/2025 grafik kepuasan' => 'Periode 2024/2025 grafik kepuasan',
         ];
 
         // Cek mapping
@@ -169,11 +180,11 @@ class GoogleDriveUploader
         $curlError = curl_error($ch);
         curl_close($ch);
 
-        \Log::info('Google Drive Upload Response', [
-            'httpCode' => $httpCode,
-            'curlError' => $curlError,
-            'response' => $result
-        ]);
+        // \Log::info('Google Drive Upload Response', [
+        //     'httpCode' => $httpCode,
+        //     'curlError' => $curlError,
+        //     'response' => $result
+        // ]);
 
         return json_decode($result, true);
     }
@@ -182,10 +193,10 @@ class GoogleDriveUploader
     {
         $url = self::WEB_APP_URL . '?action=delete&id=' . urlencode($fileId);
 
-        \Log::info('Deleting file from Google Drive', [
-            'fileId' => $fileId,
-            'url' => $url
-        ]);
+        // \Log::info('Deleting file from Google Drive', [
+        //     'fileId' => $fileId,
+        //     'url' => $url
+        // ]);
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -198,12 +209,12 @@ class GoogleDriveUploader
         $curlError = curl_error($ch);
         curl_close($ch);
 
-        \Log::info('Google Drive Delete Response', [
-            'fileId' => $fileId,
-            'httpCode' => $httpCode,
-            'curlError' => $curlError,
-            'response' => $result
-        ]);
+        // \Log::info('Google Drive Delete Response', [
+        //     'fileId' => $fileId,
+        //     'httpCode' => $httpCode,
+        //     'curlError' => $curlError,
+        //     'response' => $result
+        // ]);
 
         return json_decode($result, true);
     }

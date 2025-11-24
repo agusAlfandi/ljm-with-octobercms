@@ -1,0 +1,10 @@
+name: GrafikKepuasan
+form: $/agus/tabler/models/grafik_kepuasan/fields.yaml
+modelClass: Agus\Tabler\Models\Grafik_kepuasan
+defaultRedirect: agus/tabler/grafikkepuasan
+create:
+    redirect: 'agus/tabler/grafikkepuasan/update/:id'
+    redirectClose: agus/tabler/grafikkepuasan
+update:
+    redirect: agus/tabler/grafikkepuasan
+    redirectClose: agus/tabler/grafikkepuasan

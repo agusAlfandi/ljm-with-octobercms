@@ -1,0 +1,11 @@
+{% set options = {
+    1: 'Periode 2021/2022',
+    2: 'Periode 2022/2023',
+    3: 'Periode 2023/2024',
+    4: 'Periode 2024/2025',
+} %}
+{% if record.category is numeric %}
+    {{ options[record.category] ?: 'Kategori Tidak Diketahui' }}
+{% else %}
+    {{ record.category|title }}
+{% endif %}

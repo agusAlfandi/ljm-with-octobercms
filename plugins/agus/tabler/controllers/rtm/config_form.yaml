@@ -1,0 +1,10 @@
+name: Rtm
+form: $/agus/tabler/models/rtm/fields.yaml
+modelClass: Agus\Tabler\Models\Rtm
+defaultRedirect: agus/tabler/rtm
+create:
+    redirect: 'agus/tabler/rtm/update/:id'
+    redirectClose: agus/tabler/rtm
+update:
+    redirect: agus/tabler/rtm
+    redirectClose: agus/tabler/rtm

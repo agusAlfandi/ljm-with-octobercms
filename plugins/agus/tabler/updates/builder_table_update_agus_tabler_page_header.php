@@ -19,9 +19,9 @@ class BuilderTableUpdateAgusTablerPageHeader extends Migration
     {
         Schema::table('agus_tabler_page_header', function($table)
         {
-            $table->string('image_1', 225)->nullable(false)->change();
-            $table->string('image_2', 225)->nullable(false)->change();
-            $table->string('image_3', 225)->nullable(false)->change();
+            $table->string('image_1', 225)->nullable()->change();
+            $table->string('image_2', 225)->nullable()->change();
+            $table->string('image_3', 225)->nullable()->change();
         });
     }
 }
