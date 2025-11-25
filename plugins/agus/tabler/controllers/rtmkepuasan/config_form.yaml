@@ -1,0 +1,10 @@
+name: Rtmkepuasan
+form: $/agus/tabler/models/rtm_kepuasan/fields.yaml
+modelClass: Agus\Tabler\Models\Rtm_kepuasan
+defaultRedirect: agus/tabler/rtmkepuasan
+create:
+    redirect: 'agus/tabler/rtmkepuasan/update/:id'
+    redirectClose: agus/tabler/rtmkepuasan
+update:
+    redirect: agus/tabler/rtmkepuasan
+    redirectClose: agus/tabler/rtmkepuasan

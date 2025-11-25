@@ -109,6 +109,18 @@ class GoogleDriveUploader
             'periode 2022/2023 grafik kepuasan' => 'Periode 2022/2023 grafik kepuasan',
             'periode 2023/2024 grafik kepuasan' => 'Periode 2023/2024 grafik kepuasan',
             'periode 2024/2025 grafik kepuasan' => 'Periode 2024/2025 grafik kepuasan',
+            'periode 2021/2022 survei kepuasan' => 'Periode 2021/2022 survei kepuasan',
+            'periode 2022/2023 survei kepuasan' => 'Periode 2022/2023 survei kepuasan',
+            'periode 2023/2024 survei kepuasan' => 'Periode 2023/2024 survei kepuasan',
+            'periode 2024/2025 survei kepuasan' => 'Periode 2024/2025 survei kepuasan',
+            'periode 2021/2022 monev survei kepuasan' => 'Periode 2021/2022 monev survei kepuasan',
+            'periode 2022/2023 monev survei kepuasan' => 'Periode 2022/2023 monev survei kepuasan',
+            'periode 2023/2024 monev survei kepuasan' => 'Periode 2023/2024 monev survei kepuasan',
+            'periode 2024/2025 monev survei kepuasan' => 'Periode 2024/2025 monev survei kepuasan',
+            'periode 2021/2022 rtm kepuasan' => 'Periode 2021/2022 rtm kepuasan',
+            'periode 2022/2023 rtm kepuasan' => 'Periode 2022/2023 rtm kepuasan',
+            'periode 2023/2024 rtm kepuasan' => 'Periode 2023/2024 rtm kepuasan',
+            'periode 2024/2025 rtm kepuasan' => 'Periode 2024/2025 rtm kepuasan',
         ];
 
         // Cek mapping

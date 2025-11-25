@@ -1,0 +1,10 @@
+name: Surveikepuasan
+form: $/agus/tabler/models/survei_kepuasan/fields.yaml
+modelClass: Agus\Tabler\Models\Survei_kepuasan
+defaultRedirect: agus/tabler/surveikepuasan
+create:
+    redirect: 'agus/tabler/surveikepuasan/update/:id'
+    redirectClose: agus/tabler/surveikepuasan
+update:
+    redirect: agus/tabler/surveikepuasan
+    redirectClose: agus/tabler/surveikepuasan

@@ -60,6 +60,18 @@ navigation:
                 label: 'Grafik Kepuasan'
                 url: agus/tabler/grafikkepuasan
                 icon: icon-skype
+            side-menu-survei-kepuasan:
+                label: 'Survei Kepuasan'
+                url: agus/tabler/surveikepuasan
+                icon: icon-skyatlas
+            side-menu-monev-survei-kepuasan:
+                label: 'Monev Survei Kepuasan'
+                url: agus/tabler/monevsurveikepuasan
+                icon: icon-skyatlas
+            side-menu-rtm-kepuasan:
+                label: 'RTM Kepuasan'
+                url: agus/tabler/rtmkepuasan
+                icon: icon-skyatlas
     main-menu-akreditasi:
         label: Akreditasi
         url: /agus

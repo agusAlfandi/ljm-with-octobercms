@@ -143,6 +143,22 @@ class Plugin extends PluginBase
                     // Otomatis ambil file dari Google Drive
                     return \Agus\Tabler\Classes\GoogleDriveReader::getAllRtmFiles();
                 },
+                'getGrfKpsPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllGrfKpsFiles();
+                },
+                'getSvrKpsPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllSvrKpsFiles();
+                },
+                'getMnvSvrKpsPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllMnvSvrKpsFiles();
+                },
+                'getRtmKpsPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllRtmKpsFiles();
+                },
             ]
         ];
     }
@@ -244,6 +260,24 @@ class Plugin extends PluginBase
                         'icon' => 'icon-file-pdf-o',
                         'url' => Backend::url('agus/tabler/grafikkepuasan'),
                         'permissions' => ['agus.tabler.grafikkepuasan'],
+                    ],
+                    'menu-survei-kepuasan' => [
+                        'label' => 'Survei Kepuasan',
+                        'icon' => 'icon-file-pdf-o',
+                        'url' => Backend::url('agus/tabler/surveikepuasan'),
+                        'permissions' => ['agus.tabler.surveikepuasan'],
+                    ],
+                    'menu-monev-survei-kepuasan' => [
+                        'label' => 'Monev Survei Kepuasan',
+                        'icon' => 'icon-file-pdf-o',
+                        'url' => Backend::url('agus/tabler/monevsurveikepuasan'),
+                        'permissions' => ['agus.tabler.monevsurveikepuasan'],
+                    ],
+                    'menu-rtm-kepuasan' => [
+                        'label' => 'RTM Kepuasan',
+                        'icon' => 'icon-file-pdf-o',
+                        'url' => Backend::url('agus/tabler/rtmkepuasan'),
+                        'permissions' => ['agus.tabler.rtmkepuasan'],
                     ],
                 ]
             ],

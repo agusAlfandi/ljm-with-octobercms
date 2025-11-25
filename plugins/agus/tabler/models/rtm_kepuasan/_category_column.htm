@@ -1,0 +1,11 @@
+{% set options = {
+    1: 'Periode 2021/2022 rtm kepuasan',
+    2: 'Periode 2022/2023 rtm kepuasan',
+    3: 'Periode 2023/2024 rtm kepuasan',
+    4: 'Periode 2024/2025 rtm kepuasan',
+} %}
+{% if record.category is numeric %}
+    {{ options[record.category] ?: 'Kategori Tidak Diketahui' }}
+{% else %}
+    {{ record.category|title }}
+{% endif %}

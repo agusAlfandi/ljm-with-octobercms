@@ -1,0 +1,10 @@
+name: Monevsurveikepuasan
+form: $/agus/tabler/models/monev_survey_kepuasan/fields.yaml
+modelClass: Agus\Tabler\Models\Monev_survey_kepuasan
+defaultRedirect: agus/tabler/monevsurveikepuasan
+create:
+    redirect: 'agus/tabler/monevsurveikepuasan/update/:id'
+    redirectClose: agus/tabler/monevsurveikepuasan
+update:
+    redirect: agus/tabler/monevsurveikepuasan
+    redirectClose: agus/tabler/monevsurveikepuasan

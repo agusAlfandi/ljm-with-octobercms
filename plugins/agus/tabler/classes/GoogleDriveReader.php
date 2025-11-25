@@ -31,6 +31,18 @@ class GoogleDriveReader
         'Periode 2022/2023 grafik kepuasan' => '1FO1GFMA4Z2sM8qHMRy2Dl0tadPsgrRo2',
         'Periode 2023/2024 grafik kepuasan' => '1Kdkg7uMN6gXX9wYCs204QlKcyNFbxlbn',
         'Periode 2024/2025 grafik kepuasan' => '1rRS-auZQeEKipy9p43PMUWO9YdFWyjfl',
+        'Periode 2021/2022 survei kepuasan' => '11HhPk_V70I2Bukti_ajmrV37SL77aMg_',
+        'Periode 2022/2023 survei kepuasan' => '1rRB-N9tuwToxNWBzJxggAyVbfV7sqbOf',
+        'Periode 2023/2024 survei kepuasan' => '1vPO7cMd2XZz3Xcdl3As-n3TU23t_IwMh',
+        'Periode 2024/2025 survei kepuasan' => '1EEXzbJOzQsUP_6rYLk7GzjAZ8XmdeA8c',
+        'Periode 2021/2022 monev survei kepuasan' => '1CUMghta-WXJE3XgME8zeE6ZITAsoZ4BB',
+        'Periode 2022/2023 monev survei kepuasan' => '1LBnheQfxajI_ysjYFLbLX32IGU1EqJ-d',
+        'Periode 2023/2024 monev survei kepuasan' => '19fxja7vZ6n0HvtngWSEFFYlsG6y5f-U8',
+        'Periode 2024/2025 monev survei kepuasan' => '1PyoJNecQkoY0htJ_w7gzKLhO-3xEis4X',
+        'Periode 2021/2022 rtm kepuasan' => '1BiUYDdKCccYp_qMYgnNUqhKNrUI1P0y_',
+        'Periode 2022/2023 rtm kepuasan' => '1LKwTXYWiFAcaVSeNJTvi2ElaG9_wJLWD',
+        'Periode 2023/2024 rtm kepuasan' => '1BG9UBfrVSeFer4gbzTxDq-qW6i7pFnuO',
+        'Periode 2024/2025 rtm kepuasan' => '1qYeU81Y8lqqEWOZeiRIMSum3a84iPsjH',
     ];
 
     /**
@@ -56,6 +68,18 @@ class GoogleDriveReader
         17 => 'Periode 2022/2023 grafik kepuasan',
         18 => 'Periode 2023/2024 grafik kepuasan',
         19 => 'Periode 2024/2025 grafik kepuasan',
+        20 => 'Periode 2021/2022 survei kepuasan',
+        21 => 'Periode 2022/2023 survei kepuasan',
+        22 => 'Periode 2023/2024 survei kepuasan',
+        23 => 'Periode 2024/2025 survei kepuasan',
+        24 => 'Periode 2021/2022 monev survei kepuasan',
+        25 => 'Periode 2022/2023 monev survei kepuasan',
+        26 => 'Periode 2023/2024 monev survei kepuasan',
+        27 => 'Periode 2024/2025 monev survei kepuasan',
+        28 => 'Periode 2021/2022 rtm kepuasan',
+        29 => 'Periode 2022/2023 rtm kepuasan',
+        30 => 'Periode 2023/2024 rtm kepuasan',
+        31 => 'Periode 2024/2025 rtm kepuasan',
     ];
 
     /**
@@ -241,7 +265,7 @@ class GoogleDriveReader
     }
 
      /**
-     * Get all PDF files organized by category
+     * Get all Grafik Kepuasan PDF files organized by category
      *
      * @return array
      */
@@ -250,10 +274,162 @@ class GoogleDriveReader
         $result = [];
 
         foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'rtm'
-            if (strpos($category, 'Periode') !== 0 || substr($category, -3) !== 'kps') {
+            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'grafik kepuasan'
+            if (strpos($category, 'Periode') !== 0) {
                 continue;
             }
+
+            // Check if ends with 'grafik kepuasan' (case-insensitive)
+            if (stripos(strrev(strtolower($category)), strrev(strtolower('grafik kepuasan'))) !== 0) {
+                continue;
+            }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Survei Kepuasan PDF files organized by category (excluding Monev Survei Kepuasan)
+     *
+     * @return array
+     */
+    public static function getAllSvrKpsFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Skip jika bukan kategori Periode
+            if (strpos($category, 'Periode') !== 0) {
+                continue;
+            }
+
+            // Skip jika kategori adalah 'monev survei kepuasan'
+            if (stripos(strtolower($category), 'monev survei kepuasan') !== false) {
+                continue;
+            }
+
+            // Check if ends with 'survei kepuasan' (case-insensitive)
+            if (stripos(strrev(strtolower($category)), strrev(strtolower('survei kepuasan'))) !== 0) {
+                continue;
+            }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Grafik Kepuasan PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllMnvSvrKpsFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'monev survei kepuasan'
+            if (strpos($category, 'Periode') !== 0) {
+                continue;
+            }
+
+            // Check if ends with 'monev survei kepuasan' (case-insensitive)
+            if (stripos(strrev(strtolower($category)), strrev(strtolower('monev survei kepuasan'))) !== 0) {
+                continue;
+            }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Grafik Kepuasan PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllRtmKpsFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'rtm kepuasan'
+            if (strpos($category, 'Periode') !== 0) {
+                continue;
+            }
+
+            // Check if ends with 'rtm kepuasan' (case-insensitive)
+            if (stripos(strrev(strtolower($category)), strrev(strtolower('rtm kepuasan'))) !== 0) {
+                continue;
+            }
+
             $files = self::getFilesFromFolder($folderId);
 
             // Filter hanya file PDF

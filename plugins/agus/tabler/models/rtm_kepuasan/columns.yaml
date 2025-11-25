@@ -1,0 +1,19 @@
+columns:
+    title:
+        label: title
+        type: text
+    file_name:
+        label: file_name
+        type: text
+    category:
+        label: category
+        type: text
+        valueFrom: display_category
+        sortable: false
+        searchable: false
+    created_at:
+        label: created_at
+        type: datetime
+    updated_at:
+        label: updated_at
+        type: datetime
