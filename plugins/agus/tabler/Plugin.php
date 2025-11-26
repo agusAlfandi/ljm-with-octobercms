@@ -29,9 +29,6 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return [
-            \Agus\Tabler\Components\SurveyAccordion::class => 'surveyAccordion'
-        ];
     }
 
     /**
@@ -92,20 +89,20 @@ class Plugin extends PluginBase
                     } catch (\Exception $e) {
                         \Log::error('Error loading agendas: ' . $e->getMessage());
                     }
-                    return collect([
-                        (object)[
-                            'title' => 'Workshop Akreditasi',
-                            'description' => 'Workshop persiapan akreditasi program studi untuk meningkatkan kualitas pendidikan',
-                            'created_at' => now()->addDays(7),
-                            'is_active' => true
-                        ],
-                        (object)[
-                            'title' => 'Audit Mutu Internal',
-                            'description' => 'Pelaksanaan audit mutu internal semester genap tahun akademik 2025/2026',
-                            'created_at' => now()->addDays(12),
-                            'is_active' => true
-                        ]
-                    ]);
+                    // return collect([
+                    //     (object)[
+                    //         'title' => 'Workshop Akreditasi',
+                    //         'description' => 'Workshop persiapan akreditasi program studi untuk meningkatkan kualitas pendidikan',
+                    //         'created_at' => now()->addDays(7),
+                    //         'is_active' => true
+                    //     ],
+                    //     (object)[
+                    //         'title' => 'Audit Mutu Internal',
+                    //         'description' => 'Pelaksanaan audit mutu internal semester genap tahun akademik 2025/2026',
+                    //         'created_at' => now()->addDays(12),
+                    //         'is_active' => true
+                    //     ]
+                    // ]);
                 },
                 'getPageHeader' => function() {
                     return \Agus\Tabler\Models\Page_header::first();
@@ -185,13 +182,13 @@ class Plugin extends PluginBase
                 'sideMenu' => [
                     'menu-page-header' => [
                         'label' => 'Page Header',
-                        'icon' => 'icon-header',
+                        'icon' => 'icon-picture-o',
                         'url' => Backend::url('agus/tabler/pageheader'),
                         'permissions' => ['agus.tabler.*'],
                     ],
                     'menu-page-footer' => [
                         'label' => 'Page Footer',
-                        'icon' => 'icon-footer',
+                        'icon' => 'icon-picture-o',
                         'url' => Backend::url('agus/tabler/pagefooter'),
                         'permissions' => ['agus.tabler.*'],
                     ],
@@ -226,6 +223,21 @@ class Plugin extends PluginBase
                         'label' => 'Struktur Organisasi',
                         'icon' => 'icon-sitemap',
                         'url' => Backend::url('agus/tabler/strukturorganisasi'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                ]
+            ],
+            'main-menu-dokumen-formal-spmi' => [
+                'label' => 'Dokumen Formal SPMI',
+                'icon' => 'icon-info-circle',
+                'url' => '',
+                'permissions' => ['agus.tabler.*'],
+                'order' => 200,
+                'sideMenu' => [
+                    'menu-struktur-standar-spmi' => [
+                        'label' => 'Standar SPMI',
+                        'icon' => '',
+                        'url' => Backend::url('agus/tabler/standarspmi'),
                         'permissions' => ['agus.tabler.*'],
                     ],
                 ]

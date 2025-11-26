@@ -1,0 +1,24 @@
+fields:
+    title:
+        label: Title
+        span: auto
+        type: text
+    file_name:
+        label: 'File Upload ke google drive'
+        mode: file
+        useCaption: true
+        thumbOptions:
+            mode: crop
+            extension: auto
+        span: auto
+        disabled: 1
+        type: fileupload
+    file:
+        label: 'File Upload PDF'
+        mode: file
+        useCaption: true
+        thumbOptions:
+            mode: crop
+            extension: auto
+        span: auto
+        type: fileupload

@@ -2,8 +2,8 @@ columns:
     title:
         label: title
         type: text
-    description:
-        label: description
+    file_name:
+        label: file_name
         type: text
     created_at:
         label: created_at

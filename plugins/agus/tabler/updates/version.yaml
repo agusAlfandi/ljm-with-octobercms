@@ -219,3 +219,6 @@ v1.0.73:
 v1.0.74:
     - 'Updated table agus_tabler_rtm_kepuasan'
     - builder_table_update_agus_tabler_rtm_kepuasan.php
+v1.0.75:
+    - 'Created table agus_tabler_standar_spmi'
+    - builder_table_create_agus_tabler_standar_spmi.php

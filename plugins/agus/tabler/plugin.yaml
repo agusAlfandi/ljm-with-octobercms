@@ -39,6 +39,15 @@ navigation:
                 label: 'Struktur organisasi'
                 url: agus/tabler/strukturorganisasi
                 icon: icon-sitemap
+    main-menu-dokumen-formal-spmi:
+        label: 'Dokumen Formal SPMI'
+        url: /agus
+        icon: icon-life-ring
+        sideMenu:
+            side-menu-standar-spmi:
+                label: 'Standar SPMI'
+                url: agus/tabler/standarspmi
+                icon: icon-skyatlas
     menu-implementasi-spmi:
         label: 'implementasi spmi'
         url: agus

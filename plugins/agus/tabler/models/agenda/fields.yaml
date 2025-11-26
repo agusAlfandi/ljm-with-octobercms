@@ -7,11 +7,3 @@ fields:
         label: Description
         span: auto
         type: textarea
-    created_at:
-        label: 'Created at'
-        span: auto
-        type: datepicker
-    is_active:
-        label: 'Is active'
-        span: auto
-        type: checkbox
