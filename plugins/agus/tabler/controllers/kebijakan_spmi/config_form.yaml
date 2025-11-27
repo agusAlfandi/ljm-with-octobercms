@@ -1,0 +1,10 @@
+name: Kebijakan_spmi
+form: $/agus/tabler/models/kebijakan_spmi/fields.yaml
+modelClass: Agus\Tabler\Models\Kebijakan_spmi
+defaultRedirect: agus/tabler/kebijakan_spmi
+create:
+    redirect: 'agus/tabler/kebijakan_spmi/update/:id'
+    redirectClose: agus/tabler/kebijakan_spmi
+update:
+    redirect: agus/tabler/kebijakan_spmi
+    redirectClose: agus/tabler/kebijakan_spmi

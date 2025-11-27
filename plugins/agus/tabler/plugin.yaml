@@ -22,7 +22,7 @@ navigation:
                 label: 'Media Ljm'
                 url: agus/tabler/medialjm
                 icon: icon-newspaper-o
-            side-informasi-publik:
+            menu-informasi-publik:
                 label: 'Informasi Publik'
                 url: agus/tabler/informasipublik
                 icon: icon-file
@@ -41,16 +41,32 @@ navigation:
                 icon: icon-sitemap
     main-menu-dokumen-formal-spmi:
         label: 'Dokumen Formal SPMI'
-        url: /agus
+        url: /gus
         icon: icon-life-ring
         sideMenu:
-            side-menu-standar-spmi:
-                label: 'Standar SPMI'
-                url: agus/tabler/standarspmi
+            menu-kebijakan-spmi:
+                label: 'Kebijakan SPMI'
+                url: agus/tabler/kebijakan_spmi
                 icon: icon-skyatlas
-    menu-implementasi-spmi:
+            menu-standar-spmi:
+                label: 'Standar SPMI'
+                url: agus/tabler/standar_spmi
+                icon: icon-skyatlas
+            menu-formulir-spmi:
+                label: 'Formulir SPMI'
+                url: agus/tabler/formulir_spmi
+                icon: icon-skyatlas
+            menu-manual-mutu:
+                label: 'Manual Mutu'
+                url: agus/tabler/manual-mutu
+                icon: icon-skyatlas
+            menu-sop-spmi:
+                label: 'SOP SPMI'
+                url: agus/tabler/sop-spmi
+                icon: icon-skyatlas
+    main-menu-implementasi-spmi:
         label: 'implementasi spmi'
-        url: agus
+        url: /agus
         icon: icon-asterisk
         sideMenu:
             menu-ami:
@@ -61,23 +77,23 @@ navigation:
                 label: monev
                 url: agus/tabler/monev
                 icon: icon-sitemap
-            side-menu-rtm:
+            menu-rtm:
                 label: 'Rapat tinjauan manajemen'
                 url: agus/tabler/rtm
                 icon: icon-skype
-            side-menu-grafik-kepuasan:
+            menu-grafik-kepuasan:
                 label: 'Grafik Kepuasan'
                 url: agus/tabler/grafikkepuasan
                 icon: icon-skype
-            side-menu-survei-kepuasan:
+            menu-survei-kepuasan:
                 label: 'Survei Kepuasan'
                 url: agus/tabler/surveikepuasan
                 icon: icon-skyatlas
-            side-menu-monev-survei-kepuasan:
+            menu-monev-survei-kepuasan:
                 label: 'Monev Survei Kepuasan'
                 url: agus/tabler/monevsurveikepuasan
                 icon: icon-skyatlas
-            side-menu-rtm-kepuasan:
+            menu-rtm-kepuasan:
                 label: 'RTM Kepuasan'
                 url: agus/tabler/rtmkepuasan
                 icon: icon-skyatlas
@@ -90,3 +106,12 @@ navigation:
                 label: 'Akreditasi program studi'
                 url: /agus/tabler/akreditasiprogramstudi
                 icon: icon-slack
+    main-menu-Peningkatan:
+        label: Peningkatan
+        url: /agus
+        icon: icon-life-ring
+        sideMenu:
+            menu-benchmarking:
+                label: Benchmarking
+                url: agus/tabler/benchmarking
+                icon: icon-skyatlas

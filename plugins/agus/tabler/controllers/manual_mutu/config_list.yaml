@@ -1,0 +1,12 @@
+list: $/agus/tabler/models/manual_mutu/columns.yaml
+modelClass: Agus\Tabler\Models\Manual_mutu
+title: Manual_mutu
+noRecordsMessage: 'backend::lang.list.no_records'
+showSetup: true
+showCheckboxes: true
+recordsPerPage: 20
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: 'backend::lang.list.search_prompt'
+recordUrl: 'agus/tabler/manual_mutu/update/:id'

@@ -222,3 +222,18 @@ v1.0.74:
 v1.0.75:
     - 'Created table agus_tabler_standar_spmi'
     - builder_table_create_agus_tabler_standar_spmi.php
+v1.0.76:
+    - 'Created table agus_tabler_formulir_spmi'
+    - builder_table_create_agus_tabler_formulir_spmi.php
+v1.0.77:
+    - 'Created table agus_tabler_manual_mutu'
+    - builder_table_create_agus_tabler_manual_mutu.php
+v1.0.78:
+    - 'Created table agus_tabler_sop_spmi'
+    - builder_table_create_agus_tabler_sop_spmi.php
+v1.0.79:
+    - 'Created table agus_tabler_kebijakan_spmi'
+    - builder_table_create_agus_tabler_kebijakan_spmi.php
+v1.0.80:
+    - 'Created table agus_tabler_benchmarking'
+    - builder_table_create_agus_tabler_benchmarking.php

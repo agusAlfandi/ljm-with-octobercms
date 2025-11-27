@@ -121,6 +121,11 @@ class GoogleDriveUploader
             'periode 2022/2023 rtm kepuasan' => 'Periode 2022/2023 rtm kepuasan',
             'periode 2023/2024 rtm kepuasan' => 'Periode 2023/2024 rtm kepuasan',
             'periode 2024/2025 rtm kepuasan' => 'Periode 2024/2025 rtm kepuasan',
+            'standar spmi' => 'Standar SPMI',
+            'formulir spmi' => 'Formulir SPMI',
+            'manual mutu' => 'Manual Mutu',
+            'sop spmi' => 'SOP SPMI',
+            'kebijakan spmi' => 'Kebijakan SPMI',
         ];
 
         // Cek mapping

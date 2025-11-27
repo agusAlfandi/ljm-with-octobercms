@@ -43,6 +43,11 @@ class GoogleDriveReader
         'Periode 2022/2023 rtm kepuasan' => '1LKwTXYWiFAcaVSeNJTvi2ElaG9_wJLWD',
         'Periode 2023/2024 rtm kepuasan' => '1BG9UBfrVSeFer4gbzTxDq-qW6i7pFnuO',
         'Periode 2024/2025 rtm kepuasan' => '1qYeU81Y8lqqEWOZeiRIMSum3a84iPsjH',
+        'Standar SPMI' => '1oTatJjNzHC9S6CrRBx8FGh0Ej9kQqG_5',
+        'Formulir SPMI' => '1krE_ASwuMGU0q0ObwjNGZ9igPNC7aHIC',
+        'Manual Mutu' => '1Hp1iOnF_badJL8jZMIK_9fsYQg3W9oy-',
+        'SOP SPMI' => '1YEc_2fmTMiWtfz28CJX1GicauXFUq9Xz',
+        'Kebijakan SPMI' => '1_Xs2jNxPdwqine5jccVuqW0La5o2eXiK',
     ];
 
     /**
@@ -80,6 +85,11 @@ class GoogleDriveReader
         29 => 'Periode 2022/2023 rtm kepuasan',
         30 => 'Periode 2023/2024 rtm kepuasan',
         31 => 'Periode 2024/2025 rtm kepuasan',
+        32 => 'Standar SPMI',
+        33 => 'Formulir SPMI',
+        34 => 'Manual Mutu',
+        35 => 'SOP SPMI',
+        36 => 'Kebijakan SPMI',
     ];
 
     /**
@@ -429,6 +439,240 @@ class GoogleDriveReader
             if (stripos(strrev(strtolower($category)), strrev(strtolower('rtm kepuasan'))) !== 0) {
                 continue;
             }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Formulir SPMI PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllStandarSpmiFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Standar' dan diakhiri dengan 'standar spmi'
+            if (strpos($category, 'Standar SPMI') !== 0) {
+                continue;
+            }
+
+            // Check if ends with 'standar spmi' (case-insensitive)
+            // if (stripos(strrev(strtolower($category)), strrev(strtolower('standar spmi'))) !== 0) {
+            //     continue;
+            // }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+    /**
+     * Get all Formulir SPMI PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllFormulirSpmiFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
+            if (strpos($category, 'Formulir SPMI') !== 0) {
+                continue;
+            }
+
+            // Check if ends with 'formulir spmi' (case-insensitive)
+            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
+            //     continue;
+            // }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Manual Mutu PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllManualMutuFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
+            if (strpos($category, 'Manual Mutu') !== 0) {
+                continue;
+            }
+
+            // Check if ends with 'formulir spmi' (case-insensitive)
+            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
+            //     continue;
+            // }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+     /**
+     * Get all Manual Mutu PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllSopSpmiFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
+            if (strpos($category, 'SOP SPMI') !== 0) {
+                continue;
+            }
+
+            // Check if ends with 'formulir spmi' (case-insensitive)
+            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
+            //     continue;
+            // }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Manual Mutu PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllKebijakanSpmiFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
+            if (strpos($category, 'Kebijakan SPMI') !== 0) {
+                continue;
+            }
+
+            // Check if ends with 'formulir spmi' (case-insensitive)
+            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
+            //     continue;
+            // }
 
             $files = self::getFilesFromFolder($folderId);
 

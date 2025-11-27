@@ -1,0 +1,10 @@
+name: Manual_mutu
+form: $/agus/tabler/models/manual_mutu/fields.yaml
+modelClass: Agus\Tabler\Models\Manual_mutu
+defaultRedirect: agus/tabler/manual_mutu
+create:
+    redirect: 'agus/tabler/manual_mutu/update/:id'
+    redirectClose: agus/tabler/manual_mutu
+update:
+    redirect: agus/tabler/manual_mutu
+    redirectClose: agus/tabler/manual_mutu

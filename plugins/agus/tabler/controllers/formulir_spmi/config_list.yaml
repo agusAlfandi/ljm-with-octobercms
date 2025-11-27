@@ -1,0 +1,12 @@
+list: $/agus/tabler/models/formulir_spmi/columns.yaml
+modelClass: Agus\Tabler\Models\Formulir_spmi
+title: Formulir_spmi
+noRecordsMessage: 'backend::lang.list.no_records'
+showSetup: true
+showCheckboxes: true
+recordsPerPage: 20
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: 'backend::lang.list.search_prompt'
+recordUrl: 'agus/tabler/formulir_spmi/update/:id'

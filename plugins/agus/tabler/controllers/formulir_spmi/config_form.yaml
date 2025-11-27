@@ -1,0 +1,10 @@
+name: Formulir_spmi
+form: $/agus/tabler/models/formulir_spmi/fields.yaml
+modelClass: Agus\Tabler\Models\Formulir_spmi
+defaultRedirect: agus/tabler/formulir_spmi
+create:
+    redirect: 'agus/tabler/formulir_spmi/update/:id'
+    redirectClose: agus/tabler/formulir_spmi
+update:
+    redirect: agus/tabler/formulir_spmi
+    redirectClose: agus/tabler/formulir_spmi

@@ -17,7 +17,7 @@ class Rtmkepuasan extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'side-menu-rtm-kepuasan');
+        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'menu-struktur-rtm-kepuasan');
     }
 
       public function formExtendFields($form)

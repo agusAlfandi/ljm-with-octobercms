@@ -4,7 +4,7 @@ use Backend;
 use BackendMenu;
 use Backend\Classes\Controller;
 
-class Standarspmi extends Controller
+class Kebijakan_spmi extends Controller
 {
     public $implement = [
         \Backend\Behaviors\FormController::class,
@@ -17,7 +17,7 @@ class Standarspmi extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'main-menu-dokumen-formal-spmi', 'side-menu-standar-spmi');
+        BackendMenu::setContext('Agus.Tabler', 'main-menu-dokumen-formal-spmi', 'menu-struktur-kebijakan-spmi');
     }
 
 }

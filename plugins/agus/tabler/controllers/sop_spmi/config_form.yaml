@@ -1,0 +1,10 @@
+name: Sop_spmi
+form: $/agus/tabler/models/sop_spmi/fields.yaml
+modelClass: Agus\Tabler\Models\Sop_spmi
+defaultRedirect: agus/tabler/sop_spmi
+create:
+    redirect: 'agus/tabler/sop_spmi/update/:id'
+    redirectClose: agus/tabler/sop_spmi
+update:
+    redirect: agus/tabler/sop_spmi
+    redirectClose: agus/tabler/sop_spmi

@@ -1,0 +1,10 @@
+name: Benchmarking
+form: $/agus/tabler/models/benchmarking/fields.yaml
+modelClass: Agus\Tabler\Models\Benchmarking
+defaultRedirect: agus/tabler/benchmarking
+create:
+    redirect: 'agus/tabler/benchmarking/update/:id'
+    redirectClose: agus/tabler/benchmarking
+update:
+    redirect: agus/tabler/benchmarking
+    redirectClose: agus/tabler/benchmarking

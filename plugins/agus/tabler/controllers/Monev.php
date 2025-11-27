@@ -17,7 +17,7 @@ class Monev extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'menu-beban-belajar-mhs');
+        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'menu-struktur-monev');
     }
 
     /**

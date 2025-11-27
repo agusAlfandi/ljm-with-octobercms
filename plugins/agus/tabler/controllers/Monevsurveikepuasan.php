@@ -17,7 +17,7 @@ class Monevsurveikepuasan extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'side-menu-monev-survei-kepuasan');
+        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'menu-struktur-monev-survei-kepuasan');
     }
 
       public function formExtendFields($form)

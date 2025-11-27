@@ -17,7 +17,7 @@ class Rtm extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'side-menu-rtm');
+        BackendMenu::setContext('Agus.Tabler', 'menu-implementasi-spmi', 'menu-struktur-rtm');
     }
 
     /**
