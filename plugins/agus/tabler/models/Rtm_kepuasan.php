@@ -21,6 +21,9 @@ class Rtm_kepuasan extends Model
      * @var array rules for validation.
      */
     public $rules = [
+        'title' => 'required',
+        'category' => 'required',
+        'file' => 'required'
     ];
 
     /**

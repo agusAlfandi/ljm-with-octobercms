@@ -1,0 +1,10 @@
+name: Rekognisi
+form: $/agus/tabler/models/rekognisi/fields.yaml
+modelClass: Agus\Tabler\Models\Rekognisi
+defaultRedirect: agus/tabler/rekognisi
+create:
+    redirect: 'agus/tabler/rekognisi/update/:id'
+    redirectClose: agus/tabler/rekognisi
+update:
+    redirect: agus/tabler/rekognisi
+    redirectClose: agus/tabler/rekognisi

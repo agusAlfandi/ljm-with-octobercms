@@ -176,6 +176,54 @@ class Plugin extends PluginBase
                     // Otomatis ambil file dari Google Drive
                     return \Agus\Tabler\Classes\GoogleDriveReader::getAllKebijakanSpmiFiles();
                 },
+                'getUdinusPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllUdinusFiles();
+                },
+                'getHuachiewPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllHuachiewFiles();
+                },
+                'getTgbcPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllTgbcFiles();
+                },
+                'getInHouseTrainingIsoPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllInHouseTrainingIsoFiles();
+                },
+                'getWorkshopAunQaPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllWorkshopAunQaFiles();
+                },
+                'getWorkshopPelatihanAmiPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllWorkshopPelatihanAmiFiles();
+                },
+                'getWorkshopPeningkatanPenjaminMutuPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllWorkshopPeningkatanPenjaminMutuFiles();
+                },
+                'getPemenangHibahSpmiTahun2021PdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllPemenangHibahSpmiTahun2021Files();
+                },
+                'get2019PdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAll2019Files();
+                },
+                'get2021PdfFiles' => function() {
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAll2021Files();
+                },
+                'get2023PdfFiles' => function() {
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAll2023Files();
+                },
+                'getIsoInternational2021PdfFiles' => function() {
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllIsoInternational2021Files();
+                },
+                'getIsoInternational2024PdfFiles' => function() {
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllIsoInternational2024Files();
+                },
             ]
         ];
     }
@@ -359,10 +407,28 @@ class Plugin extends PluginBase
                 'permissions' => ['agus.tabler.*'],
                 'order' => 600,
                 'sideMenu' => [
-                    'menu-benchmarking' => [
+                    'menu-struktur-benchmarking' => [
                         'label' => 'Benchmarking',
                         'icon' => 'icon-graduation-cap',
                         'url' => Backend::url('agus/tabler/benchmarking'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                    'menu-struktur-workshop' => [
+                        'label' => 'Workshop',
+                        'icon' => 'icon-briefcase',
+                        'url' => Backend::url('agus/tabler/workshop'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                    'menu-struktur-rekognisi' => [
+                        'label' => 'Rekognisi',
+                        'icon' => 'icon-briefcase',
+                        'url' => Backend::url('agus/tabler/rekognisi'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                     'menu-struktur-auditor' => [
+                        'label' => 'Auditor',
+                        'icon' => 'icon-briefcase',
+                        'url' => Backend::url('agus/tabler/auditor'),
                         'permissions' => ['agus.tabler.*'],
                     ],
                 ]

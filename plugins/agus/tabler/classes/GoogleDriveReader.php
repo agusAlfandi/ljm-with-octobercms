@@ -48,6 +48,19 @@ class GoogleDriveReader
         'Manual Mutu' => '1Hp1iOnF_badJL8jZMIK_9fsYQg3W9oy-',
         'SOP SPMI' => '1YEc_2fmTMiWtfz28CJX1GicauXFUq9Xz',
         'Kebijakan SPMI' => '1_Xs2jNxPdwqine5jccVuqW0La5o2eXiK',
+        'UDINUS' => '1Y1zuaV9Dhlvw4aX5ZIiORjIDjY51gaC5',
+        'Huachiew Chalermprakiet' => '1A9w3xhGAKPD0T8Ei8E-dYZIjEyH1a819',
+        'TGBC Thailand' => '11uGFE5kiw4XmSa2Xe7O3favs9U758Q77',
+        'In House Training ISO' => '1rI7UjsFmt30n17WEJbvJIF5GDfIVqIek',
+        'Workshop Akreditasi AUN-QA' => '1mZ86F9ggQy-k8rydI1mF1JpPG6ZiStw2',
+        'Workshop Pelatihan AMI' => '1MFStikH3aP3CSGMTEFiiCdutdU04jYnl',
+        'Workshop Peningkatan Penjamin Mutu' => '1rAW8Ic0oiB5DVmdk2rqQ7HM3isTQR6j2',
+        'Pemenang Hibah SPMI Tahun 2021' => '1WFWell6LjBm2qjGf7Z4JnsNpQXypv3gc',
+        '2019' => '10KClQBJ3sMFp-qCXBXNAlz9oi8VszVCV',
+        '2021' => '1ktqEApDgfOHsu8Lm0m9MHIzJfd0dmcnv',
+        '2023' => '1xYRoNytZFRTqWrMeTqin5TVI66hCluqi',
+        'ISO International 2021' => '1_w_U12cQxdEKI_Tn5vWFrOhpAJpzkUc8',
+        'ISO International 2024' => '18Tzv3T5ZHtWHtWVMcAEWAmMFkD9zSYlw',
     ];
 
     /**
@@ -90,6 +103,19 @@ class GoogleDriveReader
         34 => 'Manual Mutu',
         35 => 'SOP SPMI',
         36 => 'Kebijakan SPMI',
+        37 => 'UDINUS',
+        38 => 'Huachiew Chalermprakiet',
+        39 => 'TGBC Thailand',
+        40 => 'In House Training ISO',
+        41 => 'Workshop Akreditasi AUN-QA',
+        42 => 'Workshop Pelatihan AMI',
+        43 => 'Workshop Peningkatan Penjamin Mutu',
+        44 => 'Pemenang Hibah SPMI Tahun 2021',
+        45 => '2019',
+        46 => '2021',
+        47 => '2023',
+        48 => 'ISO International 2021',
+        49 => 'ISO International 2024',
     ];
 
     /**
@@ -156,7 +182,16 @@ class GoogleDriveReader
 
         foreach (self::FOLDER_IDS as $category => $folderId) {
             // Skip folder "Keterbukaan Informasi Publik" agar tidak tampil di menu Monev
-            if ($category === 'Keterbukaan Informasi Publik' || strpos($category, 'Periode') === 0) {
+            if ($category === 'Keterbukaan Informasi Publik' ||
+                strpos($category, 'Periode') === 0 ||
+                strpos($category, 'Standar SPMI') === 0 ||
+                strpos($category, 'Formulir SPMI') === 0 ||
+                strpos($category, 'Manual Mutu') === 0 ||
+                strpos($category, 'SOP SPMI') === 0 ||
+                strpos($category, 'Kebijakan SPMI') === 0 ||
+                strpos($category, 'UDINUS') === 0 ||
+                strpos($category, 'Huachiew Chalermprakiet') === 0 ||
+                strpos($category, 'TGBC Thailand') === 0) {
                 continue;
             }
             $files = self::getFilesFromFolder($folderId);
@@ -699,6 +734,520 @@ class GoogleDriveReader
         }
 
         return $result;
+    }
+
+
+    /**
+     * Get all Manual Mutu PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllUdinusFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Ambil hanya kategori UDINUS (case-insensitive, cocok persis)
+            if ($category !== 'UDINUS') {
+                continue;
+            }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Huachiew Chalermprakiet PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllHuachiewFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Ambil hanya kategori Huachiew Chalermprakiet (case-insensitive, cocok persis)
+            if ($category !== 'Huachiew Chalermprakiet') {
+                continue;
+            }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all TGBC Thailand PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllTgbcFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
+            if ($category !== 'TGBC Thailand') {
+                continue;
+            }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all TGBC Thailand PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllInHouseTrainingIsoFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
+            if ($category !== 'In House Training ISO') {
+                continue;
+            }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Workshop AUN QA PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllWorkshopAunQaFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
+            if ($category !== 'Workshop Akreditasi AUN-QA') {
+                continue;
+            }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Workshop AUN QA PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllWorkshopPelatihanAmiFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
+            if ($category !== 'Workshop Pelatihan AMI') {
+                continue;
+            }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+     /**
+     * Get all Workshop AUN QA PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllWorkshopPeningkatanPenjaminMutuFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
+            if ($category !== 'Workshop Peningkatan Penjamin Mutu') {
+                continue;
+            }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Workshop AUN QA PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllPemenangHibahSpmiTahun2021Files()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
+            if ($category !== 'Pemenang Hibah SPMI Tahun 2021') {
+                continue;
+            }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Workshop AUN QA PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAll2019Files()
+    {
+        $folderId = self::FOLDER_IDS['2019'] ?? null;
+
+        if (!$folderId) {
+            return [];
+        }
+
+        $files = self::getFilesFromFolder($folderId);
+
+        // Filter hanya file PDF
+        $pdfFiles = array_filter($files, function($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+
+        // Transformasi format dan bersihkan nama file
+        return array_map(function($file) {
+            $cleanName = $file['name'];
+            $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+            $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+            $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+            return [
+                'title' => $displayName,
+                'fileId' => $file['id'],
+                'url' => $file['url'],
+                'size' => $file['size'] ?? 0,
+                'createdDate' => $file['createdDate'] ?? null,
+                'modifiedDate' => $file['modifiedDate'] ?? null,
+            ];
+        }, array_values($pdfFiles));
+    }
+
+    /**
+     * Get all 2021 PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAll2021Files()
+    {
+        $folderId = self::FOLDER_IDS['2021'] ?? null;
+
+        if (!$folderId) {
+            return [];
+        }
+
+        $files = self::getFilesFromFolder($folderId);
+
+        $pdfFiles = array_filter($files, function($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+
+        return array_map(function($file) {
+            $cleanName = $file['name'];
+            $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+            $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+            $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+            return [
+                'title' => $displayName,
+                'fileId' => $file['id'],
+                'url' => $file['url'],
+                'size' => $file['size'] ?? 0,
+                'createdDate' => $file['createdDate'] ?? null,
+                'modifiedDate' => $file['modifiedDate'] ?? null,
+            ];
+        }, array_values($pdfFiles));
+    }
+
+    /**
+     * Get all 2023 PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAll2023Files()
+    {
+        $folderId = self::FOLDER_IDS['2023'] ?? null;
+
+        if (!$folderId) {
+            return [];
+        }
+
+        $files = self::getFilesFromFolder($folderId);
+
+        $pdfFiles = array_filter($files, function($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+
+        return array_map(function($file) {
+            $cleanName = $file['name'];
+            $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+            $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+            $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+            return [
+                'title' => $displayName,
+                'fileId' => $file['id'],
+                'url' => $file['url'],
+                'size' => $file['size'] ?? 0,
+                'createdDate' => $file['createdDate'] ?? null,
+                'modifiedDate' => $file['modifiedDate'] ?? null,
+            ];
+        }, array_values($pdfFiles));
+    }
+
+    /**
+     * Get all ISO International 2021 PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllIsoInternational2021Files()
+    {
+        $folderId = self::FOLDER_IDS['ISO International 2021'] ?? null;
+
+        if (!$folderId) {
+            return [];
+        }
+
+        $files = self::getFilesFromFolder($folderId);
+
+        $pdfFiles = array_filter($files, function($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+
+        return array_map(function($file) {
+            $cleanName = $file['name'];
+            $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+            $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+            $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+            return [
+                'title' => $displayName,
+                'fileId' => $file['id'],
+                'url' => $file['url'],
+                'size' => $file['size'] ?? 0,
+                'createdDate' => $file['createdDate'] ?? null,
+                'modifiedDate' => $file['modifiedDate'] ?? null,
+            ];
+        }, array_values($pdfFiles));
+    }
+
+    /**
+     * Get all ISO International 2024 PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllIsoInternational2024Files()
+    {
+        $folderId = self::FOLDER_IDS['ISO International 2024'] ?? null;
+
+        if (!$folderId) {
+            return [];
+        }
+
+        $files = self::getFilesFromFolder($folderId);
+
+        $pdfFiles = array_filter($files, function($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+
+        return array_map(function($file) {
+            $cleanName = $file['name'];
+            $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+            $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+            $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+            return [
+                'title' => $displayName,
+                'fileId' => $file['id'],
+                'url' => $file['url'],
+                'size' => $file['size'] ?? 0,
+                'createdDate' => $file['createdDate'] ?? null,
+                'modifiedDate' => $file['modifiedDate'] ?? null,
+            ];
+        }, array_values($pdfFiles));
     }
 
     /**

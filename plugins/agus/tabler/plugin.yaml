@@ -115,3 +115,15 @@ navigation:
                 label: Benchmarking
                 url: agus/tabler/benchmarking
                 icon: icon-skyatlas
+            side-menu-workshop:
+                label: Workshop
+                url: agus/tabler/workshop
+                icon: icon-skyatlas
+            side-menu-rekognisi:
+                label: Rekognisi
+                url: agus/tabler/rekognisi
+                icon: icon-skyatlas
+            side-menu-auditor:
+                label: Auditor
+                url: agus/tabler/auditor
+                icon: icon-skyatlas

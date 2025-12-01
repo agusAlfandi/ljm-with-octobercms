@@ -21,6 +21,9 @@ class Informasi_publik extends Model
      * @var array rules for validation.
      */
     public $rules = [
+        'title' => 'required',
+        'sub_title' => 'required',
+        'file' => 'required',
     ];
 
        /**
@@ -28,6 +31,15 @@ class Informasi_publik extends Model
      */
     public $attachOne = [
         'file' => 'System\\Models\\File',
+    ];
+
+    /**
+     *@var array
+     */
+    protected $fillable = [
+        'title',
+        'sub_title',
+        'file'
     ];
 
 

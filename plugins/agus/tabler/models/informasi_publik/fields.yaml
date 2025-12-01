@@ -3,10 +3,12 @@ fields:
         label: Title
         span: auto
         type: text
+        required: true
     sub_title:
         label: 'Sub title'
         span: auto
         type: text
+        required: true
     file_name:
         label: Nama File di Google Drive
         span: full
@@ -25,6 +27,7 @@ fields:
         fileTypes: pdf
         maxFilesize: 20
         useCaption: false
+        required: true
         thumbOptions:
             mode: crop
             extension: auto

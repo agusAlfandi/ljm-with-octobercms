@@ -1,0 +1,10 @@
+name: Workshop
+form: $/agus/tabler/models/workshop/fields.yaml
+modelClass: Agus\Tabler\Models\Workshop
+defaultRedirect: agus/tabler/workshop
+create:
+    redirect: 'agus/tabler/workshop/update/:id'
+    redirectClose: agus/tabler/workshop
+update:
+    redirect: agus/tabler/workshop
+    redirectClose: agus/tabler/workshop

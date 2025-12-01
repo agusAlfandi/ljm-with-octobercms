@@ -1,0 +1,11 @@
+{% set options = {
+    1: 'In House Training ISO',
+    2: 'Workshop Akreditasi AUN-QA',
+    3: 'Workshop Pelatihan AMI',
+    4: 'Workshop Peningkatan Penjamin Mutu',
+} %}
+{% if record.category is numeric %}
+    {{ options[record.category] ?: 'Kategori Tidak Diketahui' }}
+{% else %}
+    {{ record.category|title }}
+{% endif %}

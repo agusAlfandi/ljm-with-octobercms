@@ -17,7 +17,7 @@ class Benchmarking extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'main-menu-peningkatan', 'menu-benchmarking');
+        BackendMenu::setContext('Agus.Tabler', 'main-menu-peningkatan', 'menu-struktur-benchmarking');
     }
 
 }

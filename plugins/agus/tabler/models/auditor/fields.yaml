@@ -1,0 +1,35 @@
+fields:
+    file:
+        label: 'Upload File PDF'
+        mode: file
+        fileTypes: pdf
+        maxFilesize: 20
+        useCaption: false
+        required: true
+        thumbOptions:
+            mode: crop
+            extension: auto
+        span: full
+        type: fileupload
+        comment: 'Upload file PDF (maksimal 20MB). Nama file akan otomatis mengisi judul dokumen.'
+    title:
+        label: 'Judul Dokumen'
+        span: full
+        type: text
+        placeholder: 'Otomatis terisi dari nama file PDF'
+        comment: 'Nama file yang akan diupload ke Google Drive (akan otomatis terisi dari file yang diupload, bisa diedit manual)'
+        required: true
+    category:
+        label: Kategori
+        span: full
+        type: dropdown
+        placeholder: '-- Pilih Category --'
+        options: 'Agus\Tabler\Models\Auditor::getCategoryOptions'
+        required: true
+        comment: 'File akan diupload ke folder Google Drive sesuai kategori yang dipilih'
+    file_name:
+        label: 'File yang Sudah Diupload'
+        span: full
+        disabled: true
+        type: text
+        comment: 'Nama file yang sudah diupload ke Google Drive (readonly)'

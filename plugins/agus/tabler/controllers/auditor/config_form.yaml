@@ -1,0 +1,10 @@
+name: Auditor
+form: $/agus/tabler/models/auditor/fields.yaml
+modelClass: Agus\Tabler\Models\Auditor
+defaultRedirect: agus/tabler/auditor
+create:
+    redirect: 'agus/tabler/auditor/update/:id'
+    redirectClose: agus/tabler/auditor
+update:
+    redirect: agus/tabler/auditor
+    redirectClose: agus/tabler/auditor

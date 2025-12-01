@@ -20,6 +20,8 @@ class Manual_mutu extends Model
      * @var array rules for validation.
      */
     public $rules = [
+        'title' => 'required',
+        'file' => 'required'
     ];
 
     /**

@@ -79,9 +79,17 @@ class GoogleDriveUploader
      */
     public static function normalizeCategoryName($category)
     {
-        // Jika integer, gunakan CATEGORY_ENUM
-        if (is_numeric($category)) {
-            return GoogleDriveReader::CATEGORY_ENUM[$category] ?? null;
+        \Log::info('normalizeCategoryName called', [
+            'category' => $category,
+            'type' => gettype($category),
+            'is_int' => is_int($category)
+        ]);
+
+        // Jika integer dan ada di CATEGORY_ENUM, gunakan CATEGORY_ENUM
+        if (is_int($category) && isset(GoogleDriveReader::CATEGORY_ENUM[$category])) {
+            $result = GoogleDriveReader::CATEGORY_ENUM[$category];
+            \Log::info('Using CATEGORY_ENUM', ['result' => $result]);
+            return $result;
         }
 
         // Jika string, normalize case dan cari match
@@ -126,25 +134,43 @@ class GoogleDriveUploader
             'manual mutu' => 'Manual Mutu',
             'sop spmi' => 'SOP SPMI',
             'kebijakan spmi' => 'Kebijakan SPMI',
+            'udinus' => 'UDINUS',
+            'huachiew chalermprakiet' => 'Huachiew Chalermprakiet',
+            'tgbc thailand' => 'TGBC Thailand',
+            'in house training iso' => 'In House Training ISO',
+            'workshop akreditasi aun-qa' => 'Workshop Akreditasi AUN-QA',
+            'workshop pelatihan ami' => 'Workshop Pelatihan AMI',
+            'workshop peningkatan penjamin mutu' => 'Workshop Peningkatan Penjamin Mutu',
+            'pemenang hibah spmi tahun 2021' => 'Pemenang Hibah SPMI Tahun 2021',
+            '2019' => '2019',
+            '2021' => '2021',
+            '2023' => '2023',
+            'iso international 2021' => 'ISO International 2021',
+            'iso international 2024' => 'ISO International 2024',
         ];
 
         // Cek mapping
         if (isset($mapping[$categoryLower])) {
-            return $mapping[$categoryLower];
+            $result = $mapping[$categoryLower];
+            \Log::info('Found in mapping', ['categoryLower' => $categoryLower, 'result' => $result]);
+            return $result;
         }
 
         // Fallback: jika string sudah persis dengan key di FOLDER_IDS, gunakan langsung
         if (isset(GoogleDriveReader::FOLDER_IDS[$category])) {
+            \Log::info('Found exact match in FOLDER_IDS', ['category' => $category]);
             return $category;
         }
 
         // Fallback: cari case-insensitive di FOLDER_IDS
         foreach (GoogleDriveReader::FOLDER_IDS as $key => $id) {
             if (strtolower($key) === $categoryLower) {
+                \Log::info('Found case-insensitive match', ['key' => $key]);
                 return $key;
             }
         }
 
+        \Log::error('Category not found', ['category' => $category, 'categoryLower' => $categoryLower]);
         return null;
     }
 

@@ -1,0 +1,10 @@
+{% set options = {
+    1: 'UDINUS',
+    2: 'Huachiew Chalermprakiet',
+    3: 'TGBC Thailand',
+} %}
+{% if record.category is numeric %}
+    {{ options[record.category] ?: 'Kategori Tidak Diketahui' }}
+{% else %}
+    {{ record.category|title }}
+{% endif %}

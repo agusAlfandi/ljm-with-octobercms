@@ -237,3 +237,18 @@ v1.0.79:
 v1.0.80:
     - 'Created table agus_tabler_benchmarking'
     - builder_table_create_agus_tabler_benchmarking.php
+v1.0.81:
+    - 'Updated table agus_tabler_benchmarking'
+    - builder_table_update_agus_tabler_benchmarking.php
+v1.0.82:
+    - 'Updated table agus_tabler_benchmarking'
+    - builder_table_update_agus_tabler_benchmarking_2.php
+v1.0.83:
+    - 'Created table agus_tabler_workshop'
+    - builder_table_create_agus_tabler_workshop.php
+v1.0.84:
+    - 'Created table agus_tabler_rekognisi'
+    - builder_table_create_agus_tabler_rekognisi.php
+v1.0.85:
+    - 'Created table agus_tabler_auditor'
+    - builder_table_create_agus_tabler_auditor.php

@@ -2,11 +2,14 @@ columns:
     title:
         label: title
         type: text
-    file_name:
-        label: file_name
-        type: text
     category:
         label: category
+        type: text
+        valueFrom: display_category
+        sortable: false
+        searchable: false
+    file_name:
+        label: file_name
         type: text
     created_at:
         label: created_at
