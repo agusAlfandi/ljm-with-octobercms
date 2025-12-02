@@ -64,6 +64,10 @@ navigation:
                 label: 'SOP SPMI'
                 url: agus/tabler/sop-spmi
                 icon: icon-skyatlas
+            menu-standar-lampauan:
+                label: 'Standar Lampauan'
+                url: agus/tabler/standar_lampauan
+                icon: icon-skyatlas
     main-menu-implementasi-spmi:
         label: 'implementasi spmi'
         url: /agus
@@ -106,6 +110,14 @@ navigation:
                 label: 'Akreditasi program studi'
                 url: /agus/tabler/akreditasiprogramstudi
                 icon: icon-slack
+            side-menu-akred-perguruan-tinggi:
+                label: 'Akreditasi Perguruan tinggi'
+                url: agus/tabler/akred_perguruan_tinggi
+                icon: icon-skyatlas
+            menu-akred-inter-iso:
+                label: 'Akreditasi International ISO'
+                url: agus/tabler/akred_inter_iso
+                icon: icon-skyatlas
     main-menu-Peningkatan:
         label: Peningkatan
         url: /agus

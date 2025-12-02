@@ -17,7 +17,7 @@ class Akreditasiprogramstudi extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Agus.Tabler', 'main-menu-akreditasi', 'menu-akreditasi-program-studi');
+        BackendMenu::setContext('Agus.Tabler', 'main-menu-akreditasi', 'menu-struktur-akreditasi-program-studi');
     }
 
 }

@@ -1,0 +1,12 @@
+list: $/agus/tabler/models/akred_inter_iso/columns.yaml
+modelClass: Agus\Tabler\Models\Akred_inter_iso
+title: Akred_inter_iso
+noRecordsMessage: 'backend::lang.list.no_records'
+showSetup: true
+showCheckboxes: true
+recordsPerPage: 20
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: 'backend::lang.list.search_prompt'
+recordUrl: 'agus/tabler/akred_inter_iso/update/:id'

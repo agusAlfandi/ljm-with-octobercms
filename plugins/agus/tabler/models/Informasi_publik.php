@@ -157,6 +157,7 @@ class Informasi_publik extends Model
                     $uploadedFileName .= '.pdf';
                 }
                 $this->file_name = $uploadedFileName;
+                $this->rules = [];
                 $this->save();
 
                 // \Log::info('File name saved to database', [

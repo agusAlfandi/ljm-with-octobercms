@@ -252,3 +252,12 @@ v1.0.84:
 v1.0.85:
     - 'Created table agus_tabler_auditor'
     - builder_table_create_agus_tabler_auditor.php
+v1.0.86:
+    - 'Created table agus_tabler_standar_lampauan'
+    - builder_table_create_agus_tabler_standar_lampauan.php
+v1.0.87:
+    - 'Created table agus_tabler_akred_perguruan_tinggi'
+    - builder_table_create_agus_tabler_akred_perguruan_tinggi.php
+v1.0.88:
+    - 'Created table agus_tabler_akred_inter_iso'
+    - builder_table_create_agus_tabler_akred_inter_iso.php

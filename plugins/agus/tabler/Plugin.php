@@ -176,6 +176,18 @@ class Plugin extends PluginBase
                     // Otomatis ambil file dari Google Drive
                     return \Agus\Tabler\Classes\GoogleDriveReader::getAllKebijakanSpmiFiles();
                 },
+                'getStandarLampauanPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllStandarLampauanFiles();
+                },
+                'getAkreditasiPerguruanTinggiPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllAkreditasiPerguruanTinggiFiles();
+                },
+                'getAkredInterIsoPdfFiles' => function() {
+                    // Otomatis ambil file dari Google Drive
+                    return \Agus\Tabler\Classes\GoogleDriveReader::getAllAkredInterIsoFiles();
+                },
                 'getUdinusPdfFiles' => function() {
                     // Otomatis ambil file dari Google Drive
                     return \Agus\Tabler\Classes\GoogleDriveReader::getAllUdinusFiles();
@@ -243,20 +255,20 @@ class Plugin extends PluginBase
         return [
             'main-menu' => [
                 'label' => 'LJM Management',
-                'icon' => 'icon-home',
+                'icon' => 'icon-university',
                 'url' => Backend::url('agus/tabler/pageheader'),
                 'permissions' => ['agus.tabler.*'],
                 'order' => 100,
                 'sideMenu' => [
                     'menu-page-header' => [
                         'label' => 'Page Header',
-                        'icon' => 'icon-picture-o',
+                        'icon' => 'icon-header',
                         'url' => Backend::url('agus/tabler/pageheader'),
                         'permissions' => ['agus.tabler.*'],
                     ],
                     'menu-page-footer' => [
                         'label' => 'Page Footer',
-                        'icon' => 'icon-picture-o',
+                        'icon' => 'icon-minus-square',
                         'url' => Backend::url('agus/tabler/pagefooter'),
                         'permissions' => ['agus.tabler.*'],
                     ],
@@ -268,13 +280,13 @@ class Plugin extends PluginBase
                     ],
                     'menu-media-ljm' => [
                         'label' => 'Media LJM',
-                        'icon' => 'icon-picture-o',
+                        'icon' => 'icon-film',
                         'url' => Backend::url('agus/tabler/medialjm'),
                         'permissions' => ['agus.tabler.*'],
                     ],
                     'menu-informasi-publik' => [
                         'label' => 'Informasi Publik',
-                        'icon' => 'icon-info',
+                        'icon' => 'icon-bullhorn',
                         'url' => Backend::url('agus/tabler/informasipublik'),
                         'permissions' => ['agus.tabler.*'],
                     ],
@@ -282,7 +294,7 @@ class Plugin extends PluginBase
             ],
             'main-menu-item' => [
                 'label' => 'Tentang Kami',
-                'icon' => 'icon-info-circle',
+                'icon' => 'icon-building',
                 'url' => Backend::url('agus/tabler/profile'),
                 'permissions' => ['agus.tabler.*'],
                 'order' => 200,
@@ -297,26 +309,32 @@ class Plugin extends PluginBase
             ],
             'main-menu-dokumen-formal-spmi' => [
                 'label' => 'Dokumen Formal SPMI',
-                'icon' => 'icon-archive',
+                'icon' => 'icon-folder-open',
                 'url' => Backend::url('agus/tabler/kebijakan_spmi'),
                 'permissions' => ['agus.tabler.*'],
                 'order' => 200,
                 'sideMenu' => [
                     'menu-struktur-kebijakan-spmi' => [
                         'label' => 'Kebijakan SPMI',
-                        'icon' => 'icon-legal',
+                        'icon' => 'icon-balance-scale',
                         'url' => Backend::url('agus/tabler/kebijakan_spmi'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                    'menu-struktur-kebijakan-spmi-statis' => [
+                        'label' => 'Edit Halaman CMS',
+                        'icon' => 'icon-file-code-o',
+                        'url' => Backend::url('cms'),
                         'permissions' => ['agus.tabler.*'],
                     ],
                     'menu-struktur-standar-spmi' => [
                         'label' => 'Standar SPMI',
-                        'icon' => 'icon-list-alt',
+                        'icon' => 'icon-check-square',
                         'url' => Backend::url('agus/tabler/standar_spmi'),
                         'permissions' => ['agus.tabler.*'],
                     ],
                     'menu-struktur-formulir-spmi' => [
                         'label' => 'Formulir SPMI',
-                        'icon' => 'icon-file-text-o',
+                        'icon' => 'icon-file-text',
                         'url' => Backend::url('agus/tabler/formulir_spmi'),
                         'permissions' => ['agus.tabler.*'],
                     ],
@@ -328,15 +346,21 @@ class Plugin extends PluginBase
                     ],
                     'menu-struktur-sop-spmi' => [
                         'label' => 'SOP SPMI',
-                        'icon' => 'icon-cogs',
+                        'icon' => 'icon-list-ol',
                         'url' => Backend::url('agus/tabler/sop_spmi'),
+                        'permissions' => ['agus.tabler.*'],
+                    ],
+                    'menu-struktur-standar-lampauan' => [
+                        'label' => 'Standar Lampauan',
+                        'icon' => 'icon-star',
+                        'url' => Backend::url('agus/tabler/standar_lampauan'),
                         'permissions' => ['agus.tabler.*'],
                     ],
                 ]
             ],
             'menu-implementasi-spmi' => [
                 'label' => 'Implementasi SPMI',
-                'icon' => 'icon-clipboard',
+                'icon' => 'icon-tasks',
                 'url' => Backend::url('agus/tabler/monev'),
                 'permissions' => ['agus.tabler.*'],
                 'order' => 500,
@@ -349,7 +373,7 @@ class Plugin extends PluginBase
                     ],
                     'menu-struktur-ami' => [
                         'label' => 'Audit Mutu Internal',
-                        'icon' => 'icon-search',
+                        'icon' => 'icon-search-plus',
                         'url' => Backend::url('agus/tabler/ami'),
                         'permissions' => ['agus.tabler.ami'],
                     ],
@@ -385,49 +409,61 @@ class Plugin extends PluginBase
                     ],
                 ]
             ],
-            'menu-akreditasi' => [
+            'main-menu-akreditasi' => [
                 'label' => 'Akreditasi',
                 'icon' => 'icon-shield',
                 'url' => Backend::url('agus/tabler/akreditasiprogramstudi'),
                 'permissions' => ['agus.tabler.*'],
                 'order' => 600,
                 'sideMenu' => [
-                    'menu-akreditasi-program-studi' => [
+                    'menu-struktur-akreditasi-program-studi' => [
                         'label' => 'Akreditasi Program Studi',
-                        'icon' => 'icon-certificate',
+                        'icon' => 'icon-graduation-cap',
                         'url' => Backend::url('agus/tabler/akreditasiprogramstudi'),
                         'permissions' => ['agus.tabler.*'],
                     ],
+                        'menu-struktur-akred-perguruan-tinggi' => [
+                            'label' => 'Akreditasi Perguruan Tinggi',
+                            'icon' => 'icon-institution',
+                            'url' => Backend::url('agus/tabler/akred_perguruan_tinggi'),
+                            'permissions' => ['agus.tabler.*'],
+                        ],
+                        'menu-struktur-akred-inter-iso' => [
+                            'label' => 'Akreditasi Internal ISO',
+                            'icon' => 'icon-check-circle',
+                            'url' => Backend::url('agus/tabler/akred_inter_iso'),
+                            'permissions' => ['agus.tabler.*'],
+                        ],
                 ]
             ],
             'main-menu-peningkatan' => [
                 'label' => 'Peningkatan',
-                'icon' => 'icon-certificate',
+                'icon' => 'icon-line-chart',
                 'url' => Backend::url('agus/tabler/peningkatan'),
                 'permissions' => ['agus.tabler.*'],
                 'order' => 600,
                 'sideMenu' => [
                     'menu-struktur-benchmarking' => [
                         'label' => 'Benchmarking',
-                        'icon' => 'icon-graduation-cap',
+                        'icon' => 'icon-exchange',
                         'url' => Backend::url('agus/tabler/benchmarking'),
                         'permissions' => ['agus.tabler.*'],
                     ],
                     'menu-struktur-workshop' => [
                         'label' => 'Workshop',
-                        'icon' => 'icon-briefcase',
+                        'icon' => 'icon-wrench',
                         'url' => Backend::url('agus/tabler/workshop'),
                         'permissions' => ['agus.tabler.*'],
                     ],
                     'menu-struktur-rekognisi' => [
                         'label' => 'Rekognisi',
-                        'icon' => 'icon-briefcase',
+                        'icon' => 'icon-trophy',
                         'url' => Backend::url('agus/tabler/rekognisi'),
                         'permissions' => ['agus.tabler.*'],
                     ],
                      'menu-struktur-auditor' => [
                         'label' => 'Auditor',
-                        'icon' => 'icon-briefcase',
+                        'icon' => 'icon-user-secret',
                         'url' => Backend::url('agus/tabler/auditor'),
                         'permissions' => ['agus.tabler.*'],
                     ],

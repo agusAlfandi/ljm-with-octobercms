@@ -1,0 +1,10 @@
+name: Standar_lampauan
+form: $/agus/tabler/models/standar_lampauan/fields.yaml
+modelClass: Agus\Tabler\Models\Standar_lampauan
+defaultRedirect: agus/tabler/standar_lampauan
+create:
+    redirect: 'agus/tabler/standar_lampauan/update/:id'
+    redirectClose: agus/tabler/standar_lampauan
+update:
+    redirect: agus/tabler/standar_lampauan
+    redirectClose: agus/tabler/standar_lampauan

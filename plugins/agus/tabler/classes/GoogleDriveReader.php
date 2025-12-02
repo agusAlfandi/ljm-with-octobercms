@@ -48,6 +48,9 @@ class GoogleDriveReader
         'Manual Mutu' => '1Hp1iOnF_badJL8jZMIK_9fsYQg3W9oy-',
         'SOP SPMI' => '1YEc_2fmTMiWtfz28CJX1GicauXFUq9Xz',
         'Kebijakan SPMI' => '1_Xs2jNxPdwqine5jccVuqW0La5o2eXiK',
+        'Standar Lampauan' => '1Yy8n9FCUHN9TTwEv9_EwH3SNjXdlxREG',
+        'Akreditasi Perguruan Tinggi' => '1jO3HbIdDqrKyN784AxM1FzrUwBjzyYX3',
+        'Akreditasi International ISO' => '1jl-L5swq7eebeVgS6aa_P6URu4Dl-DxR',
         'UDINUS' => '1Y1zuaV9Dhlvw4aX5ZIiORjIDjY51gaC5',
         'Huachiew Chalermprakiet' => '1A9w3xhGAKPD0T8Ei8E-dYZIjEyH1a819',
         'TGBC Thailand' => '11uGFE5kiw4XmSa2Xe7O3favs9U758Q77',
@@ -103,19 +106,22 @@ class GoogleDriveReader
         34 => 'Manual Mutu',
         35 => 'SOP SPMI',
         36 => 'Kebijakan SPMI',
-        37 => 'UDINUS',
-        38 => 'Huachiew Chalermprakiet',
-        39 => 'TGBC Thailand',
-        40 => 'In House Training ISO',
-        41 => 'Workshop Akreditasi AUN-QA',
-        42 => 'Workshop Pelatihan AMI',
-        43 => 'Workshop Peningkatan Penjamin Mutu',
-        44 => 'Pemenang Hibah SPMI Tahun 2021',
-        45 => '2019',
-        46 => '2021',
-        47 => '2023',
-        48 => 'ISO International 2021',
-        49 => 'ISO International 2024',
+        37 => 'Standar Lampauan',
+        38 => 'Akreditasi Perguruan Tinggi',
+        39 => 'Akreditasi International ISO',
+        40 => 'UDINUS',
+        41 => 'Huachiew Chalermprakiet',
+        42 => 'TGBC Thailand',
+        43 => 'In House Training ISO',
+        44 => 'Workshop Akreditasi AUN-QA',
+        45 => 'Workshop Pelatihan AMI',
+        46 => 'Workshop Peningkatan Penjamin Mutu',
+        47 => 'Pemenang Hibah SPMI Tahun 2021',
+        48 => '2019',
+        49 => '2021',
+        50 => '2023',
+        51 => 'ISO International 2021',
+        52 => 'ISO International 2024',
     ];
 
     /**
@@ -736,6 +742,146 @@ class GoogleDriveReader
         return $result;
     }
 
+    /**
+     * Get all Standar Lampauan PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllStandarLampauanFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
+            if (strpos($category, 'Standar Lampauan') !== 0) {
+                continue;
+            }
+
+            // Check if ends with 'formulir spmi' (case-insensitive)
+            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
+            //     continue;
+            // }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Standar Lampauan PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllAkreditasiPerguruanTinggiFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
+            if (strpos($category, 'Akreditasi Perguruan Tinggi') !== 0) {
+                continue;
+            }
+
+            // Check if ends with 'formulir spmi' (case-insensitive)
+            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
+            //     continue;
+            // }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all Standar Lampauan PDF files organized by category
+     *
+     * @return array
+     */
+    public static function getAllAkredInterIsoFiles()
+    {
+        $result = [];
+
+        foreach (self::FOLDER_IDS as $category => $folderId) {
+            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
+            if (strpos($category, 'Akreditasi International ISO') !== 0) {
+                continue;
+            }
+
+            // Check if ends with 'formulir spmi' (case-insensitive)
+            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
+            //     continue;
+            // }
+
+            $files = self::getFilesFromFolder($folderId);
+
+            // Filter hanya file PDF
+            $pdfFiles = array_filter($files, function($file) {
+                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+            });
+
+            // Transformasi format dan bersihkan nama file
+            $result[$category] = array_map(function($file) {
+                $cleanName = $file['name'];
+                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+                return [
+                    'title' => $displayName,
+                    'fileId' => $file['id'],
+                    'url' => $file['url'],
+                    'size' => $file['size'] ?? 0,
+                    'createdDate' => $file['createdDate'] ?? null,
+                    'modifiedDate' => $file['modifiedDate'] ?? null,
+                ];
+            }, array_values($pdfFiles));
+        }
+
+        return $result;
+    }
 
     /**
      * Get all Manual Mutu PDF files organized by category

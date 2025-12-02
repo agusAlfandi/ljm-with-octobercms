@@ -1,0 +1,10 @@
+name: Akred_perguruan_tinggi
+form: $/agus/tabler/models/akred_perguruan_tinggi/fields.yaml
+modelClass: Agus\Tabler\Models\Akred_perguruan_tinggi
+defaultRedirect: agus/tabler/akred_perguruan_tinggi
+create:
+    redirect: 'agus/tabler/akred_perguruan_tinggi/update/:id'
+    redirectClose: agus/tabler/akred_perguruan_tinggi
+update:
+    redirect: agus/tabler/akred_perguruan_tinggi
+    redirectClose: agus/tabler/akred_perguruan_tinggi

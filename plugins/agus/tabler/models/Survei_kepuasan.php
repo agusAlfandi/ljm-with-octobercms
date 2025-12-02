@@ -151,6 +151,7 @@ class Survei_kepuasan extends Model
                     $uploadedFileName .= '.pdf';
                 }
                 $this->file_name = $uploadedFileName;
+                $this->rules = [];
                 $this->save();
 
                 // Reset flag

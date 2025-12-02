@@ -1,0 +1,23 @@
+fields:
+    title:
+        label: Title
+        span: auto
+        type: text
+    file:
+        label: Upload File PDF
+        span: full
+        type: fileupload
+        mode: file
+        fileTypes: pdf
+        maxFilesize: 20
+        useCaption: false
+        thumbOptions:
+            mode: crop
+            extension: auto
+        comment: 'Upload file PDF max 20MB. File akan otomatis diupload ke Google Drive.'
+    file_name:
+        label: Nama File di Google Drive
+        span: full
+        type: text
+        disabled: true
+        comment: Nama file PDF yang sudah diupload ke Google Drive (readonly)

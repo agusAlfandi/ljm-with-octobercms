@@ -1,0 +1,10 @@
+name: Akred_inter_iso
+form: $/agus/tabler/models/akred_inter_iso/fields.yaml
+modelClass: Agus\Tabler\Models\Akred_inter_iso
+defaultRedirect: agus/tabler/akred_inter_iso
+create:
+    redirect: 'agus/tabler/akred_inter_iso/update/:id'
+    redirectClose: agus/tabler/akred_inter_iso
+update:
+    redirect: agus/tabler/akred_inter_iso
+    redirectClose: agus/tabler/akred_inter_iso

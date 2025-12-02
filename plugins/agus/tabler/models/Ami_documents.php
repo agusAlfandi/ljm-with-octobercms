@@ -151,6 +151,7 @@ class Ami_documents extends Model
                     $uploadedFileName .= '.pdf';
                 }
                 $this->file_name = $uploadedFileName;
+                $this->rules = [];
                 $this->save();
 
                 // Reset flag
