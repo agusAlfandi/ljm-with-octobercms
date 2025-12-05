@@ -135,13 +135,22 @@ class Survei_kepuasan extends Model
             //     'filePath' => $filePath,
             //     'fileName' => $fileName,
             //     'title' => $this->title,
-            //     'category' => $this->category
+            //     'category' => $this->category,
+            //     'category_label' => $this->category_label
             // ]);
 
             // Upload dengan nama file asli
             $result = GoogleDriveUploader::uploadToCategory($filePath, $this->category_label, $fileName);
 
-            if (isset($result['fileId'])) {
+            // \Log::info('Upload result received', [
+            //     'result' => $result,
+            //     'has_fileId' => isset($result['fileId']),
+            //     'has_success' => isset($result['success']),
+            //     'success_value' => $result['success'] ?? null
+            // ]);
+
+            // Cek apakah upload sukses
+            if (isset($result['success']) && $result['success'] === true && isset($result['fileId'])) {
                 // Set flag untuk mencegah recursive call
                 $this->isUploadingToGoogleDrive = true;
 
@@ -169,17 +178,36 @@ class Survei_kepuasan extends Model
                 // Hapus file lokal dan relasi setelah upload sukses
                 $this->deleteLocalFileRelation($file, $filePath);
             } else {
-                \Log::warning('Upload response missing fileId', [
-                    'response' => $result
-                ]);
+                // Upload gagal, tetap simpan file_name untuk tracking tapi jangan hapus file lokal
+                $this->isUploadingToGoogleDrive = true;
+
+                $uploadedFileName = $fileName;
+                if (!preg_match('/\.pdf$/i', $uploadedFileName)) {
+                    $uploadedFileName .= '.pdf';
+                }
+                $this->file_name = $uploadedFileName;
+                $this->rules = [];
+                $this->save();
+
+                $this->isUploadingToGoogleDrive = false;
+
+                // \Log::error('Upload FAILED - Check Google Apps Script', [
+                //     'response' => $result,
+                //     'error' => $result['error'] ?? 'Unknown error',
+                //     'success' => $result['success'] ?? false,
+                //     'fileName' => $uploadedFileName,
+                //     'message' => 'File name saved but upload failed. File kept in local storage.'
+                // ]);
             }
         } catch (\Exception $e) {
             // Reset flag jika terjadi error
             $this->isUploadingToGoogleDrive = false;
 
-            \Log::error('Google Drive upload failed', [
+            \Log::error('Google Drive upload exception', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ]);
         }
     }

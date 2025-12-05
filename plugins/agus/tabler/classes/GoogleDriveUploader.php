@@ -5,7 +5,7 @@ class GoogleDriveUploader
     /**
      * Google Apps Script Web App URL
      */
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby3xc0R0bdws4ubU1iLBkyevkjjI-FRTq_4DW93KBzKHbp4PugsHVzi_z46xqssErzj/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyNqaf-liLRmnudEWieYeOsvhRTjpUVi1b9WbIvVIglIEVKWIqwbdhWoCcw4jCIoJ4A/exec';
 
     /**
      * Upload file to specific Google Drive folder based on category
@@ -226,11 +226,13 @@ class GoogleDriveUploader
         $curlError = curl_error($ch);
         curl_close($ch);
 
-        // \Log::info('Google Drive Upload Response', [
-        //     'httpCode' => $httpCode,
-        //     'curlError' => $curlError,
-        //     'response' => $result
-        // ]);
+        \Log::info('Google Drive Upload Response', [
+            'httpCode' => $httpCode,
+            'curlError' => $curlError,
+            'response' => $result,
+            'fileName' => $fileName,
+            'folderId' => $folderId
+        ]);
 
         return json_decode($result, true);
     }

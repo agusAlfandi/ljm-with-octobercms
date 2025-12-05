@@ -5,65 +5,65 @@ class GoogleDriveReader
     /**
      * Google Apps Script Web App URL
      */
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby3xc0R0bdws4ubU1iLBkyevkjjI-FRTq_4DW93KBzKHbp4PugsHVzi_z46xqssErzj/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyNqaf-liLRmnudEWieYeOsvhRTjpUVi1b9WbIvVIglIEVKWIqwbdhWoCcw4jCIoJ4A/exec';
 
     /**
      * Google Drive Folder IDs per category
      * Update dengan Folder ID yang berbeda untuk setiap kategori
      */
     const FOLDER_IDS = [
-        'Beban Belajar Mahasiswa' => '1fGubOb8IWVGqm4WNf618xJFyRqBgpvMj',
-        'Monev Dosen' => '1yg4AG82aPY5CNJYXoCUhiZwPhFXorAmo',
-        'Monev Kehadiran Mahasiswa' => '12a75NMkDxzDm3HLz8cz7jR793jwWePm9',
-        'Monev Materi dengan RPS' => '1HbX0lP-s-Wlfux2gWtJ9DItJXlui4_WB',
-        'Monev Nilai' => '1RPAFgjL3Z-vvCLx7l8CXbTNeeBqBoMZE',
-        'Monev UTS UAS -- RPS' => '1V2ykjb_UKurnaCgi6wsW1kEwSFI_vyTv',
-        'Keterbukaan Informasi Publik' => '1PZ9L9NVjiKLOgIAfq8nJxqyaXHIibFOi',
-        'Periode 2021/2022 ami' => '1JieEkkFcqb0ThMxDNoO4SbQwcRnDJf6k',
-        'Periode 2022/2023 ami' => '1FdFs5FPnGP7C1Ba_My7gyfogR8YFurFv',
-        'Periode 2023/2024 ami' => '16fhw19FrHiA1Fjz-NozyLx5YMRu1fNe6',
-        'Periode 2024/2025 ami' => '1l2qRjMSPynnnWPSTOuxrwnH09SO34O5v',
-        'Periode 2021/2022 rtm' => '1n-4nkhv8BhcPhLLZn-nRATRl2krj9tte',
-        'Periode 2022/2023 rtm' => '1OUl8We-qUopDAp2VZvYV0zgkPRmcvX75',
-        'Periode 2023/2024 rtm' => '1_tdIRZd_MJ6xd3dIkvTEOoCSbpf27sKL',
-        'Periode 2024/2025 rtm' => '1gwT5tEayLaj85i_JmUQ9mGzzvQMOYhSF',
-        'Periode 2021/2022 grafik kepuasan' => '1AaEPBqFwB5v-gKdDdBhzC7GOzpA1y6UM',
-        'Periode 2022/2023 grafik kepuasan' => '1FO1GFMA4Z2sM8qHMRy2Dl0tadPsgrRo2',
-        'Periode 2023/2024 grafik kepuasan' => '1Kdkg7uMN6gXX9wYCs204QlKcyNFbxlbn',
-        'Periode 2024/2025 grafik kepuasan' => '1rRS-auZQeEKipy9p43PMUWO9YdFWyjfl',
-        'Periode 2021/2022 survei kepuasan' => '11HhPk_V70I2Bukti_ajmrV37SL77aMg_',
-        'Periode 2022/2023 survei kepuasan' => '1rRB-N9tuwToxNWBzJxggAyVbfV7sqbOf',
-        'Periode 2023/2024 survei kepuasan' => '1vPO7cMd2XZz3Xcdl3As-n3TU23t_IwMh',
-        'Periode 2024/2025 survei kepuasan' => '1EEXzbJOzQsUP_6rYLk7GzjAZ8XmdeA8c',
-        'Periode 2021/2022 monev survei kepuasan' => '1CUMghta-WXJE3XgME8zeE6ZITAsoZ4BB',
-        'Periode 2022/2023 monev survei kepuasan' => '1LBnheQfxajI_ysjYFLbLX32IGU1EqJ-d',
-        'Periode 2023/2024 monev survei kepuasan' => '19fxja7vZ6n0HvtngWSEFFYlsG6y5f-U8',
-        'Periode 2024/2025 monev survei kepuasan' => '1PyoJNecQkoY0htJ_w7gzKLhO-3xEis4X',
-        'Periode 2021/2022 rtm kepuasan' => '1BiUYDdKCccYp_qMYgnNUqhKNrUI1P0y_',
-        'Periode 2022/2023 rtm kepuasan' => '1LKwTXYWiFAcaVSeNJTvi2ElaG9_wJLWD',
-        'Periode 2023/2024 rtm kepuasan' => '1BG9UBfrVSeFer4gbzTxDq-qW6i7pFnuO',
-        'Periode 2024/2025 rtm kepuasan' => '1qYeU81Y8lqqEWOZeiRIMSum3a84iPsjH',
-        'Standar SPMI' => '1oTatJjNzHC9S6CrRBx8FGh0Ej9kQqG_5',
-        'Formulir SPMI' => '1krE_ASwuMGU0q0ObwjNGZ9igPNC7aHIC',
-        'Manual Mutu' => '1Hp1iOnF_badJL8jZMIK_9fsYQg3W9oy-',
-        'SOP SPMI' => '1YEc_2fmTMiWtfz28CJX1GicauXFUq9Xz',
-        'Kebijakan SPMI' => '1_Xs2jNxPdwqine5jccVuqW0La5o2eXiK',
-        'Standar Lampauan' => '1Yy8n9FCUHN9TTwEv9_EwH3SNjXdlxREG',
-        'Akreditasi Perguruan Tinggi' => '1jO3HbIdDqrKyN784AxM1FzrUwBjzyYX3',
-        'Akreditasi International ISO' => '1jl-L5swq7eebeVgS6aa_P6URu4Dl-DxR',
-        'UDINUS' => '1Y1zuaV9Dhlvw4aX5ZIiORjIDjY51gaC5',
-        'Huachiew Chalermprakiet' => '1A9w3xhGAKPD0T8Ei8E-dYZIjEyH1a819',
-        'TGBC Thailand' => '11uGFE5kiw4XmSa2Xe7O3favs9U758Q77',
-        'In House Training ISO' => '1rI7UjsFmt30n17WEJbvJIF5GDfIVqIek',
-        'Workshop Akreditasi AUN-QA' => '1mZ86F9ggQy-k8rydI1mF1JpPG6ZiStw2',
-        'Workshop Pelatihan AMI' => '1MFStikH3aP3CSGMTEFiiCdutdU04jYnl',
-        'Workshop Peningkatan Penjamin Mutu' => '1rAW8Ic0oiB5DVmdk2rqQ7HM3isTQR6j2',
-        'Pemenang Hibah SPMI Tahun 2021' => '1WFWell6LjBm2qjGf7Z4JnsNpQXypv3gc',
-        '2019' => '10KClQBJ3sMFp-qCXBXNAlz9oi8VszVCV',
-        '2021' => '1ktqEApDgfOHsu8Lm0m9MHIzJfd0dmcnv',
-        '2023' => '1xYRoNytZFRTqWrMeTqin5TVI66hCluqi',
-        'ISO International 2021' => '1_w_U12cQxdEKI_Tn5vWFrOhpAJpzkUc8',
-        'ISO International 2024' => '18Tzv3T5ZHtWHtWVMcAEWAmMFkD9zSYlw',
+        'Beban Belajar Mahasiswa' => '153Lr6DnNtdu1oO3H5vDTyv_5-AJAG95e',
+        'Monev Dosen' => '1n97kyLYK0xzoaI4qfqfbGJLb6UEMMp6W',
+        'Monev Kehadiran Mahasiswa' => '1XctG6rx24UQBHJxmvY8GnrqB1o3K0NSb',
+        'Monev Materi dengan RPS' => '1rmfChud543iSWdwqwq0dHWUZbQpd-0QL',
+        'Monev Nilai' => '115Bz4SlJ5HF4T_NqRnQJxiUfDLB2eCLO',
+        'Monev UTS UAS -- RPS' => '156b9htrSnUxPNx47E5DQmXfslRjVHJvu',
+        'Keterbukaan Informasi Publik' => '1JaFINzQpwGDEJMeLkGWpdzox4G6cXUst',
+        'Periode 2021/2022 ami' => '1BATxq9QQWQYlGi8F-JBATFlzIC5mDbMP',
+        'Periode 2022/2023 ami' => '1ieTzD_3btjvLTfW7C6RxNHb1C2VLa5U-',
+        'Periode 2023/2024 ami' => '13NRDa7pbVfCZygKaCpPV3nLQ9sSq5CJf',
+        'Periode 2024/2025 ami' => '1EcTwagdL_9G2XfgSrChU0G0xPYF0rT3m',
+        'Periode 2021/2022 rtm' => '1DgElsjM4zhss7YqNI2iWsEzV_QnuJ-Xu',
+        'Periode 2022/2023 rtm' => '1vYDNCJ4ZaO7L-zvvP8Jsn_QbnhZ3irHV',
+        'Periode 2023/2024 rtm' => '1NV6tY6YcJbiEn6xHSHxuZ0FEchItMW4l',
+        'Periode 2024/2025 rtm' => '1JWgZdm8jqxqr2oEG9_b1kWGDaI5vaPe6',
+        'Periode 2021/2022 grafik kepuasan' => '13P2eHmO_117n0UgaaiUMfzS1cmrppqUR',
+        'Periode 2022/2023 grafik kepuasan' => '1x5YCM73XKi9bFi2aD2mbJhYFCb4Tw2vH',
+        'Periode 2023/2024 grafik kepuasan' => '1fiqgtUw1LoNZ2HXyfa4Bhchlwlg12FCr',
+        'Periode 2024/2025 grafik kepuasan' => '1Evd8y0058W-23OB-InXtJqnf8-QWmh_6',
+        'Periode 2021/2022 survei kepuasan' => '10JyQXhPBRa0igiiuuZ2dfv_zLlPlCVHe',
+        'Periode 2022/2023 survei kepuasan' => '1jpDNHw36inEAhUQ_QucSj4d8_u3ClCvh',
+        'Periode 2023/2024 survei kepuasan' => '16x-mqkzndK9nkq9ea2UOOeodnRuURmjK',
+        'Periode 2024/2025 survei kepuasan' => '14gfNvjocgPtmEJAiPgz0JbgfxEh_HiQm',
+        'Periode 2021/2022 monev survei kepuasan' => '1Nch7q_sxo0pcs50yJb6C-ibFcupkXCuT',
+        'Periode 2022/2023 monev survei kepuasan' => '15wwI4zAIoa2-Lo_Hftb_FE5FUQWuXacm',
+        'Periode 2023/2024 monev survei kepuasan' => '1cqsVPOZjmjjEKFuHS3B9af10tw5lWqDs',
+        'Periode 2024/2025 monev survei kepuasan' => '1QkQaZK1bEdHWE_Df_G1u2mdJ3xDIiMA2',
+        'Periode 2021/2022 rtm kepuasan' => '1ESIfAZOy6cG_Vr5xAQwxDdkdQoOSkAXI',
+        'Periode 2022/2023 rtm kepuasan' => '1e4JdyKLsWb9XXhSmbIFA5s6vd767dRVN',
+        'Periode 2023/2024 rtm kepuasan' => '1lF7WPGuMXjNWgm25nmKkPOcAxTdZCQWz',
+        'Periode 2024/2025 rtm kepuasan' => '1fpcf0VxXe2S_YNdBXFZvgBAWQDgoF9Ys',
+        'Standar SPMI' => '1ahg6lJJU1c9FLFNe6gi20QOOkra-Erdz',
+        'Formulir SPMI' => '1NQ2Ae_wv9LEVZv2tHEbHrO3i5CYqox2D',
+        'Manual Mutu' => '15E5pSNy06zIG0xoewZ7CL7_MfOq_xKw2',
+        'SOP SPMI' => '1EyxyDgxrtWWm7cnJQ7xFLEtRYw2LP5Ao',
+        'Kebijakan SPMI' => '1Tt-cmBl6Q13QMxvHuXnBJS5RXNFzIJyg',
+        'Standar Lampauan' => '128nHq_j6eLQbUlMh9J65aeQyM32-5pv0',
+        'Akreditasi Perguruan Tinggi' => '1bMxC6V99_S5z-4WSXQkQ5pojaX1PK_UC',
+        'Akreditasi International ISO' => '1clIlDo2leiZJM-TKbPmSO-AiXHl41zDW',
+        'UDINUS' => '1BcqxXUVIg0y861qJhDDJhPN4YecR-akr',
+        'Huachiew Chalermprakiet' => '1DDkmH20CA4esGgwUSJe044YJGE2TfSN-',
+        'TGBC Thailand' => '1DnHsDBJ9RfdlSNT_weSjp2e37gRFs9fW',
+        'In House Training ISO' => '1bR1-LlZ5x4zP4A_vw_fD0muNBK4ufijb',
+        'Workshop Akreditasi AUN-QA' => '1jw48Dknz1ttoV7rpS6s_k9Vo0Zze1oyT',
+        'Workshop Pelatihan AMI' => '1r0rY6y_14GbBsrKrxeg-CoANMMr7qO6_',
+        'Workshop Peningkatan Penjamin Mutu' => '18k8f1CKEvDItuZV7v5CCd92THGDgNwCW',
+        'Pemenang Hibah SPMI Tahun 2021' => '1CcB3pr1JKCiBo0wXHC10OtIKUKv9TWLQ',
+        '2019' => '1NCiDXiF37r-mmcAWhpsuBigslUCeWccG',
+        '2021' => '1l2ZYnOPGqVqeGHgLZbmOwMALaxYis13M',
+        '2023' => '16aT6KOZRRF_WYvi4Sg1v7oYBqEGa_9DB',
+        'ISO International 2021' => '1w3Dzn2dwZSnh_Cw_q1F3UkkxqK7Oxpzh',
+        'ISO International 2024' => '1k1IoQzHBxZ5WE2NqWmCVTBCl1HCZUxLa',
     ];
 
     /**
@@ -197,7 +197,16 @@ class GoogleDriveReader
                 strpos($category, 'Kebijakan SPMI') === 0 ||
                 strpos($category, 'UDINUS') === 0 ||
                 strpos($category, 'Huachiew Chalermprakiet') === 0 ||
-                strpos($category, 'TGBC Thailand') === 0) {
+                strpos($category, 'TGBC Thailand') === 0 ||
+                strpos($category, 'Standar Lampauan') === 0 ||
+                strpos($category, 'Akreditasi') === 0 ||
+                strpos($category, 'In House Training ISO') === 0 ||
+                strpos($category, 'Workshop') === 0 ||
+                strpos($category, 'Pemenang Hibah SPMI') === 0 ||
+                strpos($category, 'ISO International 2021') === 0 ||
+                strpos($category, 'ISO International 2024') === 0 ||
+                is_numeric($category)
+            ) {
                 continue;
             }
             $files = self::getFilesFromFolder($folderId);
