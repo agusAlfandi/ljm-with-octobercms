@@ -3,14 +3,14 @@ fields:
         label: 'Upload File PDF'
         mode: file
         fileTypes: pdf
-        maxFilesize: 2
+        maxFilesize: 20
         useCaption: false
         thumbOptions:
             mode: crop
             extension: auto
         span: full
         type: fileupload
-        comment: 'Upload file PDF (maksimal 2MB). Nama file akan otomatis mengisi judul dokumen.'
+        comment: 'Upload file PDF (maksimal 20MB). Nama file akan otomatis mengisi judul dokumen.'
         attributes:
             data-request: onFileUpload
     title:
@@ -20,14 +20,23 @@ fields:
         placeholder: 'Otomatis terisi dari nama file PDF'
         comment: 'Nama file yang akan diupload ke Google Drive (akan otomatis terisi dari file yang diupload, bisa diedit manual)'
         required: true
-    category:
-        label: Kategori
-        span: full
+    periode:
+        label: Periode
+        span: left
         type: dropdown
-        placeholder: '-- Pilih Kategori --'
-        options: 'Agus\Tabler\Models\Grafik_kepuasan::getCategoryOptions'
+        placeholder: '-- Pilih Periode --'
+        options: getPeriodeOptions
         required: true
-        comment: 'File akan diupload ke folder Google Drive sesuai kategori yang dipilih'
+        comment: 'Pilih periode dokumen Survei Kepuasan'
+    prodi:
+        label: Prodi
+        span: right
+        type: dropdown
+        placeholder: '-- Pilih Prodi --'
+        dependsOn: [periode]
+        options: getProdiOptions
+        required: true
+        comment: 'Pilih prodi dokumen Survei Kepuasan.'
     file_name:
         label: 'File yang Sudah Diupload'
         span: full

@@ -2,6 +2,7 @@ url = "/implementasi-spmi/laporan-survey-kepuasan"
 title = "Laporan Survey Kepuasan"
 layout = "app"
 
+[kepuasanLoader]
 ==
 <div class="container-xl py-4">
     <div class="card shadow-sm">
@@ -149,312 +150,175 @@ layout = "app"
         </div>
         <div class="card-body">
             <div class="tab-content">
-                <div class="tab-pane active show" id="tabs-grafik-kepuasan" role="tabpanel">
-                    <div class="text-muted">
-
-                        <div class="container-xl py-4">
-                            <div class="card shadow-sm">
-
-                                {% set gfkKpsFiles = getGrfKpsPdfFiles() %}
-
-                                <div class="accordion" id="grfKpsAccordion">
-                                    {% set idx = 0 %}
-                                    {% for category, prodiGroups in gfkKpsFiles %}
-                                    {% set idx = idx + 1 %}
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="heading-grf-{{ idx }}">
-                                            <button class="accordion-button {% if not loop.first %}collapsed{% endif %}"
-                                                type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapse-grf-{{ idx }}"
-                                                aria-expanded="{{ loop.first ? 'true' : 'false' }}"
-                                                aria-controls="collapse-grf-{{ idx }}">
-                                                {{ category }}
-                                            </button>
-                                        </h2>
-                                        <div id="collapse-grf-{{ idx }}"
-                                            class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
-                                            aria-labelledby="heading-grf-{{ idx }}" data-bs-parent="#grfKpsAccordion">
-                                            <div class="accordion-body">
-                                                {% if prodiGroups|length > 0 %}
-                                                {% for prodi, files in prodiGroups %}
-                                                <div class="mb-4">
-                                                    <h4 class="mb-2 text-primary">
-                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                            class="icon icon-inline me-1" width="24" height="24"
-                                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                                            fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                            <path
-                                                                d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-11.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l2 2h6a2 2 0 0 1 2 2v2" />
-                                                        </svg>
-                                                        {{ prodi }}
-                                                    </h4>
-                                                    <ul class="list-group">
-                                                        {% for file in files %}
-                                                        <li
-                                                            class="list-group-item d-flex justify-content-between align-items-center">
-                                                            <span>{{ file.title }}</span>
-                                                            <a href="https://drive.google.com/file/d/{{ file.fileId }}/view"
-                                                                target="_blank" class="btn btn-outline-primary btn-sm">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon"
-                                                                    width="18" height="18" viewBox="0 0 24 24"
-                                                                    fill="none" stroke="currentColor" stroke-width="2">
-                                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4">
-                                                                    </path>
-                                                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                                                </svg>
-                                                                Lihat PDF
-                                                            </a>
-                                                        </li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                </div>
-                                                {% endfor %}
-                                                {% else %}
-                                                <div class="text-muted text-center py-3">Belum ada data Prodi atau file
-                                                    PDF untuk periode ini.</div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-
+                <!-- ===== GRAFIK KEPUASAN ===== -->
+                <div class="tab-pane active show" id="tabs-grafik-kepuasan" role="tabpanel" data-kps-section="grf" data-kps-loaded="0">
+                    <div class="kps-loading text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <div class="mt-2 text-muted">Memuat data Grafik Kepuasan...</div>
                     </div>
+                    <div class="kps-content" style="display:none"></div>
                 </div>
-                <div class="tab-pane" id="tabs-survey-kepuasan" role="tabpanel">
-                    <div class="text-muted">
 
-                        <div class="container-xl py-4">
-                            <div class="card shadow-sm">
-
-                                {% set svrKpsFiles = getSvrKpsPdfFiles() %}
-
-                                <div class="accordion" id="svrKpsAccordion">
-                                    {% set idx = 0 %}
-                                    {% for category, prodiGroups in svrKpsFiles %}
-                                    {% set idx = idx + 1 %}
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="heading-svr-{{ idx }}">
-                                            <button class="accordion-button {% if not loop.first %}collapsed{% endif %}"
-                                                type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapse-svr-{{ idx }}"
-                                                aria-expanded="{{ loop.first ? 'true' : 'false' }}"
-                                                aria-controls="collapse-svr-{{ idx }}">
-                                                {{ category }}
-                                            </button>
-                                        </h2>
-                                        <div id="collapse-svr-{{ idx }}"
-                                            class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
-                                            aria-labelledby="heading-svr-{{ idx }}" data-bs-parent="#svrKpsAccordion">
-                                            <div class="accordion-body">
-                                                {% if prodiGroups|length > 0 %}
-                                                {% for prodi, files in prodiGroups %}
-                                                <div class="mb-4">
-                                                    <h4 class="mb-2 text-primary">
-                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                            class="icon icon-inline me-1" width="24" height="24"
-                                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                                            fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                            <path
-                                                                d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-11.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l2 2h6a2 2 0 0 1 2 2v2" />
-                                                        </svg>
-                                                        {{ prodi }}
-                                                    </h4>
-                                                    <ul class="list-group">
-                                                        {% for file in files %}
-                                                        <li
-                                                            class="list-group-item d-flex justify-content-between align-items-center">
-                                                            <span>{{ file.title }}</span>
-                                                            <a href="https://drive.google.com/file/d/{{ file.fileId }}/view"
-                                                                target="_blank" class="btn btn-outline-primary btn-sm">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon"
-                                                                    width="18" height="18" viewBox="0 0 24 24"
-                                                                    fill="none" stroke="currentColor" stroke-width="2">
-                                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4">
-                                                                    </path>
-                                                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                                                </svg>
-                                                                Lihat PDF
-                                                            </a>
-                                                        </li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                </div>
-                                                {% endfor %}
-                                                {% else %}
-                                                <div class="text-muted text-center py-3">Belum ada data Prodi atau file
-                                                    PDF untuk periode ini.</div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-
+                <!-- ===== SURVEI KEPUASAN ===== -->
+                <div class="tab-pane" id="tabs-survey-kepuasan" role="tabpanel" data-kps-section="svr" data-kps-loaded="0">
+                    <div class="kps-loading text-center py-5" style="display:none">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <div class="mt-2 text-muted">Memuat data Survei Kepuasan...</div>
                     </div>
+                    <div class="kps-content" style="display:none"></div>
                 </div>
-                <div class="tab-pane" id="tabs-monev-survey-kepuasan" role="tabpanel">
-                    <div class="text-muted">
 
-                        <div class="container-xl py-4">
-                            <div class="card shadow-sm">
-
-                                {% set mnvSvrKpsFiles = getMnvSvrKpsPdfFiles() %}
-
-                                <div class="accordion" id="mnvSvrKpsAccordion">
-                                    {% set idx = 0 %}
-                                    {% for category, prodiGroups in mnvSvrKpsFiles %}
-                                    {% set idx = idx + 1 %}
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="heading-mnv-{{ idx }}">
-                                            <button class="accordion-button {% if not loop.first %}collapsed{% endif %}"
-                                                type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapse-mnv-{{ idx }}"
-                                                aria-expanded="{{ loop.first ? 'true' : 'false' }}"
-                                                aria-controls="collapse-mnv-{{ idx }}">
-                                                {{ category }}
-                                            </button>
-                                        </h2>
-                                        <div id="collapse-mnv-{{ idx }}"
-                                            class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
-                                            aria-labelledby="heading-mnv-{{ idx }}"
-                                            data-bs-parent="#mnvSvrKpsAccordion">
-                                            <div class="accordion-body">
-                                                {% if prodiGroups|length > 0 %}
-                                                {% for prodi, files in prodiGroups %}
-                                                <div class="mb-4">
-                                                    <h4 class="mb-2 text-primary">
-                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                            class="icon icon-inline me-1" width="24" height="24"
-                                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                                            fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                            <path
-                                                                d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-11.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l2 2h6a2 2 0 0 1 2 2v2" />
-                                                        </svg>
-                                                        {{ prodi }}
-                                                    </h4>
-                                                    <ul class="list-group">
-                                                        {% for file in files %}
-                                                        <li
-                                                            class="list-group-item d-flex justify-content-between align-items-center">
-                                                            <span>{{ file.title }}</span>
-                                                            <a href="https://drive.google.com/file/d/{{ file.fileId }}/view"
-                                                                target="_blank" class="btn btn-outline-primary btn-sm">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon"
-                                                                    width="18" height="18" viewBox="0 0 24 24"
-                                                                    fill="none" stroke="currentColor" stroke-width="2">
-                                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4">
-                                                                    </path>
-                                                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                                                </svg>
-                                                                Lihat PDF
-                                                            </a>
-                                                        </li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                </div>
-                                                {% endfor %}
-                                                {% else %}
-                                                <div class="text-muted text-center py-3">Belum ada data Prodi atau file
-                                                    PDF untuk periode ini.</div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-
+                <!-- ===== MONEV SURVEI KEPUASAN ===== -->
+                <div class="tab-pane" id="tabs-monev-survey-kepuasan" role="tabpanel" data-kps-section="mnv" data-kps-loaded="0">
+                    <div class="kps-loading text-center py-5" style="display:none">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <div class="mt-2 text-muted">Memuat data Monev Survei Kepuasan...</div>
                     </div>
+                    <div class="kps-content" style="display:none"></div>
                 </div>
-                <div class="tab-pane" id="tabs-rtm-kepuasan" role="tabpanel">
-                    <div class="text-muted">
 
-                        <div class="container-xl py-4">
-                            <div class="card shadow-sm">
-
-                                {% set rtmKpsFiles = getRtmKpsPdfFiles() %}
-
-                                <div class="accordion" id="rtmKpsAccordion">
-                                    {% set idx = 0 %}
-                                    {% for category, prodiGroups in rtmKpsFiles %}
-                                    {% set idx = idx + 1 %}
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="heading-rtm-{{ idx }}">
-                                            <button class="accordion-button {% if not loop.first %}collapsed{% endif %}"
-                                                type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapse-rtm-{{ idx }}"
-                                                aria-expanded="{{ loop.first ? 'true' : 'false' }}"
-                                                aria-controls="collapse-rtm-{{ idx }}">
-                                                {{ category }}
-                                            </button>
-                                        </h2>
-                                        <div id="collapse-rtm-{{ idx }}"
-                                            class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
-                                            aria-labelledby="heading-rtm-{{ idx }}" data-bs-parent="#rtmKpsAccordion">
-                                            <div class="accordion-body">
-                                                {% if prodiGroups|length > 0 %}
-                                                {% for prodi, files in prodiGroups %}
-                                                <div class="mb-4">
-                                                    <h4 class="mb-2 text-primary">
-                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                            class="icon icon-inline me-1" width="24" height="24"
-                                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                                            fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                            <path
-                                                                d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-11.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l2 2h6a2 2 0 0 1 2 2v2" />
-                                                        </svg>
-                                                        {{ prodi }}
-                                                    </h4>
-                                                    <ul class="list-group">
-                                                        {% for file in files %}
-                                                        <li
-                                                            class="list-group-item d-flex justify-content-between align-items-center">
-                                                            <span>{{ file.title }}</span>
-                                                            <a href="https://drive.google.com/file/d/{{ file.fileId }}/view"
-                                                                target="_blank" class="btn btn-outline-primary btn-sm">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon"
-                                                                    width="18" height="18" viewBox="0 0 24 24"
-                                                                    fill="none" stroke="currentColor" stroke-width="2">
-                                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4">
-                                                                    </path>
-                                                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                                                </svg>
-                                                                Lihat PDF
-                                                            </a>
-                                                        </li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                </div>
-                                                {% endfor %}
-                                                {% else %}
-                                                <div class="text-muted text-center py-3">Belum ada data Prodi atau file
-                                                    PDF untuk periode ini.</div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-
+                <!-- ===== RTM KEPUASAN ===== -->
+                <div class="tab-pane" id="tabs-rtm-kepuasan" role="tabpanel" data-kps-section="rtmk" data-kps-loaded="0">
+                    <div class="kps-loading text-center py-5" style="display:none">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <div class="mt-2 text-muted">Memuat data RTM Kepuasan...</div>
                     </div>
+                    <div class="kps-content" style="display:none"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+(function () {
+    var HANDLER_URL = window.location.pathname;
+
+    function buildPaneHtml(section, label, data) {
+        var keys = Object.keys(data);
+        if (keys.length === 0) {
+            return '<div class="card-header"><h3 class="card-title">Dokumen PDF ' + label + '</h3></div>'
+                 + '<div class="card-body"><div class="text-muted text-center py-4">Belum ada data dokumen ' + label + '.</div></div>';
+        }
+
+        var cardsHtml = '';
+        keys.forEach(function (category, catIdx) {
+            var prodiGroups = data[category];
+            var prodiKeys = Object.keys(prodiGroups);
+            var innerHtml = '';
+
+            if (prodiKeys.length === 0) {
+                innerHtml = '<div class="text-muted text-center py-3">Belum ada data Prodi atau file PDF untuk periode ini.</div>';
+            } else {
+                var pills = '';
+                var panes = '';
+                prodiKeys.forEach(function (prodi, prodiIdx) {
+                    var files = prodiGroups[prodi];
+                    var paneId = 'pills-' + section + '-' + catIdx + '-' + prodiIdx;
+                    var badge = files.length > 0 ? ' <span class="badge bg-primary ms-1">' + files.length + '</span>' : '';
+                    pills += '<li class="nav-item" role="presentation">'
+                           + '<button class="nav-link' + (prodiIdx === 0 ? ' active' : '') + (files.length > 0 ? ' text-primary fw-bold' : '') + '"'
+                           + ' data-kps-toggle="pill" data-kps-target="#' + paneId + '" type="button" role="tab">'
+                           + escHtml(prodi) + badge + '</button></li>';
+
+                    var items = '';
+                    if (files.length === 0) {
+                        items = '<li class="list-group-item text-muted">Belum ada file PDF.</li>';
+                    } else {
+                        files.forEach(function (file) {
+                            items += '<li class="list-group-item d-flex justify-content-between align-items-center">'
+                                   + '<span>' + escHtml(file.title) + '</span>'
+                                   + '<a href="https://drive.google.com/file/d/' + escHtml(file.fileId) + '/view" target="_blank" class="btn btn-outline-primary btn-sm">'
+                                   + '<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+                                   + '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>'
+                                   + '<polyline points="7 10 12 15 17 10"></polyline>'
+                                   + '<line x1="12" y1="15" x2="12" y2="3"></line></svg> Lihat PDF</a></li>';
+                        });
+                    }
+                    panes += '<div class="kps-tab-pane' + (prodiIdx === 0 ? ' kps-active' : '') + '" id="' + paneId + '"'
+                           + ' style="display:' + (prodiIdx === 0 ? 'block' : 'none') + '">'
+                           + '<ul class="list-group">' + items + '</ul></div>';
+                });
+                innerHtml = '<ul class="nav nav-pills mb-3 flex-wrap" role="tablist">' + pills + '</ul>'
+                          + '<div class="kps-tab-content">' + panes + '</div>';
+            }
+
+            cardsHtml += '<div class="col-md-6"><div class="card h-100">'
+                       + '<div class="card-header fw-semibold">' + escHtml(category) + '</div>'
+                       + '<div class="card-body">' + innerHtml + '</div>'
+                       + '</div></div>';
+        });
+
+        return '<div class="card-header"><h3 class="card-title">Dokumen PDF ' + escHtml(label) + '</h3></div>'
+             + '<div class="card-body"><div class="row g-4">' + cardsHtml + '</div></div>';
+    }
+
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function loadKpsSection(pane) {
+        if (pane.getAttribute('data-kps-loaded') === '1') return;
+        pane.setAttribute('data-kps-loaded', '1');
+
+        var section = pane.getAttribute('data-kps-section');
+        var loading = pane.querySelector('.kps-loading');
+        var content = pane.querySelector('.kps-content');
+
+        if (loading) loading.style.display = 'block';
+
+        var fd = new FormData();
+        fd.append('section', section);
+        fd.append('_token', document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '');
+
+        fetch(HANDLER_URL, {
+            method: 'POST',
+            headers: { 'X-OCTOBER-REQUEST-HANDLER': 'kepuasanLoader::onGetKpsData', 'X-Requested-With': 'XMLHttpRequest' },
+            body: fd
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (resp) {
+            if (loading) loading.style.display = 'none';
+            content.innerHTML = buildPaneHtml(section, resp.label, resp.data || {});
+            content.style.display = 'block';
+            bindPills(content);
+        })
+        .catch(function (err) {
+            if (loading) loading.style.display = 'none';
+            content.innerHTML = '<div class="alert alert-danger m-3">Gagal memuat data. Silakan coba lagi.</div>';
+            content.style.display = 'block';
+            pane.setAttribute('data-kps-loaded', '0');
+        });
+    }
+
+    function bindPills(root) {
+        root.querySelectorAll('[data-kps-toggle="pill"]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var target = document.querySelector(this.getAttribute('data-kps-target'));
+                if (!target) return;
+                var pillList = this.closest('ul');
+                pillList.querySelectorAll('.nav-link').forEach(function (p) { p.classList.remove('active'); });
+                this.classList.add('active');
+                var content = target.closest('.kps-tab-content');
+                content.querySelectorAll('.kps-tab-pane').forEach(function (p) {
+                    p.classList.remove('kps-active'); p.style.display = 'none';
+                });
+                target.classList.add('kps-active'); target.style.display = 'block';
+            });
+        });
+    }
+
+    // Load the first (active) tab immediately
+    var firstPane = document.querySelector('.tab-pane[data-kps-section]');
+    if (firstPane) loadKpsSection(firstPane);
+
+    // Lazy-load others on tab click
+    document.querySelectorAll('[data-bs-toggle="tab"]').forEach(function (tab) {
+        tab.addEventListener('shown.bs.tab', function (e) {
+            var targetId = e.target.getAttribute('href') || e.target.getAttribute('data-bs-target');
+            if (!targetId) return;
+            var pane = document.querySelector(targetId + '[data-kps-section]');
+            if (pane) loadKpsSection(pane);
+        });
+    });
+})();
+</script>

@@ -273,3 +273,27 @@ v1.0.91:
 v1.0.92:
     - 'Add periode_name and prodi_name to RTM table'
     - add_names_to_rtm_table.php
+v1.0.93:
+    - 'Add periode and prodi to Grafik Kepuasan table'
+    - add_periode_prodi_to_grafik_kepuasan.php
+v1.0.94:
+    - 'Add periode_name and prodi_name to Grafik Kepuasan table'
+    - add_names_to_grafik_kepuasan_table.php
+v1.0.95:
+    - 'Add periode and prodi to Survei Kepuasan table'
+    - add_periode_prodi_to_survei_kepuasan.php
+v1.0.96:
+    - 'Add periode_name and prodi_name to Survei Kepuasan table'
+    - add_names_to_survei_kepuasan_table.php
+v1.0.97:
+    - 'Add periode and prodi to Monev Survei Kepuasan table'
+    - add_periode_prodi_to_monev_survei_kepuasan.php
+v1.0.98:
+    - 'Add periode_name and prodi_name to Monev Survei Kepuasan table'
+    - add_names_to_monev_survei_kepuasan_table.php
+v1.0.99:
+    - 'Add periode and prodi to RTM Kepuasan table'
+    - add_periode_prodi_to_rtm_kepuasan.php
+v1.0.100:
+    - 'Add periode_name and prodi_name to RTM Kepuasan table'
+    - add_names_to_rtm_kepuasan_table.php

@@ -44,6 +44,10 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
+        return [
+            \Agus\Tabler\Components\KepuasanLoader::class => 'kepuasanLoader',
+            \Agus\Tabler\Components\DriveLoader::class    => 'driveLoader',
+        ];
     }
 
     /**

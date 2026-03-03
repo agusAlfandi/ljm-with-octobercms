@@ -1,6 +1,8 @@
 url = "/implementasi-spmi/audit-mutu-internal"
 layout = "app"
 title = "Audit Mutu Internal"
+
+[driveLoader]
 ==
 <div class="container-xl py-4">
     <div class="card shadow-sm">
@@ -54,114 +56,112 @@ title = "Audit Mutu Internal"
     </div>
 </div>
 
-<!-- Section untuk PDF Files -->
+<!-- Section untuk PDF Files (lazy loaded) -->
 <div class="container-xl py-4">
     <div class="card shadow-sm">
-        <div class="card-header">
-            <h3 class="card-title">Dokumen PDF Audit Mutu Internal</h3>
+        <div class="drive-loading text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <div class="mt-2 text-muted">Memuat data Audit Mutu Internal...</div>
         </div>
-        <div class="card-body">
-            {% set amiFiles = getAmiPdfFiles() %}
-            {% if amiFiles is empty %}
-                <div class="text-muted text-center py-4">Belum ada data dokumen AMI.</div>
-            {% else %}
-                <div class="row g-4">
-                    {% for category, prodiGroups in amiFiles %}
-                        <div class="col-md-6">
-                            <div class="card h-100">
-                                <div class="card-header fw-semibold">{{ category }}</div>
-                                <div class="card-body">
-                                    {% if prodiGroups is empty %}
-                                        <div class="text-muted text-center py-3">Belum ada data Prodi atau file PDF untuk periode ini.</div>
-                                    {% else %}
-                                        {% set catLoop = loop.index %}
-                                        <ul class="nav nav-pills mb-3 flex-wrap" role="tablist">
-                                            {% for prodi, files in prodiGroups %}
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link{% if loop.first %} active{% endif %}{% if files|length > 0 %} text-primary fw-bold{% endif %}"
-                                                        data-ami-toggle="pill"
-                                                        data-ami-target="#pills-{{ catLoop }}-{{ loop.index }}"
-                                                        type="button" role="tab">
-                                                        {{ prodi }}
-                                                        {% if files|length > 0 %}
-                                                            <span class="badge bg-primary ms-1">{{ files|length }}</span>
-                                                        {% endif %}
-                                                    </button>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                        <div class="ami-tab-content">
-                                            {% for prodi, files in prodiGroups %}
-                                                <div class="ami-tab-pane{% if loop.first %} ami-active{% endif %}"
-                                                    id="pills-{{ catLoop }}-{{ loop.index }}">
-                                                    <ul class="list-group">
-                                                        {% if files is empty %}
-                                                            <li class="list-group-item text-muted">Belum ada file PDF.</li>
-                                                        {% else %}
-                                                            {% for file in files %}
-                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                                    <span>{{ file.title }}</span>
-                                                                    <a href="https://drive.google.com/file/d/{{ file.fileId }}/view"
-                                                                        target="_blank"
-                                                                        class="btn btn-outline-primary btn-sm">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="18" height="18"
-                                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                                            <polyline points="7 10 12 15 17 10"></polyline>
-                                                                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                                                                        </svg>
-                                                                        Lihat PDF
-                                                                    </a>
-                                                                </li>
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    </ul>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
+        <div class="drive-content" style="display:none"></div>
     </div>
 </div>
-
 <script>
 (function () {
-    function initPillTabs() {
-        document.querySelectorAll('[data-ami-toggle="pill"]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var target = document.querySelector(this.getAttribute('data-ami-target'));
-                if (!target) return;
+    var HANDLER_URL = window.location.pathname;
 
-                var pillList = this.closest('ul');
-                pillList.querySelectorAll('.nav-link').forEach(function (pill) {
-                    pill.classList.remove('active');
+    function buildPaneHtml(label, data) {
+        var keys = Object.keys(data);
+        if (keys.length === 0) {
+            return '<div class="card-header"><h3 class="card-title">Dokumen PDF ' + label + '</h3></div>'
+                 + '<div class="card-body"><div class="text-muted text-center py-4">Belum ada data dokumen ' + label + '.</div></div>';
+        }
+        var cardsHtml = '';
+        keys.forEach(function (category, catIdx) {
+            var prodiGroups = data[category];
+            var prodiKeys = Object.keys(prodiGroups);
+            var innerHtml = '';
+            if (prodiKeys.length === 0) {
+                innerHtml = '<div class="text-muted text-center py-3">Belum ada data Prodi atau file PDF untuk periode ini.</div>';
+            } else {
+                var pills = '', panes = '';
+                prodiKeys.forEach(function (prodi, prodiIdx) {
+                    var files = prodiGroups[prodi];
+                    var paneId = 'drive-pills-' + catIdx + '-' + prodiIdx;
+                    var badge = files.length > 0 ? ' <span class="badge bg-primary ms-1">' + files.length + '</span>' : '';
+                    pills += '<li class="nav-item" role="presentation">'
+                           + '<button class="nav-link' + (prodiIdx === 0 ? ' active' : '') + (files.length > 0 ? ' text-primary fw-bold' : '') + '"'
+                           + ' data-drive-toggle="pill" data-drive-target="#' + paneId + '" type="button" role="tab">'
+                           + escHtml(prodi) + badge + '</button></li>';
+                    var items = files.length === 0
+                        ? '<li class="list-group-item text-muted">Belum ada file PDF.</li>'
+                        : files.map(function (file) {
+                            return '<li class="list-group-item d-flex justify-content-between align-items-center">'
+                                 + '<span>' + escHtml(file.title) + '</span>'
+                                 + '<a href="https://drive.google.com/file/d/' + escHtml(file.fileId) + '/view" target="_blank" class="btn btn-outline-primary btn-sm">'
+                                 + '<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+                                 + '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>'
+                                 + '<polyline points="7 10 12 15 17 10"></polyline>'
+                                 + '<line x1="12" y1="15" x2="12" y2="3"></line></svg> Lihat PDF</a></li>';
+                          }).join('');
+                    panes += '<div class="drive-tab-pane' + (prodiIdx === 0 ? ' drive-active' : '') + '" id="' + paneId + '"'
+                           + ' style="display:' + (prodiIdx === 0 ? 'block' : 'none') + '">'
+                           + '<ul class="list-group">' + items + '</ul></div>';
                 });
-                this.classList.add('active');
-
-                var content = target.closest('.ami-tab-content');
-                content.querySelectorAll('.ami-tab-pane').forEach(function (pane) {
-                    pane.classList.remove('ami-active');
-                    pane.style.display = 'none';
-                });
-                target.classList.add('ami-active');
-                target.style.display = 'block';
-            });
+                innerHtml = '<ul class="nav nav-pills mb-3 flex-wrap" role="tablist">' + pills + '</ul>'
+                          + '<div class="drive-tab-content">' + panes + '</div>';
+            }
+            cardsHtml += '<div class="col-md-6"><div class="card h-100">'
+                       + '<div class="card-header fw-semibold">' + escHtml(category) + '</div>'
+                       + '<div class="card-body">' + innerHtml + '</div>'
+                       + '</div></div>';
         });
+        return '<div class="card-header"><h3 class="card-title">Dokumen PDF ' + escHtml(label) + '</h3></div>'
+             + '<div class="card-body"><div class="row g-4">' + cardsHtml + '</div></div>';
+    }
 
-        // Set initial display
-        document.querySelectorAll('.ami-tab-content').forEach(function (content) {
-            content.querySelectorAll('.ami-tab-pane').forEach(function (pane) {
-                pane.style.display = pane.classList.contains('ami-active') ? 'block' : 'none';
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function bindPills(root) {
+        root.querySelectorAll('[data-drive-toggle="pill"]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var target = document.querySelector(this.getAttribute('data-drive-target'));
+                if (!target) return;
+                this.closest('ul').querySelectorAll('.nav-link').forEach(function (p) { p.classList.remove('active'); });
+                this.classList.add('active');
+                var tc = target.closest('.drive-tab-content');
+                tc.querySelectorAll('.drive-tab-pane').forEach(function (p) { p.classList.remove('drive-active'); p.style.display = 'none'; });
+                target.classList.add('drive-active'); target.style.display = 'block';
             });
         });
     }
 
-    initPillTabs();
+    var card    = document.querySelector('.drive-loading').closest('.card');
+    var loading = card.querySelector('.drive-loading');
+    var content = card.querySelector('.drive-content');
+
+    var fd = new FormData();
+    fd.append('type', 'ami');
+    fd.append('_token', (document.querySelector('meta[name="csrf-token"]') || {}).content || '');
+
+    fetch(HANDLER_URL, {
+        method: 'POST',
+        headers: { 'X-OCTOBER-REQUEST-HANDLER': 'driveLoader::onGetData', 'X-Requested-With': 'XMLHttpRequest' },
+        body: fd
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (resp) {
+        loading.style.display = 'none';
+        content.innerHTML = buildPaneHtml(resp.label, resp.data || {});
+        content.style.display = 'block';
+        bindPills(content);
+    })
+    .catch(function () {
+        loading.style.display = 'none';
+        content.innerHTML = '<div class="alert alert-danger m-3">Gagal memuat data. Silakan coba lagi.</div>';
+        content.style.display = 'block';
+    });
 })();
 </script>

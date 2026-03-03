@@ -26,6 +26,10 @@ class GoogleDriveReader
         'ROOT_MONEV' => '1QUyXBU-v1Rpej3c11KHKtfzQEeOU7HXB',
         'ROOT_RTM' => '14geE5fwAKq-WccSByexh5y4io_NhKly0',
         'ROOT_SURVEY_KEPUASAN' => '1c3zdOeRZ0oHiOgIwP6fySjHqGLF7Gwht',
+        'ROOT_GRAFIK_KEPUASAN' => '1r9HT0OU_qFel9Opxag-Udu-BG_5_KtBC',
+        'ROOT_SURVEI_KEPUASAN' => '1x62AJbGPXo66gCpAxp73LMW5r9WxdDfN',
+        'ROOT_MONEV_SURVEI_KEPUASAN' => '17zBtOcyFoilnmojiSRvwwy_B5AxYqoK8',
+        'ROOT_RTM_KEPUASAN' => '1BEROZa-ZPzCGqR3iTY5DkGxRIGbF3Gcb',
 
         'Standar SPMI' => '1ahg6lJJU1c9FLFNe6gi20QOOkra-Erdz',
         'Formulir SPMI' => '1NQ2Ae_wv9LEVZv2tHEbHrO3i5CYqox2D',
@@ -123,7 +127,7 @@ class GoogleDriveReader
     public static function clearCache()
     {
         // Must use the same md5-based keys that getCategoryNestedStructure() stores
-        $rootKeys = ['ROOT_AMI', 'ROOT_MONEV', 'ROOT_RTM', 'ROOT_SURVEY_KEPUASAN'];
+        $rootKeys = ['ROOT_AMI', 'ROOT_MONEV', 'ROOT_RTM', 'ROOT_SURVEY_KEPUASAN', 'ROOT_GRAFIK_KEPUASAN', 'ROOT_SURVEI_KEPUASAN', 'ROOT_MONEV_SURVEI_KEPUASAN', 'ROOT_RTM_KEPUASAN'];
         foreach ($rootKeys as $key) {
             if (!empty(self::FOLDER_IDS[$key])) {
                 \Cache::forget('gdrive_structure_' . md5(self::FOLDER_IDS[$key]));
@@ -162,6 +166,10 @@ class GoogleDriveReader
             self::FOLDER_IDS['ROOT_MONEV'] ?? null,
             self::FOLDER_IDS['ROOT_RTM'] ?? null,
             self::FOLDER_IDS['ROOT_SURVEY_KEPUASAN'] ?? null,
+            self::FOLDER_IDS['ROOT_GRAFIK_KEPUASAN'] ?? null,
+            self::FOLDER_IDS['ROOT_SURVEI_KEPUASAN'] ?? null,
+            self::FOLDER_IDS['ROOT_MONEV_SURVEI_KEPUASAN'] ?? null,
+            self::FOLDER_IDS['ROOT_RTM_KEPUASAN'] ?? null,
         ];
 
         foreach ($roots as $rootId) {
@@ -519,43 +527,43 @@ class GoogleDriveReader
     }
 
     /**
-     * Get all Grafik Kepuasan PDF files
+     * Get all Grafik Kepuasan PDF files organized by period and prodi
      *
      * @return array
      */
     public static function getAllGrfKpsFiles()
     {
-        return self::getSurveyStructure('grafik');
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_GRAFIK_KEPUASAN'] ?? null);
     }
 
     /**
-     * Get all Survei Kepuasan PDF files
+     * Get all Survei Kepuasan PDF files organized by period and prodi
      *
      * @return array
      */
     public static function getAllSvrKpsFiles()
     {
-        return self::getSurveyStructure('survei kepuasan');
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_SURVEI_KEPUASAN'] ?? null);
     }
 
     /**
-     * Get all Monev Survei Kepuasan PDF files
+     * Get all Monev Survei Kepuasan PDF files organized by period and prodi
      *
      * @return array
      */
     public static function getAllMnvSvrKpsFiles()
     {
-        return self::getSurveyStructure('monev survei');
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_MONEV_SURVEI_KEPUASAN'] ?? null);
     }
 
     /**
-     * Get all RTM Kepuasan PDF files
+     * Get all RTM Kepuasan PDF files organized by period and prodi
      *
      * @return array
      */
     public static function getAllRtmKpsFiles()
     {
-        return self::getSurveyStructure('rtm kepuasan');
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_RTM_KEPUASAN'] ?? null);
     }
 
     /**
