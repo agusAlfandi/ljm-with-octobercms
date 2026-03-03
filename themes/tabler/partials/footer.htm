@@ -14,7 +14,11 @@
           <a href="tel:(0271)7470050" class="link-primary small">(0271) 7470050</a>
         </div>
         <div class="mb-2">
-          <img src="/image/Vector-Logo-UDB.jpg" alt="Logo UDB" style="height:50px;">
+          <img
+                    src="{{ 'assets/img/logo.png'|theme }}"
+                    alt="Logo Universitas Duta Bangsa Surakarta"
+                    class="navbar-brand-image"
+                    height="40"/>
         </div>
       </div>
 
@@ -22,24 +26,24 @@
       <div class="col-12 col-md-4 col-lg-3">
         <h6 class="mb-3 fw-bold">TENTANG KAMI</h6>
         <ul class="list-unstyled small">
-          <li class="mb-2"><a href="#" class="link-secondary text-decoration-none">Sambutan Kepala LJM</a></li>
-          <li class="mb-2"><a href="#" class="link-secondary text-decoration-none">Struktur & Jajaran</a></li>
-          <li class="mb-2"><a href="#" class="link-secondary text-decoration-none">Visi, Misi & Tujuan</a></li>
-          <li class="mb-2"><a href="#" class="link-secondary text-decoration-none">Sejarah</a></li>
+          <li class="mb-2"><a href="{{ 'tentang-kami/profile'|page }}" class="link-secondary text-decoration-none">Profil</a></li>
+          <li class="mb-2"><a href="{{ 'tentang-kami/struktur-organisasi'|page }}" class="link-secondary text-decoration-none">Struktur Organisasi</a></li>
+          <li class="mb-2"><a href="{{ 'tentang-kami/tupoksi'|page }}" class="link-secondary text-decoration-none">Tupoksi</a></li>
         </ul>
       </div>
 
       <!-- Middle Column 2: SPMI & Akreditasi -->
       <div class="col-12 col-md-4 col-lg-3">
-        <h6 class="mb-3 fw-bold">SPMI & AMI</h6>
+        <h6 class="mb-3 fw-bold">DOKUMEN SPMI</h6>
         <ul class="list-unstyled small">
-          <li class="mb-2"><a href="#" class="link-secondary text-decoration-none">Sistem Penjaminan Mutu Internal</a></li>
-          <li class="mb-2"><a href="#" class="link-secondary text-decoration-none">Audit Mutu Internal</a></li>
+          <li class="mb-2"><a href="{{ 'dokumen-formal-spmi/kebijakan-spmi'|page }}" class="link-secondary text-decoration-none">Kebijakan SPMI</a></li>
+          <li class="mb-2"><a href="{{ 'dokumen-formal-spmi/standar-spmi'|page }}" class="link-secondary text-decoration-none">Standar SPMI</a></li>
+          <li class="mb-2"><a href="{{ 'implementasi-spmi/audit-mutu-internal'|page }}" class="link-secondary text-decoration-none">Audit Mutu Internal (AMI)</a></li>
         </ul>
         <h6 class="mb-3 fw-bold mt-3">AKREDITASI</h6>
         <ul class="list-unstyled small">
-          <li class="mb-2"><a href="#" class="link-secondary text-decoration-none">Perguruan Tinggi</a></li>
-          <li class="mb-2"><a href="#" class="link-secondary text-decoration-none">Program Studi</a></li>
+          <li class="mb-2"><a href="{{ 'akreditasi/akreditasi-perguruan-tinggi'|page }}" class="link-secondary text-decoration-none">Perguruan Tinggi</a></li>
+          <li class="mb-2"><a href="{{ 'akreditasi/akreditasi-program-studi'|page }}" class="link-secondary text-decoration-none">Program Studi</a></li>
         </ul>
       </div>
 

@@ -3,14 +3,14 @@ fields:
         label: 'Upload File PDF'
         mode: file
         fileTypes: pdf
-        maxFilesize: 20
+        maxFilesize: 2
         useCaption: false
         thumbOptions:
             mode: crop
             extension: auto
         span: full
         type: fileupload
-        comment: 'Upload file PDF (maksimal 20MB). Nama file akan otomatis mengisi judul dokumen.'
+        comment: 'Upload file PDF (maksimal 2MB). Nama file akan otomatis mengisi judul dokumen.'
         attributes:
             data-request: onFileUpload
     title:

@@ -3,12 +3,14 @@ columns:
         label: 'Judul Dokumen'
         type: text
         searchable: true
-    category:
-        label: Kategori
+    periode_name:
+        label: Periode
         type: text
-        valueFrom: display_category
-        sortable: false
-        searchable: false
+        searchable: true
+    prodi_name:
+        label: Prodi
+        type: text
+        searchable: true
     file_name:
         label: 'Nama File'
         type: text

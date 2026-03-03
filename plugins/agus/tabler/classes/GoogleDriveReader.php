@@ -1,69 +1,53 @@
-<?php namespace Agus\Tabler\Classes;
+<?php
+namespace Agus\Tabler\Classes;
 
 class GoogleDriveReader
 {
     /**
      * Google Apps Script Web App URL
      */
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby3xc0R0bdws4ubU1iLBkyevkjjI-FRTq_4DW93KBzKHbp4PugsHVzi_z46xqssErzj/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyNqaf-liLRmnudEWieYeOsvhRTjpUVi1b9WbIvVIglIEVKWIqwbdhWoCcw4jCIoJ4A/exec';
 
     /**
      * Google Drive Folder IDs per category
      * Update dengan Folder ID yang berbeda untuk setiap kategori
      */
     const FOLDER_IDS = [
-        'Beban Belajar Mahasiswa' => '1fGubOb8IWVGqm4WNf618xJFyRqBgpvMj',
-        'Monev Dosen' => '1yg4AG82aPY5CNJYXoCUhiZwPhFXorAmo',
-        'Monev Kehadiran Mahasiswa' => '12a75NMkDxzDm3HLz8cz7jR793jwWePm9',
-        'Monev Materi dengan RPS' => '1HbX0lP-s-Wlfux2gWtJ9DItJXlui4_WB',
-        'Monev Nilai' => '1RPAFgjL3Z-vvCLx7l8CXbTNeeBqBoMZE',
-        'Monev UTS UAS -- RPS' => '1V2ykjb_UKurnaCgi6wsW1kEwSFI_vyTv',
-        'Keterbukaan Informasi Publik' => '1PZ9L9NVjiKLOgIAfq8nJxqyaXHIibFOi',
-        'Periode 2021/2022 ami' => '1JieEkkFcqb0ThMxDNoO4SbQwcRnDJf6k',
-        'Periode 2022/2023 ami' => '1FdFs5FPnGP7C1Ba_My7gyfogR8YFurFv',
-        'Periode 2023/2024 ami' => '16fhw19FrHiA1Fjz-NozyLx5YMRu1fNe6',
-        'Periode 2024/2025 ami' => '1l2qRjMSPynnnWPSTOuxrwnH09SO34O5v',
-        'Periode 2021/2022 rtm' => '1n-4nkhv8BhcPhLLZn-nRATRl2krj9tte',
-        'Periode 2022/2023 rtm' => '1OUl8We-qUopDAp2VZvYV0zgkPRmcvX75',
-        'Periode 2023/2024 rtm' => '1_tdIRZd_MJ6xd3dIkvTEOoCSbpf27sKL',
-        'Periode 2024/2025 rtm' => '1gwT5tEayLaj85i_JmUQ9mGzzvQMOYhSF',
-        'Periode 2021/2022 grafik kepuasan' => '1AaEPBqFwB5v-gKdDdBhzC7GOzpA1y6UM',
-        'Periode 2022/2023 grafik kepuasan' => '1FO1GFMA4Z2sM8qHMRy2Dl0tadPsgrRo2',
-        'Periode 2023/2024 grafik kepuasan' => '1Kdkg7uMN6gXX9wYCs204QlKcyNFbxlbn',
-        'Periode 2024/2025 grafik kepuasan' => '1rRS-auZQeEKipy9p43PMUWO9YdFWyjfl',
-        'Periode 2021/2022 survei kepuasan' => '11HhPk_V70I2Bukti_ajmrV37SL77aMg_',
-        'Periode 2022/2023 survei kepuasan' => '1rRB-N9tuwToxNWBzJxggAyVbfV7sqbOf',
-        'Periode 2023/2024 survei kepuasan' => '1vPO7cMd2XZz3Xcdl3As-n3TU23t_IwMh',
-        'Periode 2024/2025 survei kepuasan' => '1EEXzbJOzQsUP_6rYLk7GzjAZ8XmdeA8c',
-        'Periode 2021/2022 monev survei kepuasan' => '1CUMghta-WXJE3XgME8zeE6ZITAsoZ4BB',
-        'Periode 2022/2023 monev survei kepuasan' => '1LBnheQfxajI_ysjYFLbLX32IGU1EqJ-d',
-        'Periode 2023/2024 monev survei kepuasan' => '19fxja7vZ6n0HvtngWSEFFYlsG6y5f-U8',
-        'Periode 2024/2025 monev survei kepuasan' => '1PyoJNecQkoY0htJ_w7gzKLhO-3xEis4X',
-        'Periode 2021/2022 rtm kepuasan' => '1BiUYDdKCccYp_qMYgnNUqhKNrUI1P0y_',
-        'Periode 2022/2023 rtm kepuasan' => '1LKwTXYWiFAcaVSeNJTvi2ElaG9_wJLWD',
-        'Periode 2023/2024 rtm kepuasan' => '1BG9UBfrVSeFer4gbzTxDq-qW6i7pFnuO',
-        'Periode 2024/2025 rtm kepuasan' => '1qYeU81Y8lqqEWOZeiRIMSum3a84iPsjH',
-        'Standar SPMI' => '1oTatJjNzHC9S6CrRBx8FGh0Ej9kQqG_5',
-        'Formulir SPMI' => '1krE_ASwuMGU0q0ObwjNGZ9igPNC7aHIC',
-        'Manual Mutu' => '1Hp1iOnF_badJL8jZMIK_9fsYQg3W9oy-',
-        'SOP SPMI' => '1YEc_2fmTMiWtfz28CJX1GicauXFUq9Xz',
-        'Kebijakan SPMI' => '1_Xs2jNxPdwqine5jccVuqW0La5o2eXiK',
-        'Standar Lampauan' => '1Yy8n9FCUHN9TTwEv9_EwH3SNjXdlxREG',
-        'Akreditasi Perguruan Tinggi' => '1jO3HbIdDqrKyN784AxM1FzrUwBjzyYX3',
-        'Akreditasi International ISO' => '1jl-L5swq7eebeVgS6aa_P6URu4Dl-DxR',
-        'UDINUS' => '1Y1zuaV9Dhlvw4aX5ZIiORjIDjY51gaC5',
-        'Huachiew Chalermprakiet' => '1A9w3xhGAKPD0T8Ei8E-dYZIjEyH1a819',
-        'TGBC Thailand' => '11uGFE5kiw4XmSa2Xe7O3favs9U758Q77',
-        'In House Training ISO' => '1rI7UjsFmt30n17WEJbvJIF5GDfIVqIek',
-        'Workshop Akreditasi AUN-QA' => '1mZ86F9ggQy-k8rydI1mF1JpPG6ZiStw2',
-        'Workshop Pelatihan AMI' => '1MFStikH3aP3CSGMTEFiiCdutdU04jYnl',
-        'Workshop Peningkatan Penjamin Mutu' => '1rAW8Ic0oiB5DVmdk2rqQ7HM3isTQR6j2',
-        'Pemenang Hibah SPMI Tahun 2021' => '1WFWell6LjBm2qjGf7Z4JnsNpQXypv3gc',
-        '2019' => '10KClQBJ3sMFp-qCXBXNAlz9oi8VszVCV',
-        '2021' => '1ktqEApDgfOHsu8Lm0m9MHIzJfd0dmcnv',
-        '2023' => '1xYRoNytZFRTqWrMeTqin5TVI66hCluqi',
-        'ISO International 2021' => '1_w_U12cQxdEKI_Tn5vWFrOhpAJpzkUc8',
-        'ISO International 2024' => '18Tzv3T5ZHtWHtWVMcAEWAmMFkD9zSYlw',
+        'Beban Belajar Mahasiswa' => '153Lr6DnNtdu1oO3H5vDTyv_5-AJAG95e',
+        'Monev Dosen' => '1n97kyLYK0xzoaI4qfqfbGJLb6UEMMp6W',
+        'Monev Kehadiran Mahasiswa' => '1XctG6rx24UQBHJxmvY8GnrqB1o3K0NSb',
+        'Monev Materi dengan RPS' => '1rmfChud543iSWdwqwq0dHWUZbQpd-0QL',
+        'Monev Nilai' => '115Bz4SlJ5HF4T_NqRnQJxiUfDLB2eCLO',
+        'Monev UTS UAS -- RPS' => '156b9htrSnUxPNx47E5DQmXfslRjVHJvu',
+        'Keterbukaan Informasi Publik' => '1JaFINzQpwGDEJMeLkGWpdzox4G6cXUst',
+
+        // Root Category Folders (Opsi A: Automated)
+        'ROOT_AMI' => '1wsIgC4NLLi1YrqeTfVR8BycKYWFLtzab',
+        'ROOT_MONEV' => '1QUyXBU-v1Rpej3c11KHKtfzQEeOU7HXB',
+        'ROOT_RTM' => '14geE5fwAKq-WccSByexh5y4io_NhKly0',
+        'ROOT_SURVEY_KEPUASAN' => '1c3zdOeRZ0oHiOgIwP6fySjHqGLF7Gwht',
+
+        'Standar SPMI' => '1ahg6lJJU1c9FLFNe6gi20QOOkra-Erdz',
+        'Formulir SPMI' => '1NQ2Ae_wv9LEVZv2tHEbHrO3i5CYqox2D',
+        'Manual Mutu' => '15E5pSNy06zIG0xoewZ7CL7_MfOq_xKw2',
+        'SOP SPMI' => '1EyxyDgxrtWWm7cnJQ7xFLEtRYw2LP5Ao',
+        'Kebijakan SPMI' => '1Tt-cmBl6Q13QMxvHuXnBJS5RXNFzIJyg',
+        'Standar Lampauan' => '128nHq_j6eLQbUlMh9J65aeQyM32-5pv0',
+        'Akreditasi Perguruan Tinggi' => '1bMxC6V99_S5z-4WSXQkQ5pojaX1PK_UC',
+        'Akreditasi International ISO' => '1clIlDo2leiZJM-TKbPmSO-AiXHl41zDW',
+        'UDINUS' => '1BcqxXUVIg0y861qJhDDJhPN4YecR-akr',
+        'Huachiew Chalermprakiet' => '1DDkmH20CA4esGgwUSJe044YJGE2TfSN-',
+        'TGBC Thailand' => '1DnHsDBJ9RfdlSNT_weSjp2e37gRFs9fW',
+        'In House Training ISO' => '1bR1-LlZ5x4zP4A_vw_fD0muNBK4ufijb',
+        'Workshop Akreditasi AUN-QA' => '1jw48Dknz1ttoV7rpS6s_k9Vo0Zze1oyT',
+        'Workshop Pelatihan AMI' => '1r0rY6y_14GbBsrKrxeg-CoANMMr7qO6_',
+        'Workshop Peningkatan Penjamin Mutu' => '18k8f1CKEvDItuZV7v5CCd92THGDgNwCW',
+        'Pemenang Hibah SPMI Tahun 2021' => '1CcB3pr1JKCiBo0wXHC10OtIKUKv9TWLQ',
+        '2019' => '1NCiDXiF37r-mmcAWhpsuBigslUCeWccG',
+        '2021' => '1l2ZYnOPGqVqeGHgLZbmOwMALaxYis13M',
+        '2023' => '16aT6KOZRRF_WYvi4Sg1v7oYBqEGa_9DB',
+        'ISO International 2021' => '1w3Dzn2dwZSnh_Cw_q1F3UkkxqK7Oxpzh',
+        'ISO International 2024' => '1k1IoQzHBxZ5WE2NqWmCVTBCl1HCZUxLa',
     ];
 
     /**
@@ -125,435 +109,472 @@ class GoogleDriveReader
     ];
 
     /**
-     * Get files from Google Drive folder
-     *
-     * @param string $folderId Google Drive folder ID
-     * @return array List of files
+     * Cache TTL in minutes
      */
-    public static function getFilesFromFolder($folderId)
-    {
-        $url = self::WEB_APP_URL . '?action=list&folderId=' . urlencode($folderId);
+    // default value stored in configuration (see config/gdrive.php)
+    // this constant is kept for backwards compatibility but the actual
+    // TTL is read at runtime so it can be changed without editing code.
+    const CACHE_TTL = 60; // fallback if config missing (minutes)
 
-        // \Log::info('Fetching files from Google Drive', [
-        //     'url' => $url,
-        //     'folderId' => $folderId
-        // ]);
+
+    /**
+     * Clear all Google Drive cache entries
+     */
+    public static function clearCache()
+    {
+        // Must use the same md5-based keys that getCategoryNestedStructure() stores
+        $rootKeys = ['ROOT_AMI', 'ROOT_MONEV', 'ROOT_RTM', 'ROOT_SURVEY_KEPUASAN'];
+        foreach ($rootKeys as $key) {
+            if (!empty(self::FOLDER_IDS[$key])) {
+                \Cache::forget('gdrive_structure_' . md5(self::FOLDER_IDS[$key]));
+            }
+        }
+
+        // Also clear individual folder-level caches
+        foreach (self::FOLDER_IDS as $folderId) {
+            \Cache::forget('gdrive_folder_' . md5($folderId));
+        }
+    }
+
+    /**
+     * Returns the cache TTL (in minutes) used for Drive API results.  The
+     * value can be overridden in `config/gdrive.php` or via the
+     * GDRIVE_CACHE_TTL environment variable.
+     */
+    protected static function getCacheTtl()
+    {
+        // OctoberCMS plugin config files are accessed with the double-colon
+        // syntax (author.plugin::file.key).  keep a fallback to the constant for
+        // backwards compatibility.
+        $ttl = (int)\Config::get('agus.tabler::gdrive.cache_ttl', self::CACHE_TTL);
+        return $ttl > 0 ? $ttl : self::CACHE_TTL;
+    }
+
+    /**
+     * Preload commonly used folder structures so that the first web request
+     * doesn't pay for the Google Apps Script roundtrip.  You can call this
+     * from a scheduled task or a console command.
+     */
+    public static function warmCache()
+    {
+        $roots = [
+            self::FOLDER_IDS['ROOT_AMI'] ?? null,
+            self::FOLDER_IDS['ROOT_MONEV'] ?? null,
+            self::FOLDER_IDS['ROOT_RTM'] ?? null,
+            self::FOLDER_IDS['ROOT_SURVEY_KEPUASAN'] ?? null,
+        ];
+
+        foreach ($roots as $rootId) {
+            if ($rootId) {
+                self::getCategoryNestedStructure($rootId);
+            }
+        }
+    }
+
+    /**
+     * Get entire nested folder structure in ONE API call (much faster!)
+     * This eliminates multiple round-trips to Google Apps Script
+     *
+     * @param string $folderId Root folder ID
+     * @param int $depth How many levels deep to traverse
+     * @return array Nested structure
+     */
+    public static function getNestedStructure($folderId, $depth = 2)
+    {
+        $url = self::WEB_APP_URL . '?action=listNested&folderId=' . urlencode($folderId) . '&depth=' . $depth;
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60); // Longer timeout for nested fetch
 
         $result = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
         curl_close($ch);
 
-        // \Log::info('Google Drive API Response', [
-        //     'httpCode' => $httpCode,
-        //     'curlError' => $curlError,
-        //     'response' => $result
-        // ]);
-
         if ($httpCode !== 200) {
-            // \Log::error('Google Drive API error: HTTP ' . $httpCode, [
-            //     'curlError' => $curlError,
-            //     'response' => $result
-            // ]);
+            \Log::warning('getNestedStructure failed', ['httpCode' => $httpCode]);
             return [];
         }
 
         $data = json_decode($result, true);
 
         if (!$data || !isset($data['success']) || !$data['success']) {
-            // \Log::error('Google Drive API error: ' . ($data['error'] ?? 'Unknown error'), [
-            //     'response' => $result,
-            //     'decoded' => $data
-            // ]);
+            \Log::warning('getNestedStructure invalid response', ['data' => $data]);
             return [];
         }
 
-        return $data['files'] ?? [];
+        return $data['structure'] ?? [];
     }
 
     /**
-     * Get all PDF files organized by category
+     * Convert nested structure from GAS to the format expected by frontend
+     * Structure: Period -> Prodi -> Files
+     *
+     * @param array $items Nested items from getNestedStructure
+     * @return array Formatted structure
+     */
+    private static function formatNestedToGrouped($items)
+    {
+        $result = [];
+
+        foreach ($items as $item) {
+            // Each top-level folder is a Period
+            if (isset($item['mimeType']) && $item['mimeType'] === 'application/vnd.google-apps.folder') {
+                $periodName = $item['name'];
+                $prodiGroups = [];
+
+                // Children are Prodi folders or files
+                if (isset($item['children']) && is_array($item['children'])) {
+                    foreach ($item['children'] as $child) {
+                        if (isset($child['mimeType']) && $child['mimeType'] === 'application/vnd.google-apps.folder') {
+                            // This is a Prodi folder
+                            $prodiName = $child['name'];
+                            $files = [];
+
+                            // Get PDF files from Prodi folder
+                            if (isset($child['children']) && is_array($child['children'])) {
+                                foreach ($child['children'] as $file) {
+                                    if (isset($file['mimeType']) && $file['mimeType'] === 'application/pdf') {
+                                        $files[] = [
+                                            'fileId' => $file['id'],
+                                            'title' => pathinfo($file['name'], PATHINFO_FILENAME),
+                                            'fileName' => $file['name'],
+                                        ];
+                                    }
+                                }
+                            }
+
+                            $prodiGroups[$prodiName] = $files;
+                        } elseif (isset($child['mimeType']) && $child['mimeType'] === 'application/pdf') {
+                            // PDF file directly in Period folder (no Prodi subfolder)
+                            if (!isset($prodiGroups['Umum'])) {
+                                $prodiGroups['Umum'] = [];
+                            }
+                            $prodiGroups['Umum'][] = [
+                                'fileId' => $child['id'],
+                                'title' => pathinfo($child['name'], PATHINFO_FILENAME),
+                                'fileName' => $child['name'],
+                            ];
+                        }
+                    }
+                }
+
+                $result[$periodName] = $prodiGroups;
+            }
+        }
+
+        // Sort by Period Name descending (newest first)
+        krsort($result);
+
+        return $result;
+    }
+
+    /**
+     * Get files from Google Drive folder (cached)
+     *
+     * @param string $folderId Google Drive folder ID
+     * @return array List of files
+     */
+    public static function getFilesFromFolder($folderId)
+    {
+        $cacheKey = 'gdrive_folder_' . md5($folderId);
+
+        $ttl = self::getCacheTtl();
+        return \Cache::remember($cacheKey, $ttl, function () use ($folderId) {
+            $url = self::WEB_APP_URL . '?action=list&folderId=' . urlencode($folderId);
+
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+            $result = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode !== 200) {
+                return [];
+            }
+
+            $data = json_decode($result, true);
+
+            if (!$data || !isset($data['success']) || !$data['success']) {
+                return [];
+            }
+
+            return $data['files'] ?? [];
+        });
+    }
+
+    /**
+     * Find a subfolder by name (case-insensitive partial match)
+     * @param string $parentId
+     * @param string $name
+     * @return array|null
+     */
+    public static function findSubfolderByName($parentId, $name)
+    {
+        $files = self::getFilesFromFolder($parentId);
+        $nameLower = strtolower(trim($name));
+
+        foreach ($files as $file) {
+            if (isset($file['mimeType']) && $file['mimeType'] === 'application/vnd.google-apps.folder') {
+                $fileNameLower = strtolower(trim($file['name']));
+                if (strpos($fileNameLower, $nameLower) !== false) {
+                    return $file;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find a file by name
+     * @param string $folderId
+     * @param string $fileName
+     * @return array|null
+     */
+    public static function findFileByName($folderId, $fileName)
+    {
+        $files = self::getFilesFromFolder($folderId);
+        $fileNameLower = strtolower(trim($fileName));
+
+        foreach ($files as $file) {
+            if (strtolower(trim($file['name'])) === $fileNameLower) {
+                return $file;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Helper to format PDF files
+     *
+     * @param array $files
+     * @return array
+     */
+    private static function formatPdfFiles($files)
+    {
+        return array_map(function ($file) {
+            $cleanName = $file['name'];
+            $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
+            $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
+            $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
+            return [
+                'title' => $displayName,
+                'fileId' => $file['id'],
+                'url' => $file['url'],
+                'size' => $file['size'] ?? 0,
+                'createdDate' => $file['createdDate'] ?? null,
+                'modifiedDate' => $file['modifiedDate'] ?? null,
+            ];
+        }, array_values($files));
+    }
+
+    /**
+     * Get files grouped by subfolder (Prodi)
+     *
+     * @param string $parentFolderId
+     * @return array
+     */
+    public static function getFilesGroupedBySubfolder($parentFolderId)
+    {
+        $items = self::getFilesFromFolder($parentFolderId);
+        $result = [];
+
+        // Identify folders and files
+        $folders = [];
+        $rootPdfFiles = [];
+
+        foreach ($items as $item) {
+            if (isset($item['mimeType']) && $item['mimeType'] === 'application/vnd.google-apps.folder') {
+                $folders[] = $item;
+            }
+            elseif (isset($item['mimeType']) && $item['mimeType'] === 'application/pdf') {
+                $rootPdfFiles[] = $item;
+            }
+        }
+
+        // Group files by subfolder
+        foreach ($folders as $folder) {
+            $subItems = self::getFilesFromFolder($folder['id']);
+            $pdfFiles = array_filter($subItems, function ($f) {
+                return isset($f['mimeType']) && $f['mimeType'] === 'application/pdf';
+            });
+
+            if (!empty($pdfFiles)) {
+                $result[$folder['name']] = self::formatPdfFiles($pdfFiles);
+            }
+        }
+
+        // If there are files in root, put them in a special group
+        if (!empty($rootPdfFiles)) {
+            $result['Umum'] = self::formatPdfFiles($rootPdfFiles);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get 3-level nested structure (Category Root -> Periods -> Prodi -> Files)
+     * NOW USES SINGLE API CALL for much faster loading!
+     *
+     * @param string $rootFolderId
+     * @return array
+     */
+    public static function getCategoryNestedStructure($rootFolderId)
+    {
+        if (!$rootFolderId) {
+            return [];
+        }
+
+        $cacheKey = 'gdrive_structure_' . md5($rootFolderId);
+        $ttl = self::getCacheTtl();
+
+        return \Cache::remember($cacheKey, $ttl, function () use ($rootFolderId) {
+            // Use new single-call method (much faster!)
+            $nestedItems = self::getNestedStructure($rootFolderId, 2);
+
+            if (empty($nestedItems)) {
+                // Fallback to old method if new endpoint not deployed yet
+                \Log::info('Falling back to legacy multi-call method');
+                return self::getCategoryNestedStructureLegacy($rootFolderId);
+            }
+
+            return self::formatNestedToGrouped($nestedItems);
+        });
+    }
+
+    /**
+     * Legacy method - uses multiple API calls (slower)
+     * Kept for backward compatibility if GAS not updated
+     *
+     * @param string $rootFolderId
+     * @return array
+     */
+    private static function getCategoryNestedStructureLegacy($rootFolderId)
+    {
+        $items = self::getFilesFromFolder($rootFolderId);
+        $result = [];
+
+        foreach ($items as $item) {
+            if (isset($item['mimeType']) && $item['mimeType'] === 'application/vnd.google-apps.folder') {
+                $periodName = $item['name'];
+                $result[$periodName] = self::getFilesGroupedBySubfolder($item['id']);
+            }
+        }
+
+        krsort($result);
+        return $result;
+    }
+
+    /**
+     * Get all Monev PDF files organized by category (Period) and subfolders (Prodi)
      *
      * @return array
      */
     public static function getAllMonevFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Skip folder "Keterbukaan Informasi Publik" agar tidak tampil di menu Monev
-            if ($category === 'Keterbukaan Informasi Publik' ||
-                strpos($category, 'Periode') === 0 ||
-                strpos($category, 'Standar SPMI') === 0 ||
-                strpos($category, 'Formulir SPMI') === 0 ||
-                strpos($category, 'Manual Mutu') === 0 ||
-                strpos($category, 'SOP SPMI') === 0 ||
-                strpos($category, 'Kebijakan SPMI') === 0 ||
-                strpos($category, 'UDINUS') === 0 ||
-                strpos($category, 'Huachiew Chalermprakiet') === 0 ||
-                strpos($category, 'TGBC Thailand') === 0) {
-                continue;
-            }
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter only PDF files
-            $pdfFiles = array_filter($files, function($file) {
-                // Cek apakah file adalah PDF
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transform to required format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-
-                // Hilangkan hash OctoberCMS (format: 691ac1222c28e953840030.pdf)
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-
-                // Hilangkan ekstensi untuk tampilan
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_MONEV'] ?? null);
     }
 
-    /**
-     * Get all PDF files organized by category
-     *
-     * @return array
-     */
     public static function getAllAmiFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'ami'
-            if (strpos($category, 'Periode') !== 0 || substr($category, -3) !== 'ami') {
-                continue;
-            }
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_AMI'] ?? null);
     }
 
     /**
-     * Get all PDF files organized by category
+     * Get all RTM PDF files organized by period and prodi
      *
      * @return array
      */
     public static function getAllRtmFiles()
     {
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_RTM'] ?? null);
+    }
+
+    private static function getSurveyStructure($prefix)
+    {
+        $rootId = self::FOLDER_IDS['ROOT_SURVEY_KEPUASAN'] ?? null;
+        if (!$rootId)
+            return [];
+
+        $items = self::getFilesFromFolder($rootId);
         $result = [];
 
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'rtm'
-            if (strpos($category, 'Periode') !== 0 || substr($category, -3) !== 'rtm') {
-                continue;
+        foreach ($items as $item) {
+            // Look for subfolders that match the survey type (e.g., "Grafik Kepuasan")
+            if (isset($item['mimeType']) && $item['mimeType'] === 'application/vnd.google-apps.folder') {
+                if (stripos($item['name'], $prefix) !== false) {
+                    // Inside this folder, get the nested structure (Periods -> Prodi)
+                    return self::getCategoryNestedStructure($item['id']);
+                }
             }
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
         }
 
         return $result;
     }
 
-     /**
-     * Get all Grafik Kepuasan PDF files organized by category
+    /**
+     * Get all Grafik Kepuasan PDF files
      *
      * @return array
      */
     public static function getAllGrfKpsFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'grafik kepuasan'
-            if (strpos($category, 'Periode') !== 0) {
-                continue;
-            }
-
-            // Check if ends with 'grafik kepuasan' (case-insensitive)
-            if (stripos(strrev(strtolower($category)), strrev(strtolower('grafik kepuasan'))) !== 0) {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        return self::getSurveyStructure('grafik');
     }
 
     /**
-     * Get all Survei Kepuasan PDF files organized by category (excluding Monev Survei Kepuasan)
+     * Get all Survei Kepuasan PDF files
      *
      * @return array
      */
     public static function getAllSvrKpsFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Skip jika bukan kategori Periode
-            if (strpos($category, 'Periode') !== 0) {
-                continue;
-            }
-
-            // Skip jika kategori adalah 'monev survei kepuasan'
-            if (stripos(strtolower($category), 'monev survei kepuasan') !== false) {
-                continue;
-            }
-
-            // Check if ends with 'survei kepuasan' (case-insensitive)
-            if (stripos(strrev(strtolower($category)), strrev(strtolower('survei kepuasan'))) !== 0) {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        return self::getSurveyStructure('survei kepuasan');
     }
 
     /**
-     * Get all Grafik Kepuasan PDF files organized by category
+     * Get all Monev Survei Kepuasan PDF files
      *
      * @return array
      */
     public static function getAllMnvSvrKpsFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'monev survei kepuasan'
-            if (strpos($category, 'Periode') !== 0) {
-                continue;
-            }
-
-            // Check if ends with 'monev survei kepuasan' (case-insensitive)
-            if (stripos(strrev(strtolower($category)), strrev(strtolower('monev survei kepuasan'))) !== 0) {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        return self::getSurveyStructure('monev survei');
     }
 
     /**
-     * Get all Grafik Kepuasan PDF files organized by category
+     * Get all RTM Kepuasan PDF files
      *
      * @return array
      */
     public static function getAllRtmKpsFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Periode' dan diakhiri dengan 'rtm kepuasan'
-            if (strpos($category, 'Periode') !== 0) {
-                continue;
-            }
-
-            // Check if ends with 'rtm kepuasan' (case-insensitive)
-            if (stripos(strrev(strtolower($category)), strrev(strtolower('rtm kepuasan'))) !== 0) {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        return self::getSurveyStructure('rtm kepuasan');
     }
 
     /**
-     * Get all Formulir SPMI PDF files organized by category
+     * Get all Standar SPMI PDF files organized by category
      *
      * @return array
      */
     public static function getAllStandarSpmiFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Standar' dan diakhiri dengan 'standar spmi'
-            if (strpos($category, 'Standar SPMI') !== 0) {
-                continue;
-            }
-
-            // Check if ends with 'standar spmi' (case-insensitive)
-            // if (stripos(strrev(strtolower($category)), strrev(strtolower('standar spmi'))) !== 0) {
-            //     continue;
-            // }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Standar SPMI'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Standar SPMI' => self::formatPdfFiles($pdfFiles)];
     }
+
     /**
      * Get all Formulir SPMI PDF files organized by category
      *
@@ -561,44 +582,14 @@ class GoogleDriveReader
      */
     public static function getAllFormulirSpmiFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
-            if (strpos($category, 'Formulir SPMI') !== 0) {
-                continue;
-            }
-
-            // Check if ends with 'formulir spmi' (case-insensitive)
-            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
-            //     continue;
-            // }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Formulir SPMI'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Formulir SPMI' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
@@ -608,138 +599,48 @@ class GoogleDriveReader
      */
     public static function getAllManualMutuFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
-            if (strpos($category, 'Manual Mutu') !== 0) {
-                continue;
-            }
-
-            // Check if ends with 'formulir spmi' (case-insensitive)
-            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
-            //     continue;
-            // }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Manual Mutu'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Manual Mutu' => self::formatPdfFiles($pdfFiles)];
     }
 
-     /**
-     * Get all Manual Mutu PDF files organized by category
+    /**
+     * Get all SOP SPMI PDF files organized by category
      *
      * @return array
      */
     public static function getAllSopSpmiFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
-            if (strpos($category, 'SOP SPMI') !== 0) {
-                continue;
-            }
-
-            // Check if ends with 'formulir spmi' (case-insensitive)
-            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
-            //     continue;
-            // }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['SOP SPMI'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['SOP SPMI' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
-     * Get all Manual Mutu PDF files organized by category
+     * Get all Kebijakan SPMI PDF files organized by category
      *
      * @return array
      */
     public static function getAllKebijakanSpmiFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
-            if (strpos($category, 'Kebijakan SPMI') !== 0) {
-                continue;
-            }
-
-            // Check if ends with 'formulir spmi' (case-insensitive)
-            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
-            //     continue;
-            // }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Kebijakan SPMI'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Kebijakan SPMI' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
@@ -749,670 +650,268 @@ class GoogleDriveReader
      */
     public static function getAllStandarLampauanFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
-            if (strpos($category, 'Standar Lampauan') !== 0) {
-                continue;
-            }
-
-            // Check if ends with 'formulir spmi' (case-insensitive)
-            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
-            //     continue;
-            // }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Standar Lampauan'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Standar Lampauan' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
-     * Get all Standar Lampauan PDF files organized by category
+     * Get all Akreditasi Perguruan Tinggi PDF files organized by category
      *
      * @return array
      */
     public static function getAllAkreditasiPerguruanTinggiFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
-            if (strpos($category, 'Akreditasi Perguruan Tinggi') !== 0) {
-                continue;
-            }
-
-            // Check if ends with 'formulir spmi' (case-insensitive)
-            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
-            //     continue;
-            // }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Akreditasi Perguruan Tinggi'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Akreditasi Perguruan Tinggi' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
-     * Get all Standar Lampauan PDF files organized by category
+     * Get all Akreditasi International ISO PDF files
      *
      * @return array
      */
     public static function getAllAkredInterIsoFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Hanya ambil kategori yang mengandung 'Formulir' dan diakhiri dengan 'formulir spmi'
-            if (strpos($category, 'Akreditasi International ISO') !== 0) {
-                continue;
-            }
-
-            // Check if ends with 'formulir spmi' (case-insensitive)
-            // if (stripos(strrev(strtolower($category)), strrev(strtolower('formulir spmi'))) !== 0) {
-            //     continue;
-            // }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Akreditasi International ISO'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Akreditasi International ISO' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
-     * Get all Manual Mutu PDF files organized by category
+     * Get all UDINUS PDF files
      *
      * @return array
      */
     public static function getAllUdinusFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Ambil hanya kategori UDINUS (case-insensitive, cocok persis)
-            if ($category !== 'UDINUS') {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['UDINUS'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['UDINUS' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
-     * Get all Huachiew Chalermprakiet PDF files organized by category
+     * Get all Huachiew Chalermprakiet PDF files
      *
      * @return array
      */
     public static function getAllHuachiewFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Ambil hanya kategori Huachiew Chalermprakiet (case-insensitive, cocok persis)
-            if ($category !== 'Huachiew Chalermprakiet') {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Huachiew Chalermprakiet'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Huachiew Chalermprakiet' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
-     * Get all TGBC Thailand PDF files organized by category
+     * Get all TGBC Thailand PDF files
      *
      * @return array
      */
     public static function getAllTgbcFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
-            if ($category !== 'TGBC Thailand') {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['TGBC Thailand'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['TGBC Thailand' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
-     * Get all TGBC Thailand PDF files organized by category
+     * Get all In House Training ISO PDF files
      *
      * @return array
      */
     public static function getAllInHouseTrainingIsoFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
-            if ($category !== 'In House Training ISO') {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['In House Training ISO'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['In House Training ISO' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
-     * Get all Workshop AUN QA PDF files organized by category
+     * Get all Workshop Akreditasi AUN-QA PDF files
      *
      * @return array
      */
     public static function getAllWorkshopAunQaFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
-            if ($category !== 'Workshop Akreditasi AUN-QA') {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Workshop Akreditasi AUN-QA'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Workshop Akreditasi AUN-QA' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
-     * Get all Workshop AUN QA PDF files organized by category
+     * Get all Workshop Pelatihan AMI PDF files
      *
      * @return array
      */
     public static function getAllWorkshopPelatihanAmiFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
-            if ($category !== 'Workshop Pelatihan AMI') {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Workshop Pelatihan AMI'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Workshop Pelatihan AMI' => self::formatPdfFiles($pdfFiles)];
     }
 
-     /**
-     * Get all Workshop AUN QA PDF files organized by category
+    /**
+     * Get all Workshop Peningkatan Penjamin Mutu PDF files
      *
      * @return array
      */
     public static function getAllWorkshopPeningkatanPenjaminMutuFiles()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
-            if ($category !== 'Workshop Peningkatan Penjamin Mutu') {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Workshop Peningkatan Penjamin Mutu'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Workshop Peningkatan Penjamin Mutu' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
-     * Get all Workshop AUN QA PDF files organized by category
+     * Get all Pemenang Hibah SPMI Tahun 2021 PDF files
      *
      * @return array
      */
     public static function getAllPemenangHibahSpmiTahun2021Files()
     {
-        $result = [];
-
-        foreach (self::FOLDER_IDS as $category => $folderId) {
-            // Ambil hanya kategori TGBC Thailand (case-insensitive, cocok persis)
-            if ($category !== 'Pemenang Hibah SPMI Tahun 2021') {
-                continue;
-            }
-
-            $files = self::getFilesFromFolder($folderId);
-
-            // Filter hanya file PDF
-            $pdfFiles = array_filter($files, function($file) {
-                return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
-            });
-
-            // Transformasi format dan bersihkan nama file
-            $result[$category] = array_map(function($file) {
-                $cleanName = $file['name'];
-                $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-                $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-                $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-                return [
-                    'title' => $displayName,
-                    'fileId' => $file['id'],
-                    'url' => $file['url'],
-                    'size' => $file['size'] ?? 0,
-                    'createdDate' => $file['createdDate'] ?? null,
-                    'modifiedDate' => $file['modifiedDate'] ?? null,
-                ];
-            }, array_values($pdfFiles));
-        }
-
-        return $result;
+        $folderId = self::FOLDER_IDS['Pemenang Hibah SPMI Tahun 2021'] ?? null;
+        if (!$folderId)
+            return [];
+        $files = self::getFilesFromFolder($folderId);
+        $pdfFiles = array_filter($files, function ($file) {
+            return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
+        });
+        return ['Pemenang Hibah SPMI Tahun 2021' => self::formatPdfFiles($pdfFiles)];
     }
 
     /**
-     * Get all Workshop AUN QA PDF files organized by category
+     * Get all 2019 PDF files
      *
      * @return array
      */
     public static function getAll2019Files()
     {
         $folderId = self::FOLDER_IDS['2019'] ?? null;
-
-        if (!$folderId) {
+        if (!$folderId)
             return [];
-        }
-
         $files = self::getFilesFromFolder($folderId);
-
-        // Filter hanya file PDF
-        $pdfFiles = array_filter($files, function($file) {
+        $pdfFiles = array_filter($files, function ($file) {
             return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
         });
-
-        // Transformasi format dan bersihkan nama file
-        return array_map(function($file) {
-            $cleanName = $file['name'];
-            $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-            $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-            $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-            return [
-                'title' => $displayName,
-                'fileId' => $file['id'],
-                'url' => $file['url'],
-                'size' => $file['size'] ?? 0,
-                'createdDate' => $file['createdDate'] ?? null,
-                'modifiedDate' => $file['modifiedDate'] ?? null,
-            ];
-        }, array_values($pdfFiles));
+        return self::formatPdfFiles($pdfFiles);
     }
 
     /**
-     * Get all 2021 PDF files organized by category
+     * Get all 2021 PDF files
      *
      * @return array
      */
     public static function getAll2021Files()
     {
         $folderId = self::FOLDER_IDS['2021'] ?? null;
-
-        if (!$folderId) {
+        if (!$folderId)
             return [];
-        }
-
         $files = self::getFilesFromFolder($folderId);
-
-        $pdfFiles = array_filter($files, function($file) {
+        $pdfFiles = array_filter($files, function ($file) {
             return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
         });
-
-        return array_map(function($file) {
-            $cleanName = $file['name'];
-            $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-            $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-            $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-            return [
-                'title' => $displayName,
-                'fileId' => $file['id'],
-                'url' => $file['url'],
-                'size' => $file['size'] ?? 0,
-                'createdDate' => $file['createdDate'] ?? null,
-                'modifiedDate' => $file['modifiedDate'] ?? null,
-            ];
-        }, array_values($pdfFiles));
+        return self::formatPdfFiles($pdfFiles);
     }
 
     /**
-     * Get all 2023 PDF files organized by category
+     * Get all 2023 PDF files
      *
      * @return array
      */
     public static function getAll2023Files()
     {
         $folderId = self::FOLDER_IDS['2023'] ?? null;
-
-        if (!$folderId) {
+        if (!$folderId)
             return [];
-        }
-
         $files = self::getFilesFromFolder($folderId);
-
-        $pdfFiles = array_filter($files, function($file) {
+        $pdfFiles = array_filter($files, function ($file) {
             return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
         });
-
-        return array_map(function($file) {
-            $cleanName = $file['name'];
-            $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-            $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-            $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-            return [
-                'title' => $displayName,
-                'fileId' => $file['id'],
-                'url' => $file['url'],
-                'size' => $file['size'] ?? 0,
-                'createdDate' => $file['createdDate'] ?? null,
-                'modifiedDate' => $file['modifiedDate'] ?? null,
-            ];
-        }, array_values($pdfFiles));
+        return self::formatPdfFiles($pdfFiles);
     }
 
     /**
-     * Get all ISO International 2021 PDF files organized by category
+     * Get all ISO International 2021 PDF files
      *
      * @return array
      */
     public static function getAllIsoInternational2021Files()
     {
         $folderId = self::FOLDER_IDS['ISO International 2021'] ?? null;
-
-        if (!$folderId) {
+        if (!$folderId)
             return [];
-        }
-
         $files = self::getFilesFromFolder($folderId);
-
-        $pdfFiles = array_filter($files, function($file) {
+        $pdfFiles = array_filter($files, function ($file) {
             return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
         });
-
-        return array_map(function($file) {
-            $cleanName = $file['name'];
-            $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-            $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-            $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-            return [
-                'title' => $displayName,
-                'fileId' => $file['id'],
-                'url' => $file['url'],
-                'size' => $file['size'] ?? 0,
-                'createdDate' => $file['createdDate'] ?? null,
-                'modifiedDate' => $file['modifiedDate'] ?? null,
-            ];
-        }, array_values($pdfFiles));
+        return self::formatPdfFiles($pdfFiles);
     }
 
     /**
-     * Get all ISO International 2024 PDF files organized by category
+     * Get all ISO International 2024 PDF files
      *
      * @return array
      */
     public static function getAllIsoInternational2024Files()
     {
         $folderId = self::FOLDER_IDS['ISO International 2024'] ?? null;
-
-        if (!$folderId) {
+        if (!$folderId)
             return [];
-        }
-
         $files = self::getFilesFromFolder($folderId);
-
-        $pdfFiles = array_filter($files, function($file) {
+        $pdfFiles = array_filter($files, function ($file) {
             return isset($file['mimeType']) && $file['mimeType'] === 'application/pdf';
         });
-
-        return array_map(function($file) {
-            $cleanName = $file['name'];
-            $cleanName = preg_replace('/^[a-f0-9]{20,}\./', '', $cleanName);
-            $cleanName = preg_replace('/^[a-f0-9]{20,}_/', '', $cleanName);
-            $displayName = preg_replace('/\.pdf$/i', '', $cleanName);
-            return [
-                'title' => $displayName,
-                'fileId' => $file['id'],
-                'url' => $file['url'],
-                'size' => $file['size'] ?? 0,
-                'createdDate' => $file['createdDate'] ?? null,
-                'modifiedDate' => $file['modifiedDate'] ?? null,
-            ];
-        }, array_values($pdfFiles));
-    }
-
-    /**
-     * Find file by name in specific folder
-     *
-     * @param string $folderId Google Drive folder ID
-     * @param string $fileName File name to search for (exact match)
-     * @return array|null File data or null if not found
-     */
-    public static function findFileByName($folderId, $fileName)
-    {
-        $files = self::getFilesFromFolder($folderId);
-
-        foreach ($files as $file) {
-            if ($file['name'] === $fileName) {
-                return $file;
-            }
-        }
-
-        return null;
+        return self::formatPdfFiles($pdfFiles);
     }
 }

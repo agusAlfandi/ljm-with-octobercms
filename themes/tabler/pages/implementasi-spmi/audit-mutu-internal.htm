@@ -1,6 +1,6 @@
 url = "/implementasi-spmi/audit-mutu-internal"
-title = "Audit Mutu Internal"
 layout = "app"
+title = "Audit Mutu Internal"
 ==
 <div class="container-xl py-4">
     <div class="card shadow-sm">
@@ -9,14 +9,29 @@ layout = "app"
                 <li class="nav-item" role="presentation">
                     <a href="#tabs-ami" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">
                         <!-- Icon Audit (Clipboard Check) -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="9" y="4" width="6" height="2" rx="1"/><rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 14l2 2l4 -4"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <rect x="9" y="4" width="6" height="2" rx="1" />
+                            <rect x="5" y="7" width="14" height="13" rx="2" />
+                            <path d="M9 14l2 2l4 -4" />
+                        </svg>
                         Audit Mutu Internal (AMI)
                     </a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <a href="#tabs-tujuan" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">
                         <!-- Icon Target/Goal (Target) -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="3"/><path d="M12 7v5l3 3"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <circle cx="12" cy="12" r="9" />
+                            <circle cx="12" cy="12" r="6" />
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M12 7v5l3 3" />
+                        </svg>
                         Tujuan
                     </a>
                 </li>
@@ -39,52 +54,114 @@ layout = "app"
     </div>
 </div>
 
- <!-- Section untuk PDF Files - akan menggunakan Builder -->
+<!-- Section untuk PDF Files -->
 <div class="container-xl py-4">
     <div class="card shadow-sm">
         <div class="card-header">
             <h3 class="card-title">Dokumen PDF Audit Mutu Internal</h3>
         </div>
-        {% set amiFiles = getAmiPdfFiles() %}
-
-        <div class="accordion" id="amiAccordion">
-            {% set idx = 0 %}
-            {% for category, files in amiFiles %}
-                {% set idx = idx + 1 %}
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading-{{ idx }}">
-                        <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ idx }}" aria-expanded="{{ loop.first ? 'true' : 'false' }}" aria-controls="collapse-{{ idx }}">
-                            {{ category }}
-                        </button>
-                    </h2>
-                    <div id="collapse-{{ idx }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading-{{ idx }}" data-bs-parent="#amiAccordion">
-                        <div class="accordion-body">
-                            <ul class="list-group">
-                                {% for file in files %}
-                                    {% if file.fileId %}
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span>{{ file.title }}</span>
-                                            <a href="https://drive.google.com/file/d/{{ file.fileId }}/view"
-                                               target="_blank"
-                                               class="btn btn-outline-primary btn-sm">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                                </svg>
-                                                Lihat PDF
-                                            </a>
-                                        </li>
+        <div class="card-body">
+            {% set amiFiles = getAmiPdfFiles() %}
+            {% if amiFiles is empty %}
+                <div class="text-muted text-center py-4">Belum ada data dokumen AMI.</div>
+            {% else %}
+                <div class="row g-4">
+                    {% for category, prodiGroups in amiFiles %}
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header fw-semibold">{{ category }}</div>
+                                <div class="card-body">
+                                    {% if prodiGroups is empty %}
+                                        <div class="text-muted text-center py-3">Belum ada data Prodi atau file PDF untuk periode ini.</div>
+                                    {% else %}
+                                        {% set catLoop = loop.index %}
+                                        <ul class="nav nav-pills mb-3 flex-wrap" role="tablist">
+                                            {% for prodi, files in prodiGroups %}
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link{% if loop.first %} active{% endif %}{% if files|length > 0 %} text-primary fw-bold{% endif %}"
+                                                        data-ami-toggle="pill"
+                                                        data-ami-target="#pills-{{ catLoop }}-{{ loop.index }}"
+                                                        type="button" role="tab">
+                                                        {{ prodi }}
+                                                        {% if files|length > 0 %}
+                                                            <span class="badge bg-primary ms-1">{{ files|length }}</span>
+                                                        {% endif %}
+                                                    </button>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                        <div class="ami-tab-content">
+                                            {% for prodi, files in prodiGroups %}
+                                                <div class="ami-tab-pane{% if loop.first %} ami-active{% endif %}"
+                                                    id="pills-{{ catLoop }}-{{ loop.index }}">
+                                                    <ul class="list-group">
+                                                        {% if files is empty %}
+                                                            <li class="list-group-item text-muted">Belum ada file PDF.</li>
+                                                        {% else %}
+                                                            {% for file in files %}
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    <span>{{ file.title }}</span>
+                                                                    <a href="https://drive.google.com/file/d/{{ file.fileId }}/view"
+                                                                        target="_blank"
+                                                                        class="btn btn-outline-primary btn-sm">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="18" height="18"
+                                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                                        </svg>
+                                                                        Lihat PDF
+                                                                    </a>
+                                                                </li>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
                                     {% endif %}
-                                {% else %}
-                                    <li class="list-group-item text-muted">Belum ada file PDF untuk kategori ini.</li>
-                                {% endfor %}
-                            </ul>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
+            {% endif %}
         </div>
     </div>
 </div>
 
+<script>
+(function () {
+    function initPillTabs() {
+        document.querySelectorAll('[data-ami-toggle="pill"]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var target = document.querySelector(this.getAttribute('data-ami-target'));
+                if (!target) return;
+
+                var pillList = this.closest('ul');
+                pillList.querySelectorAll('.nav-link').forEach(function (pill) {
+                    pill.classList.remove('active');
+                });
+                this.classList.add('active');
+
+                var content = target.closest('.ami-tab-content');
+                content.querySelectorAll('.ami-tab-pane').forEach(function (pane) {
+                    pane.classList.remove('ami-active');
+                    pane.style.display = 'none';
+                });
+                target.classList.add('ami-active');
+                target.style.display = 'block';
+            });
+        });
+
+        // Set initial display
+        document.querySelectorAll('.ami-tab-content').forEach(function (content) {
+            content.querySelectorAll('.ami-tab-pane').forEach(function (pane) {
+                pane.style.display = pane.classList.contains('ami-active') ? 'block' : 'none';
+            });
+        });
+    }
+
+    initPillTabs();
+})();
+</script>

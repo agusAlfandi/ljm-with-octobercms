@@ -25,10 +25,10 @@ fields:
         type: fileupload
         mode: file
         fileTypes: pdf
-        maxFilesize: 20
+        maxFilesize: 2
         useCaption: false
         required: true
         thumbOptions:
             mode: crop
             extension: auto
-        comment: Upload file PDF (maksimal 20MB). File akan otomatis diupload ke Google Drive dan mengganti file lama jika ada.
+        comment: Upload file PDF (maksimal 2MB). File akan otomatis diupload ke Google Drive dan mengganti file lama jika ada.

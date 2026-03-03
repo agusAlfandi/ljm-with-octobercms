@@ -9,7 +9,7 @@ fields:
         type: fileupload
         mode: file
         fileTypes: pdf
-        maxFilesize: 20
+        maxFilesize: 2
         useCaption: false
         thumbOptions:
             mode: crop

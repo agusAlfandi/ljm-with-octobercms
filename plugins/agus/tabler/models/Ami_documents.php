@@ -3,6 +3,7 @@
 use Model;
 use Agus\Tabler\Classes\GoogleDriveReader;
 use Agus\Tabler\Classes\GoogleDriveUploader;
+use Agus\Tabler\Traits\SpmiOptions;
 
 /**
  * Model
@@ -10,6 +11,7 @@ use Agus\Tabler\Classes\GoogleDriveUploader;
 class Ami_documents extends Model
 {
     use \October\Rain\Database\Traits\Validation;
+    use SpmiOptions;
 
 
     /**
@@ -21,8 +23,9 @@ class Ami_documents extends Model
      * @var array rules for validation.
      */
     public $rules = [
-         'title' => 'required',
-        'category' => 'required',
+        'title' => 'required',
+        'periode' => 'required',
+        'prodi' => 'required',
         'file' => 'required'
     ];
 
@@ -31,7 +34,10 @@ class Ami_documents extends Model
      */
     protected $fillable = [
         'title',
-        'category',
+        'periode',
+        'prodi',
+        'periode_name',
+        'prodi_name',
         'file'
     ];
 
@@ -43,34 +49,19 @@ class Ami_documents extends Model
     ];
 
     /**
-     * @return array
+     * Get display periode attribute (accessor)
      */
-
-    public static function getCategoryOptions() {
-        return [
-            1 => 'Periode 2021/2022',
-            2 => 'Periode 2022/2023',
-            3 => 'Periode 2023/2024',
-            4 => 'Periode 2024/2025',
-        ];
+    public function getDisplayPeriodeAttribute()
+    {
+        return $this->periode_name ?: $this->periode;
     }
 
     /**
-     * Get category label attribute (accessor)
+     * Get display prodi attribute (accessor)
      */
-    public function getCategoryLabelAttribute()
+    public function getDisplayProdiAttribute()
     {
-        $options = self::getCategoryOptions();
-        return isset($options[$this->category]) ? $options[$this->category] : 'Kategori Tidak Diketahui';
-    }
-
-    /**
-     * Get display category attribute (accessor)
-     */
-    public function getDisplayCategoryAttribute()
-    {
-        $options = self::getCategoryOptions();
-        return isset($options[$this->category]) ? $options[$this->category] : 'Kategori Tidak Diketahui';
+        return $this->prodi_name ?: $this->prodi;
     }
 
      /**
@@ -78,6 +69,13 @@ class Ami_documents extends Model
      */
     protected $isUploadingToGoogleDrive = false;
 
+
+    public function beforeSave()
+    {
+        // Tetapkan nama periode dan prodi dari value yang dipilih (karena key = name sekarang)
+        $this->periode_name = $this->periode;
+        $this->prodi_name = $this->prodi;
+    }
 
     /**
      * afterSave - trigger upload setelah semua relasi tersimpan
@@ -93,29 +91,14 @@ class Ami_documents extends Model
         if ($this->file()->withDeferred($this->sessionKey)->count() > 0) {
             $file = $this->file()->withDeferred($this->sessionKey)->first();
 
-            // \Log::info('afterSave with deferred file', [
-            //     'id' => $this->id,
-            //     'title' => $this->title,
-            //     'category' => $this->category,
-            //     'file_id' => $file ? $file->id : null,
-            //     'file_path' => $file ? $file->getPath() : null
-            // ]);
-
-            if ($file && $this->category && $this->title) {
+            if ($file && $this->periode && $this->prodi && $this->title) {
                 // Hapus file lama jika ada sebelum upload file baru
                 $this->deleteOldFileIfExists();
                 $this->uploadFileToGoogleDrive($file);
             }
         }
         // Jika file sudah committed (bukan deferred)
-        elseif ($this->file && $this->category && $this->title) {
-            // \Log::info('afterSave with committed file', [
-            //     'id' => $this->id,
-            //     'title' => $this->title,
-            //     'category' => $this->category,
-            //     'file_id' => $this->file->id
-            // ]);
-
+        elseif ($this->file && $this->periode && $this->prodi && $this->title) {
             // Hapus file lama jika ada sebelum upload file baru
             $this->deleteOldFileIfExists();
             $this->uploadFileToGoogleDrive($this->file);
@@ -131,15 +114,16 @@ class Ami_documents extends Model
             $filePath = $file->getLocalPath();
             $fileName = $file->file_name; // Gunakan nama file asli, bukan title
 
-            // \Log::info('Uploading file to Google Drive', [
-            //     'filePath' => $filePath,
-            //     'fileName' => $fileName,
-            //     'title' => $this->title,
-            //     'category' => $this->category
-            // ]);
+            // Cari Folder ID Prodi secara dinamis berdasarkan nama yang dipilih di admin
+            $targetFolderId = $this->getTargetFolderId('ROOT_AMI');
 
-            // Upload dengan nama file asli
-            $result = GoogleDriveUploader::uploadToCategory($filePath, $this->category_label, $fileName);
+            if (!$targetFolderId) {
+                \Log::error('Could not find target Folder ID in Google Drive for: ' . $this->periode . ' -> ' . $this->prodi);
+                return;
+            }
+
+            // Upload langsung ke folder prodi yang ditemukan (ID folder)
+            $result = GoogleDriveUploader::upload($filePath, $targetFolderId, $fileName);
 
             if (isset($result['fileId'])) {
                 // Set flag untuk mencegah recursive call
@@ -157,16 +141,10 @@ class Ami_documents extends Model
                 // Reset flag
                 $this->isUploadingToGoogleDrive = false;
 
-                // \Log::info('File successfully uploaded to Google Drive', [
-                //     'fileId' => $result['fileId'],
-                //     'fileName' => $uploadedFileName,
-                //     'category' => $this->category,
-                //     'categoryName' => $this->category_label,
-                //     'folderId' => $result['folderId'] ?? null,
-                //     'folderName' => $result['folderName'] ?? null
-                // ]);
+                // Hapus cache Google Drive supaya data baru langsung tampil
+                \Cache::forget('gdrive_structure_' . md5(\Agus\Tabler\Classes\GoogleDriveReader::FOLDER_IDS['ROOT_AMI']));
 
-                // Hapus file lokal dan relasi setelah upload sukses
+                // Hapus relasi file lokal dan relasi setelah upload sukses
                 $this->deleteLocalFileRelation($file, $filePath);
             } else {
                 \Log::warning('Upload response missing fileId', [
@@ -191,34 +169,15 @@ class Ami_documents extends Model
     {
         // Ambil data lama dari database sebelum update
         $oldFileName = $this->getOriginal('file_name');
+        
+        // Find folder ID for old file
+        $oldFolderId = $this->getTargetFolderId('ROOT_AMI');
 
-        // \Log::info('Checking for old file to delete', [
-        //     'old_file_name' => $oldFileName,
-        //     'new_file_exists' => !empty($this->file)
-        // ]);
+        if ($oldFileName && $oldFolderId) {
+            $existingFile = GoogleDriveReader::findFileByName($oldFolderId, $oldFileName);
 
-        if ($oldFileName) {
-            // Hapus file lama di Google Drive menggunakan category dari model
-            $categoryName = GoogleDriveUploader::normalizeCategoryName($this->category_label);
-            $folderId = GoogleDriveReader::FOLDER_IDS[$categoryName] ?? null;
-
-            if ($folderId) {
-                $existingFile = GoogleDriveReader::findFileByName($folderId, $oldFileName);
-
-                if ($existingFile) {
-                    GoogleDriveUploader::delete($existingFile['id']);
-                    // \Log::info('Old file deleted from Google Drive before update', [
-                    //     'fileId' => $existingFile['id'],
-                    //     'fileName' => $oldFileName,
-                    //     'category' => $this->category_label
-                    // ]);
-                } else {
-                    // \Log::warning('Old file not found in Google Drive', [
-                    //     'fileName' => $oldFileName,
-                    //     'folderId' => $folderId,
-                    //     'category' => $this->category_label
-                    // ]);
-                }
+            if ($existingFile) {
+                GoogleDriveUploader::delete($existingFile['id']);
             }
         }
     }
@@ -233,12 +192,10 @@ class Ami_documents extends Model
             // Hapus file fisik dari storage
             if (file_exists($filePath)) {
                 @unlink($filePath);
-                // \Log::info('Local file deleted', ['filePath' => $filePath]);
             }
 
             // Hapus relasi file di database
             $file->delete();
-            // \Log::info('File relation deleted from database');
         } catch (\Exception $e) {
             \Log::error('Failed to delete local file', [
                 'error' => $e->getMessage(),
@@ -250,29 +207,20 @@ class Ami_documents extends Model
     public function afterDelete()
     {
         // Saat record dihapus, hapus juga file dari Google Drive menggunakan file_name dari database
-        if ($this->file_name && $this->category) {
+        if ($this->file_name) {
             try {
-                // Cari file di Google Drive berdasarkan nama dari database
-                $categoryName = GoogleDriveUploader::normalizeCategoryName($this->category_label);
-                $folderId = GoogleDriveReader::FOLDER_IDS[$categoryName] ?? null;
-
-                if ($folderId) {
-                    $existingFile = GoogleDriveReader::findFileByName($folderId, $this->file_name);
+                $targetFolderId = $this->getTargetFolderId('ROOT_AMI');
+                
+                if ($targetFolderId) {
+                    $existingFile = GoogleDriveReader::findFileByName($targetFolderId, $this->file_name);
 
                     if ($existingFile) {
                         GoogleDriveUploader::delete($existingFile['id']);
-                        // \Log::info('File deleted from Google Drive', [
-                        //     'fileId' => $existingFile['id'],
-                        //     'fileName' => $this->file_name,
-                        //     'category' => $this->category_label
-                        // ]);
-                    } else {
-                        \Log::warning('File not found in Google Drive for deletion', [
-                            'fileName' => $this->file_name,
-                            'category' => $this->category_label
-                        ]);
                     }
                 }
+
+                // Hapus cache supaya daftar file ter-update
+                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS['ROOT_AMI']));
             } catch (\Exception $e) {
                 \Log::error('Google Drive delete failed: ' . $e->getMessage());
             }

@@ -1,11 +1,12 @@
-<?php namespace Agus\Tabler\Classes;
+<?php
+namespace Agus\Tabler\Classes;
 
 class GoogleDriveUploader
 {
     /**
      * Google Apps Script Web App URL
      */
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby3xc0R0bdws4ubU1iLBkyevkjjI-FRTq_4DW93KBzKHbp4PugsHVzi_z46xqssErzj/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyNqaf-liLRmnudEWieYeOsvhRTjpUVi1b9WbIvVIglIEVKWIqwbdhWoCcw4jCIoJ4A/exec';
 
     /**
      * Upload file to specific Google Drive folder based on category
@@ -58,10 +59,11 @@ class GoogleDriveUploader
             // Hapus file lama
             try {
                 self::delete($existingFile['id']);
-                // \Log::info('Old file deleted successfully', [
-                //     'fileId' => $existingFile['id']
-                // ]);
-            } catch (\Exception $e) {
+            // \Log::info('Old file deleted successfully', [
+            //     'fileId' => $existingFile['id']
+            // ]);
+            }
+            catch (\Exception $e) {
                 \Log::warning('Failed to delete old file, continuing with upload', [
                     'error' => $e->getMessage()
                 ]);
@@ -197,7 +199,8 @@ class GoogleDriveUploader
             if (!preg_match('/\.pdf$/i', $fileName)) {
                 $fileName .= '.pdf';
             }
-        } else {
+        }
+        else {
             $fileName = basename($filePath);
         }
 
