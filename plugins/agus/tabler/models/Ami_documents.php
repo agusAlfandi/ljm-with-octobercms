@@ -169,7 +169,7 @@ class Ami_documents extends Model
     {
         // Ambil data lama dari database sebelum update
         $oldFileName = $this->getOriginal('file_name');
-        
+
         // Find folder ID for old file
         $oldFolderId = $this->getTargetFolderId('ROOT_AMI');
 
@@ -210,7 +210,7 @@ class Ami_documents extends Model
         if ($this->file_name) {
             try {
                 $targetFolderId = $this->getTargetFolderId('ROOT_AMI');
-                
+
                 if ($targetFolderId) {
                     $existingFile = GoogleDriveReader::findFileByName($targetFolderId, $this->file_name);
 

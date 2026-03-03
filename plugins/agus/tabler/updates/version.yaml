@@ -267,3 +267,9 @@ v1.0.89:
 v1.0.90:
     - 'Add periode_name and prodi_name to AMI table'
     - add_names_to_ami_table.php
+v1.0.91:
+    - 'Add periode and prodi to RTM table'
+    - add_periode_prodi_to_rtm.php
+v1.0.92:
+    - 'Add periode_name and prodi_name to RTM table'
+    - add_names_to_rtm_table.php

@@ -1,19 +1,27 @@
 columns:
     title:
-        label: title
+        label: 'Judul Dokumen'
         type: text
+        searchable: true
+    periode_name:
+        label: Periode
+        type: text
+        searchable: true
+    prodi_name:
+        label: Prodi
+        type: text
+        searchable: true
     file_name:
-        label: file_name
+        label: 'Nama File'
         type: text
-    category:
-        label: category
-        valueFrom: display_category
-        sortable: true
-        searchable: false
-        type: text
+        searchable: true
     created_at:
-        label: created_at
+        label: Dibuat
         type: datetime
+        format: 'd M Y H:i'
+        width: 150px
     updated_at:
-        label: updated_at
+        label: Diperbarui
         type: datetime
+        format: 'd M Y H:i'
+        width: 150px

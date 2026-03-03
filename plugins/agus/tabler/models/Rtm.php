@@ -10,7 +10,7 @@ use Agus\Tabler\Classes\GoogleDriveUploader;
 class Rtm extends Model
 {
     use \October\Rain\Database\Traits\Validation;
-
+    use \Agus\Tabler\Traits\SpmiOptions;  // reuse helper from AMI model
 
     /**
      * @var string table in the database used by the model.
@@ -21,9 +21,10 @@ class Rtm extends Model
      * @var array rules for validation.
      */
     public $rules = [
-        'title' => 'required',
-        'category' => 'required',
-        'file' => 'required'
+        'title'   => 'required',
+        'periode' => 'required',
+        'prodi'   => 'required',
+        'file'    => 'required'
     ];
 
     /**
@@ -31,9 +32,35 @@ class Rtm extends Model
      */
     protected $fillable = [
         'title',
-        'category',
+        'periode',
+        'prodi',
+        'periode_name',
+        'prodi_name',
         'file'
     ];
+
+    /**
+     * Get display periode attribute (accessor)
+     */
+    public function getDisplayPeriodeAttribute()
+    {
+        return $this->periode_name ?: $this->periode;
+    }
+
+    /**
+     * Get display prodi attribute (accessor)
+     */
+    public function getDisplayProdiAttribute()
+    {
+        return $this->prodi_name ?: $this->prodi;
+    }
+
+    public function beforeSave()
+    {
+        // keep copies of the selected names
+        $this->periode_name = $this->periode;
+        $this->prodi_name   = $this->prodi;
+    }
 
     /**
      * @var array Attributes to attach files.
@@ -42,37 +69,7 @@ class Rtm extends Model
         'file' => 'System\Models\File'
     ];
 
-      /**
-     * @return array
-     */
-
-    public static function getCategoryOptions() {
-        return [
-            1 => 'Periode 2021/2022 rtm',
-            2 => 'Periode 2022/2023 rtm',
-            3 => 'Periode 2023/2024 rtm',
-            4 => 'Periode 2024/2025 rtm',
-        ];
-    }
-
-     /**
-     * Get category label attribute (accessor)
-     */
-    public function getCategoryLabelAttribute()
-    {
-        $options = self::getCategoryOptions();
-        return isset($options[$this->category]) ? $options[$this->category] : 'Kategori Tidak Diketahui';
-    }
-
-    /**
-     * Get display category attribute (accessor)
-     */
-    public function getDisplayCategoryAttribute()
-    {
-        $options = self::getCategoryOptions();
-        return isset($options[$this->category]) ? $options[$this->category] : 'Kategori Tidak Diketahui';
-    }
-
+  
      /**
      * @var bool Flag to prevent recursive afterSave calls
      */
@@ -84,39 +81,19 @@ class Rtm extends Model
      */
     public function afterSave()
     {
-        // Skip jika sedang dalam proses upload (mencegah recursive call)
+        // Skip when already uploading (prevent recursion)
         if ($this->isUploadingToGoogleDrive) {
             return;
         }
 
-        // Gunakan deferred binding untuk memastikan file sudah attached
+        // handle deferred binding or immediate file
         if ($this->file()->withDeferred($this->sessionKey)->count() > 0) {
             $file = $this->file()->withDeferred($this->sessionKey)->first();
-
-            // \Log::info('afterSave with deferred file', [
-            //     'id' => $this->id,
-            //     'title' => $this->title,
-            //     'category' => $this->category,
-            //     'file_id' => $file ? $file->id : null,
-            //     'file_path' => $file ? $file->getPath() : null
-            // ]);
-
-            if ($file && $this->category && $this->title) {
-                // Hapus file lama jika ada sebelum upload file baru
+            if ($file && $this->periode && $this->prodi && $this->title) {
                 $this->deleteOldFileIfExists();
                 $this->uploadFileToGoogleDrive($file);
             }
-        }
-        // Jika file sudah committed (bukan deferred)
-        elseif ($this->file && $this->category && $this->title) {
-            // \Log::info('afterSave with committed file', [
-            //     'id' => $this->id,
-            //     'title' => $this->title,
-            //     'category' => $this->category,
-            //     'file_id' => $this->file->id
-            // ]);
-
-            // Hapus file lama jika ada sebelum upload file baru
+        } elseif ($this->file && $this->periode && $this->prodi && $this->title) {
             $this->deleteOldFileIfExists();
             $this->uploadFileToGoogleDrive($this->file);
         }
@@ -129,23 +106,20 @@ class Rtm extends Model
     {
         try {
             $filePath = $file->getLocalPath();
-            $fileName = $file->file_name; // Gunakan nama file asli, bukan title
+            $fileName = $file->file_name;
 
-            // \Log::info('Uploading file to Google Drive', [
-            //     'filePath' => $filePath,
-            //     'fileName' => $fileName,
-            //     'title' => $this->title,
-            //     'category' => $this->category
-            // ]);
+            // find destination folder under ROOT_RTM using periode/prodi
+            $targetFolderId = $this->getTargetFolderId('ROOT_RTM');
+            if (!$targetFolderId) {
+                \Log::error('RTM: unable to resolve target folder for ' . $this->periode . '/' . $this->prodi);
+                return;
+            }
 
-            // Upload dengan nama file asli
-            $result = GoogleDriveUploader::uploadToCategory($filePath, $this->category_label, $fileName);
+            $result = GoogleDriveUploader::upload($filePath, $targetFolderId, $fileName);
 
             if (isset($result['fileId'])) {
-                // Set flag untuk mencegah recursive call
                 $this->isUploadingToGoogleDrive = true;
 
-                // Simpan nama file yang diupload ke database
                 $uploadedFileName = $result['fileName'] ?? $fileName;
                 if (!preg_match('/\.pdf$/i', $uploadedFileName)) {
                     $uploadedFileName .= '.pdf';
@@ -154,33 +128,18 @@ class Rtm extends Model
                 $this->rules = [];
                 $this->save();
 
-                // Reset flag
                 $this->isUploadingToGoogleDrive = false;
 
-                // \Log::info('File successfully uploaded to Google Drive', [
-                //     'fileId' => $result['fileId'],
-                //     'fileName' => $uploadedFileName,
-                //     'category' => $this->category,
-                //     'categoryName' => $this->category_label,
-                //     'folderId' => $result['folderId'] ?? null,
-                //     'folderName' => $result['folderName'] ?? null
-                // ]);
+                // clear cache so list updates immediately
+                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS['ROOT_RTM']));
 
-                // Hapus file lokal dan relasi setelah upload sukses
                 $this->deleteLocalFileRelation($file, $filePath);
             } else {
-                \Log::warning('Upload response missing fileId', [
-                    'response' => $result
-                ]);
+                \Log::warning('Upload response missing fileId', ['response' => $result]);
             }
         } catch (\Exception $e) {
-            // Reset flag jika terjadi error
             $this->isUploadingToGoogleDrive = false;
-
-            \Log::error('Google Drive upload failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            \Log::error('Google Drive upload failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
         }
     }
 
@@ -189,36 +148,13 @@ class Rtm extends Model
      */
     protected function deleteOldFileIfExists()
     {
-        // Ambil data lama dari database sebelum update
         $oldFileName = $this->getOriginal('file_name');
+        $oldFolderId = $this->getTargetFolderId('ROOT_RTM');
 
-        // \Log::info('Checking for old file to delete', [
-        //     'old_file_name' => $oldFileName,
-        //     'new_file_exists' => !empty($this->file)
-        // ]);
-
-        if ($oldFileName) {
-            // Hapus file lama di Google Drive menggunakan category dari model
-            $categoryName = GoogleDriveUploader::normalizeCategoryName($this->category_label);
-            $folderId = GoogleDriveReader::FOLDER_IDS[$categoryName] ?? null;
-
-            if ($folderId) {
-                $existingFile = GoogleDriveReader::findFileByName($folderId, $oldFileName);
-
-                if ($existingFile) {
-                    GoogleDriveUploader::delete($existingFile['id']);
-                    // \Log::info('Old file deleted from Google Drive before update', [
-                    //     'fileId' => $existingFile['id'],
-                    //     'fileName' => $oldFileName,
-                    //     'category' => $this->category_label
-                    // ]);
-                } else {
-                    // \Log::warning('Old file not found in Google Drive', [
-                    //     'fileName' => $oldFileName,
-                    //     'folderId' => $folderId,
-                    //     'category' => $this->category_label
-                    // ]);
-                }
+        if ($oldFileName && $oldFolderId) {
+            $existingFile = GoogleDriveReader::findFileByName($oldFolderId, $oldFileName);
+            if ($existingFile) {
+                GoogleDriveUploader::delete($existingFile['id']);
             }
         }
     }
@@ -249,30 +185,16 @@ class Rtm extends Model
 
     public function afterDelete()
     {
-        // Saat record dihapus, hapus juga file dari Google Drive menggunakan file_name dari database
-        if ($this->file_name && $this->category) {
+        if ($this->file_name) {
             try {
-                // Cari file di Google Drive berdasarkan nama dari database
-                $categoryName = GoogleDriveUploader::normalizeCategoryName($this->category_label);
-                $folderId = GoogleDriveReader::FOLDER_IDS[$categoryName] ?? null;
-
-                if ($folderId) {
-                    $existingFile = GoogleDriveReader::findFileByName($folderId, $this->file_name);
-
+                $targetFolderId = $this->getTargetFolderId('ROOT_RTM');
+                if ($targetFolderId) {
+                    $existingFile = GoogleDriveReader::findFileByName($targetFolderId, $this->file_name);
                     if ($existingFile) {
                         GoogleDriveUploader::delete($existingFile['id']);
-                        // \Log::info('File deleted from Google Drive', [
-                        //     'fileId' => $existingFile['id'],
-                        //     'fileName' => $this->file_name,
-                        //     'category' => $this->category_label
-                        // ]);
-                    } else {
-                        \Log::warning('File not found in Google Drive for deletion', [
-                            'fileName' => $this->file_name,
-                            'category' => $this->category_label
-                        ]);
                     }
                 }
+                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS['ROOT_RTM']));
             } catch (\Exception $e) {
                 \Log::error('Google Drive delete failed: ' . $e->getMessage());
             }
