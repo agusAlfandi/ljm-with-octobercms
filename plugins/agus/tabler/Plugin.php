@@ -149,6 +149,24 @@ class Plugin extends PluginBase
             // Otomatis ambil file dari Google Drive
             return \Agus\Tabler\Classes\GoogleDriveReader::getAllMonevFiles();
         },
+                'getMonevBebanBelajarPdfFiles' => function () {
+            return \Agus\Tabler\Classes\GoogleDriveReader::getAllMonevBebanBelajarFiles();
+        },
+                'getMonevDosenPdfFiles' => function () {
+            return \Agus\Tabler\Classes\GoogleDriveReader::getAllMonevDosenFiles();
+        },
+                'getMonevKehadiranPdfFiles' => function () {
+            return \Agus\Tabler\Classes\GoogleDriveReader::getAllMonevKehadiranFiles();
+        },
+                'getMonevMateriRpsPdfFiles' => function () {
+            return \Agus\Tabler\Classes\GoogleDriveReader::getAllMonevMateriRpsFiles();
+        },
+                'getMonevNilaiPdfFiles' => function () {
+            return \Agus\Tabler\Classes\GoogleDriveReader::getAllMonevNilaiFiles();
+        },
+                'getMonevUtsUasPdfFiles' => function () {
+            return \Agus\Tabler\Classes\GoogleDriveReader::getAllMonevUtsUasFiles();
+        },
                 'getAkreditasi' => function () {
             return Akreditasi_program_studi::all();
         },

@@ -33,11 +33,35 @@ class DriveLoader extends ComponentBase
             case 'rtm':
                 $files = GoogleDriveReader::getAllRtmFiles();
                 break;
+            case 'monev_beban':
+                $files = GoogleDriveReader::getAllMonevBebanBelajarFiles();
+                break;
+            case 'monev_dosen':
+                $files = GoogleDriveReader::getAllMonevDosenFiles();
+                break;
+            case 'monev_kehadiran':
+                $files = GoogleDriveReader::getAllMonevKehadiranFiles();
+                break;
+            case 'monev_materi':
+                $files = GoogleDriveReader::getAllMonevMateriRpsFiles();
+                break;
+            case 'monev_nilai':
+                $files = GoogleDriveReader::getAllMonevNilaiFiles();
+                break;
+            case 'monev_uts':
+                $files = GoogleDriveReader::getAllMonevUtsUasFiles();
+                break;
         }
 
         $labels = [
-            'ami' => 'Audit Mutu Internal',
-            'rtm' => 'Rapat Tinjauan Manajemen',
+            'ami'             => 'Audit Mutu Internal',
+            'rtm'             => 'Rapat Tinjauan Manajemen',
+            'monev_beban'     => 'Beban Belajar Mahasiswa',
+            'monev_dosen'     => 'Monev Dosen',
+            'monev_kehadiran' => 'Monev Kehadiran Mahasiswa',
+            'monev_materi'    => 'Monev Materi dengan RPS',
+            'monev_nilai'     => 'Monev Nilai',
+            'monev_uts'       => 'Monev UTS UAS -- RPS',
         ];
 
         return [

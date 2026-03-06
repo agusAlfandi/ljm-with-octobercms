@@ -127,7 +127,8 @@ class GoogleDriveReader
     public static function clearCache()
     {
         // Must use the same md5-based keys that getCategoryNestedStructure() stores
-        $rootKeys = ['ROOT_AMI', 'ROOT_MONEV', 'ROOT_RTM', 'ROOT_SURVEY_KEPUASAN', 'ROOT_GRAFIK_KEPUASAN', 'ROOT_SURVEI_KEPUASAN', 'ROOT_MONEV_SURVEI_KEPUASAN', 'ROOT_RTM_KEPUASAN'];
+        $rootKeys = ['ROOT_AMI', 'ROOT_MONEV', 'ROOT_RTM', 'ROOT_SURVEY_KEPUASAN', 'ROOT_GRAFIK_KEPUASAN', 'ROOT_SURVEI_KEPUASAN', 'ROOT_MONEV_SURVEI_KEPUASAN', 'ROOT_RTM_KEPUASAN',
+            'Beban Belajar Mahasiswa', 'Monev Dosen', 'Monev Kehadiran Mahasiswa', 'Monev Materi dengan RPS', 'Monev Nilai', 'Monev UTS UAS -- RPS'];
         foreach ($rootKeys as $key) {
             if (!empty(self::FOLDER_IDS[$key])) {
                 \Cache::forget('gdrive_structure_' . md5(self::FOLDER_IDS[$key]));
@@ -170,6 +171,12 @@ class GoogleDriveReader
             self::FOLDER_IDS['ROOT_SURVEI_KEPUASAN'] ?? null,
             self::FOLDER_IDS['ROOT_MONEV_SURVEI_KEPUASAN'] ?? null,
             self::FOLDER_IDS['ROOT_RTM_KEPUASAN'] ?? null,
+            self::FOLDER_IDS['Beban Belajar Mahasiswa'] ?? null,
+            self::FOLDER_IDS['Monev Dosen'] ?? null,
+            self::FOLDER_IDS['Monev Kehadiran Mahasiswa'] ?? null,
+            self::FOLDER_IDS['Monev Materi dengan RPS'] ?? null,
+            self::FOLDER_IDS['Monev Nilai'] ?? null,
+            self::FOLDER_IDS['Monev UTS UAS -- RPS'] ?? null,
         ];
 
         foreach ($roots as $rootId) {
@@ -413,9 +420,8 @@ class GoogleDriveReader
                 return isset($f['mimeType']) && $f['mimeType'] === 'application/pdf';
             });
 
-            if (!empty($pdfFiles)) {
-                $result[$folder['name']] = self::formatPdfFiles($pdfFiles);
-            }
+            // Always include the prodi folder, even if it has no PDF files yet
+            $result[$folder['name']] = !empty($pdfFiles) ? self::formatPdfFiles($pdfFiles) : [];
         }
 
         // If there are files in root, put them in a special group
@@ -487,6 +493,66 @@ class GoogleDriveReader
     public static function getAllMonevFiles()
     {
         return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_MONEV'] ?? null);
+    }
+
+    /**
+     * Get Monev Beban Belajar Mahasiswa files (Period -> Prodi -> Files)
+     *
+     * @return array
+     */
+    public static function getAllMonevBebanBelajarFiles()
+    {
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['Beban Belajar Mahasiswa'] ?? null);
+    }
+
+    /**
+     * Get Monev Dosen files (Period -> Prodi -> Files)
+     *
+     * @return array
+     */
+    public static function getAllMonevDosenFiles()
+    {
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['Monev Dosen'] ?? null);
+    }
+
+    /**
+     * Get Monev Kehadiran Mahasiswa files (Period -> Prodi -> Files)
+     *
+     * @return array
+     */
+    public static function getAllMonevKehadiranFiles()
+    {
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['Monev Kehadiran Mahasiswa'] ?? null);
+    }
+
+    /**
+     * Get Monev Materi dengan RPS files (Period -> Prodi -> Files)
+     *
+     * @return array
+     */
+    public static function getAllMonevMateriRpsFiles()
+    {
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['Monev Materi dengan RPS'] ?? null);
+    }
+
+    /**
+     * Get Monev Nilai files (Period -> Prodi -> Files)
+     *
+     * @return array
+     */
+    public static function getAllMonevNilaiFiles()
+    {
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['Monev Nilai'] ?? null);
+    }
+
+    /**
+     * Get Monev UTS UAS RPS files (Period -> Prodi -> Files)
+     *
+     * @return array
+     */
+    public static function getAllMonevUtsUasFiles()
+    {
+        return self::getCategoryNestedStructure(self::FOLDER_IDS['Monev UTS UAS -- RPS'] ?? null);
     }
 
     public static function getAllAmiFiles()

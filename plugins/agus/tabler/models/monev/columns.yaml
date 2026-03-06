@@ -9,6 +9,14 @@ columns:
         valueFrom: display_category
         sortable: true
         searchable: false
+    periode_name:
+        label: Periode
+        type: text
+        searchable: true
+    prodi_name:
+        label: Prodi
+        type: text
+        searchable: true
     file_name:
         label: 'Nama File'
         type: text
