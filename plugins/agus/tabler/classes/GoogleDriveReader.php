@@ -23,6 +23,19 @@ class GoogleDriveReader
 
         // Root Category Folders (Opsi A: Automated)
         'ROOT_AMI' => '1wsIgC4NLLi1YrqeTfVR8BycKYWFLtzab',
+
+        // AMI Level Folders (sub-folder of ROOT_AMI: Prodi, Fakultas, Universitas)
+        'AMI_LEVEL_PRODI'       => '1x6qXNdpLXbdtVUCNeXh60JG1i15L7SEz',
+        'AMI_LEVEL_FAKULTAS'    => '1Rv8cWJO35BU_kyllppL4lSvMs9O7UbK1',
+        'AMI_LEVEL_UNIVERSITAS' => '1DcZUDzahZxtHfJFQxbSZ5S2xRWtSUG28',
+
+        // AMI Fakultas sub-folders (inside AMI_LEVEL_FAKULTAS)
+        'AMI_FAK_HUKUM_BISNIS'          => '1SQD-DBGRbMagmH883uDNUU_sGqqA7Qaf',
+        'AMI_FAK_ILMU_KESEHATAN'        => '1P9xMMyPQOK6OyBS30eCFpY3sNNbj0Lee',
+        'AMI_FAK_ILMU_KOMPUTER'         => '1GpWTpzqbeSd0659a8XIuGw8mPF0z7ujA',
+        'AMI_FAK_KEDOKTERAN'            => '1ZjAOQy2fCY216hJ868FeHhvJqIJyZD0z',
+        'AMI_FAK_KEGURUAN_ILMU_PEND'    => '1O_oWdoog3wOBrRkYDJulc2pHXmXn-_l6',
+        'AMI_FAK_SAINS_TEKNOLOGI'       => '1nKKis3dcd3IP2-KQHdYEGGgfzKlUehlW',
         'ROOT_MONEV' => '1QUyXBU-v1Rpej3c11KHKtfzQEeOU7HXB',
         'ROOT_RTM' => '14geE5fwAKq-WccSByexh5y4io_NhKly0',
         'ROOT_SURVEY_KEPUASAN' => '1c3zdOeRZ0oHiOgIwP6fySjHqGLF7Gwht',
@@ -202,7 +215,7 @@ class GoogleDriveReader
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60); // Longer timeout for nested fetch
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120); // Extended timeout: depth=2 traversal can take 60-90s for large folder trees
 
         $result = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -262,6 +275,13 @@ class GoogleDriveReader
                             }
 
                             $prodiGroups[$prodiName] = $files;
+                            // Store folder ID so the frontend can lazy-load files later
+                            if (!empty($child['id'])) {
+                                if (!isset($prodiGroups['_folderIds'])) {
+                                    $prodiGroups['_folderIds'] = [];
+                                }
+                                $prodiGroups['_folderIds'][$prodiName] = $child['id'];
+                            }
                         } elseif (isset($child['mimeType']) && $child['mimeType'] === 'application/pdf') {
                             // PDF file directly in Period folder (no Prodi subfolder)
                             if (!isset($prodiGroups['Umum'])) {
@@ -322,6 +342,46 @@ class GoogleDriveReader
 
             return $data['files'] ?? [];
         });
+    }
+
+    /**
+     * Create a subfolder inside a parent folder, or return it if it already exists.
+     * Requires the GAS script to have the 'createFolder' action deployed.
+     *
+     * @param string $parentId Parent folder ID
+     * @param string $name     Subfolder name
+     * @return array|null ['id' => ..., 'name' => ...] or null on failure
+     */
+    public static function createOrFindSubfolder($parentId, $name)
+    {
+        $url = self::WEB_APP_URL
+             . '?action=createFolder'
+             . '&parentId=' . urlencode($parentId)
+             . '&name='     . urlencode($name);
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+        $result   = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200) {
+            \Log::warning('createOrFindSubfolder HTTP error', ['code' => $httpCode, 'name' => $name]);
+            return null;
+        }
+
+        $data = json_decode($result, true);
+
+        if (!$data || !($data['success'] ?? false)) {
+            \Log::warning('createOrFindSubfolder failed', ['error' => $data['error'] ?? 'unknown', 'name' => $name]);
+            return null;
+        }
+
+        return ['id' => $data['folderId'], 'name' => $data['folderName']];
     }
 
     /**
@@ -446,20 +506,43 @@ class GoogleDriveReader
         }
 
         $cacheKey = 'gdrive_structure_' . md5($rootFolderId);
-        $ttl = self::getCacheTtl();
+        $ttl      = self::getCacheTtl();
 
-        return \Cache::remember($cacheKey, $ttl, function () use ($rootFolderId) {
-            // Use new single-call method (much faster!)
-            $nestedItems = self::getNestedStructure($rootFolderId, 2);
+        // Return full cached result if it exists
+        $cached = \Cache::get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
 
-            if (empty($nestedItems)) {
-                // Fallback to old method if new endpoint not deployed yet
-                \Log::info('Falling back to legacy multi-call method');
-                return self::getCategoryNestedStructureLegacy($rootFolderId);
-            }
+        // Try depth=2: full data (Periode → Prodi → Files)
+        // Large trees (e.g. 4 periods × 26 prodi) can take 60-120 s in GAS
+        $nestedItems = self::getNestedStructure($rootFolderId, 2);
 
-            return self::formatNestedToGrouped($nestedItems);
-        });
+        if (!empty($nestedItems)) {
+            $result = self::formatNestedToGrouped($nestedItems);
+            \Cache::put($cacheKey, $result, $ttl);
+            return $result;
+        }
+
+        // depth=2 timed out — try depth=1 (Periode → Prodi folder names, no files)
+        // This is always fast (~5 s) and at least shows the prodi folder structure.
+        \Log::warning('getCategoryNestedStructure: depth=2 timed out, using depth=1 fallback', ['folder' => $rootFolderId]);
+        $shallowItems = self::getNestedStructure($rootFolderId, 1);
+
+        if (!empty($shallowItems)) {
+            $result = self::formatNestedToGrouped($shallowItems);
+            // Short TTL so depth=2 gets a chance on the next cache-miss.
+            \Cache::put($cacheKey, $result, 5);
+            return $result;
+        }
+
+        // Final fallback: legacy sequential API calls
+        \Log::warning('getCategoryNestedStructure: depth=1 also failed, trying legacy', ['folder' => $rootFolderId]);
+        $result = self::getCategoryNestedStructureLegacy($rootFolderId);
+        if (!empty($result)) {
+            \Cache::put($cacheKey, $result, $ttl);
+        }
+        return $result;
     }
 
     /**
@@ -482,6 +565,88 @@ class GoogleDriveReader
         }
 
         krsort($result);
+        return $result;
+    }
+
+    /**
+     * Get nested structure for Fakultas level (depth=3: Fakultas → Periode → Prodi → Files)
+     */
+    public static function getCategoryFakultasStructure($rootFolderId)
+    {
+        if (!$rootFolderId) {
+            return [];
+        }
+
+        $cacheKey = 'gdrive_structure_' . md5($rootFolderId);
+        $ttl = self::getCacheTtl();
+
+        return \Cache::remember($cacheKey, $ttl, function () use ($rootFolderId) {
+            $nestedItems = self::getNestedStructure($rootFolderId, 3);
+
+            if (empty($nestedItems)) {
+                \Log::info('AMI Fakultas: depth=3 empty, falling back to 2-level');
+                return self::getCategoryNestedStructureLegacy($rootFolderId);
+            }
+
+            return self::formatNestedToFakultasGrouped($nestedItems);
+        });
+    }
+
+    /**
+     * Format depth=3 nested items: Fakultas → Periode → Prodi → Files
+     */
+    private static function formatNestedToFakultasGrouped($items)
+    {
+        $result = [];
+
+        foreach ($items as $fakItem) {
+            if (!isset($fakItem['mimeType']) || $fakItem['mimeType'] !== 'application/vnd.google-apps.folder') {
+                continue;
+            }
+            $fakultasName = $fakItem['name'];
+            $periodeData  = [];
+
+            foreach ($fakItem['children'] ?? [] as $periodeItem) {
+                if (!isset($periodeItem['mimeType']) || $periodeItem['mimeType'] !== 'application/vnd.google-apps.folder') {
+                    continue;
+                }
+                $periodeName = $periodeItem['name'];
+                $prodiGroups = [];
+
+                foreach ($periodeItem['children'] ?? [] as $child) {
+                    if (isset($child['mimeType']) && $child['mimeType'] === 'application/vnd.google-apps.folder') {
+                        $prodiName = $child['name'];
+                        $files = [];
+                        foreach ($child['children'] ?? [] as $file) {
+                            if (isset($file['mimeType']) && $file['mimeType'] === 'application/pdf') {
+                                $files[] = [
+                                    'fileId'   => $file['id'],
+                                    'title'    => pathinfo($file['name'], PATHINFO_FILENAME),
+                                    'fileName' => $file['name'],
+                                ];
+                            }
+                        }
+                        $prodiGroups[$prodiName] = $files;
+                    } elseif (isset($child['mimeType']) && $child['mimeType'] === 'application/pdf') {
+                        if (!isset($prodiGroups['Umum'])) {
+                            $prodiGroups['Umum'] = [];
+                        }
+                        $prodiGroups['Umum'][] = [
+                            'fileId'   => $child['id'],
+                            'title'    => pathinfo($child['name'], PATHINFO_FILENAME),
+                            'fileName' => $child['name'],
+                        ];
+                    }
+                }
+
+                $periodeData[$periodeName] = $prodiGroups;
+            }
+
+            krsort($periodeData);
+            $result[$fakultasName] = $periodeData;
+        }
+
+        ksort($result);
         return $result;
     }
 
@@ -557,7 +722,53 @@ class GoogleDriveReader
 
     public static function getAllAmiFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_AMI'] ?? null);
+        return [
+            'Prodi' => [
+                'levels' => 2,
+                'data'   => self::getCategoryNestedStructure(self::FOLDER_IDS['AMI_LEVEL_PRODI'] ?? null),
+            ],
+            'Fakultas' => [
+                'levels' => 3,
+                'data'   => self::getCategoryFakultasStructure(self::FOLDER_IDS['AMI_LEVEL_FAKULTAS'] ?? null),
+            ],
+            'Universitas' => [
+                'levels' => 2,
+                'data'   => self::getCategoryNestedStructure(self::FOLDER_IDS['AMI_LEVEL_UNIVERSITAS'] ?? null),
+            ],
+        ];
+    }
+
+    /**
+     * Load AMI data for a single level only (used for tab-by-tab lazy loading).
+     * Much faster than getAllAmiFiles() since only one GAS request is made.
+     *
+     * @param string $level  'Prodi', 'Fakultas', or 'Universitas'
+     * @return array Single-key array with the same structure as getAllAmiFiles()
+     */
+    public static function getAmiFilesByLevel($level)
+    {
+        $map = [
+            'Prodi'       => ['key' => 'AMI_LEVEL_PRODI',       'levels' => 2, 'fakultas' => false],
+            'Universitas' => ['key' => 'AMI_LEVEL_UNIVERSITAS',  'levels' => 2, 'fakultas' => false],
+            'Fakultas'    => ['key' => 'AMI_LEVEL_FAKULTAS',     'levels' => 3, 'fakultas' => true],
+        ];
+
+        if (!isset($map[$level])) {
+            return [];
+        }
+
+        $cfg      = $map[$level];
+        $folderId = self::FOLDER_IDS[$cfg['key']] ?? null;
+        $data     = $cfg['fakultas']
+            ? self::getCategoryFakultasStructure($folderId)
+            : self::getCategoryNestedStructure($folderId);
+
+        return [
+            $level => [
+                'levels' => $cfg['levels'],
+                'data'   => $data,
+            ],
+        ];
     }
 
     /**

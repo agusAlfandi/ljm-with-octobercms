@@ -28,8 +28,36 @@ class DriveLoader extends ComponentBase
 
         switch ($type) {
             case 'ami':
-                $files = GoogleDriveReader::getAllAmiFiles();
+                // Allow extended execution time: depth=2 GAS traversal over 100 folders
+                // can legitimately take 60-120 seconds on first (cache-miss) load.
+                @set_time_limit(0);
+                $level = post('level'); // optional: 'Prodi', 'Fakultas', or 'Universitas'
+                $files = $level
+                    ? GoogleDriveReader::getAmiFilesByLevel($level)
+                    : GoogleDriveReader::getAllAmiFiles();
                 break;
+
+            case 'ami_folder_files':
+                // Lazy-load PDF files from a specific prodi folder ID.
+                // Called by the frontend when a user first clicks a prodi pill.
+                @set_time_limit(0);
+                $folderId = trim(post('folderId') ?? '');
+                // Validate: Google Drive IDs are alphanumeric + underscores/hyphens, 20-50 chars
+                if ($folderId && preg_match('/^[a-zA-Z0-9_-]{20,50}$/', $folderId)) {
+                    $rawFiles = GoogleDriveReader::getFilesFromFolder($folderId);
+                    $pdfs = [];
+                    foreach ($rawFiles as $f) {
+                        if (isset($f['mimeType']) && $f['mimeType'] === 'application/pdf') {
+                            $pdfs[] = [
+                                'fileId'   => $f['id'],
+                                'title'    => pathinfo($f['name'], PATHINFO_FILENAME),
+                                'fileName' => $f['name'],
+                            ];
+                        }
+                    }
+                    return ['type' => $type, 'label' => '', 'data' => $pdfs];
+                }
+                return ['type' => $type, 'label' => '', 'data' => []];
             case 'rtm':
                 $files = GoogleDriveReader::getAllRtmFiles();
                 break;

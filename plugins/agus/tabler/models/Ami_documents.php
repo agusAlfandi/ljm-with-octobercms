@@ -24,6 +24,7 @@ class Ami_documents extends Model
      */
     public $rules = [
         'title' => 'required',
+        'level' => 'required',
         'periode' => 'required',
         'prodi' => 'required',
         'file' => 'required'
@@ -34,6 +35,8 @@ class Ami_documents extends Model
      */
     protected $fillable = [
         'title',
+        'level',
+        'fakultas',
         'periode',
         'prodi',
         'periode_name',
@@ -69,6 +72,121 @@ class Ami_documents extends Model
      */
     protected $isUploadingToGoogleDrive = false;
 
+
+    /**
+     * Get level options (Prodi, Fakultas, Universitas)
+     */
+    public function getLevelOptions()
+    {
+        return [
+            'Prodi'       => 'Prodi',
+            'Fakultas'    => 'Fakultas',
+            'Universitas' => 'Universitas',
+        ];
+    }
+
+    /**
+     * Get Fakultas options — only shown when level = Fakultas
+     */
+    public function getFakultasOptions()
+    {
+        if ($this->level !== 'Fakultas') {
+            return [];
+        }
+
+        return [
+            'Fakultas Hukum dan Bisnis'              => 'Fakultas Hukum dan Bisnis',
+            'Fakultas Ilmu Kesehatan'                => 'Fakultas Ilmu Kesehatan',
+            'Fakultas Ilmu Komputer'                 => 'Fakultas Ilmu Komputer',
+            'Fakultas Kedokteran'                    => 'Fakultas Kedokteran',
+            'Fakultas Keguruan dan Ilmu Pendidikan'  => 'Fakultas Keguruan dan Ilmu Pendidikan',
+            'Fakultas Sains dan Teknologi'           => 'Fakultas Sains dan Teknologi',
+        ];
+    }
+
+    /**
+     * Map fakultas name to its Google Drive folder ID
+     */
+    protected function getFakultasFolderId($fakultasName)
+    {
+        $map = [
+            'Fakultas Hukum dan Bisnis'             => GoogleDriveReader::FOLDER_IDS['AMI_FAK_HUKUM_BISNIS'],
+            'Fakultas Ilmu Kesehatan'               => GoogleDriveReader::FOLDER_IDS['AMI_FAK_ILMU_KESEHATAN'],
+            'Fakultas Ilmu Komputer'                => GoogleDriveReader::FOLDER_IDS['AMI_FAK_ILMU_KOMPUTER'],
+            'Fakultas Kedokteran'                   => GoogleDriveReader::FOLDER_IDS['AMI_FAK_KEDOKTERAN'],
+            'Fakultas Keguruan dan Ilmu Pendidikan' => GoogleDriveReader::FOLDER_IDS['AMI_FAK_KEGURUAN_ILMU_PEND'],
+            'Fakultas Sains dan Teknologi'          => GoogleDriveReader::FOLDER_IDS['AMI_FAK_SAINS_TEKNOLOGI'],
+        ];
+
+        return $map[$fakultasName] ?? null;
+    }
+
+    /**
+     * Override getTargetFolderId to navigate through AMI level folder
+     * Prodi/Universitas path : level folder → Periode → Prodi
+     * Fakultas path           : level folder → Fakultas → Periode → Prodi
+     */
+    protected function getTargetFolderId($rootKey)
+    {
+        if (!$this->periode || !$this->prodi || !$this->level) {
+            return null;
+        }
+
+        // --- Fakultas: 3-level path ---
+        if ($this->level === 'Fakultas') {
+            if (!$this->fakultas) {
+                \Log::warning('AMI: level Fakultas dipilih tapi fakultas kosong');
+                return null;
+            }
+
+            $fakultasId = $this->getFakultasFolderId($this->fakultas);
+            if (!$fakultasId) {
+                \Log::warning("AMI: Folder Fakultas '{$this->fakultas}' tidak dikenali");
+                return null;
+            }
+
+            $periodeFolder = GoogleDriveReader::createOrFindSubfolder($fakultasId, $this->periode);
+            if (!$periodeFolder || !isset($periodeFolder['id'])) {
+                \Log::warning("AMI: Gagal membuat/menemukan Folder Periode '{$this->periode}' di fakultas '{$this->fakultas}'");
+                return null;
+            }
+
+            $prodiFolder = GoogleDriveReader::createOrFindSubfolder($periodeFolder['id'], $this->prodi);
+            if (!$prodiFolder || !isset($prodiFolder['id'])) {
+                \Log::warning("AMI: Gagal membuat/menemukan Folder Prodi '{$this->prodi}' di periode '{$this->periode}'");
+                return null;
+            }
+
+            return $prodiFolder['id'];
+        }
+
+        // --- Prodi / Universitas: 2-level path ---
+        $levelFolderIds = [
+            'Prodi'       => GoogleDriveReader::FOLDER_IDS['AMI_LEVEL_PRODI'],
+            'Universitas' => GoogleDriveReader::FOLDER_IDS['AMI_LEVEL_UNIVERSITAS'],
+        ];
+
+        if (!isset($levelFolderIds[$this->level])) {
+            \Log::warning('AMI: level tidak valid: ' . $this->level);
+            return null;
+        }
+
+        $levelId = $levelFolderIds[$this->level];
+
+        $periodeFolder = GoogleDriveReader::createOrFindSubfolder($levelId, $this->periode);
+        if (!$periodeFolder || !isset($periodeFolder['id'])) {
+            \Log::warning("AMI: Gagal membuat/menemukan Folder Periode '{$this->periode}' di level '{$this->level}'");
+            return null;
+        }
+
+        $prodiFolder = GoogleDriveReader::createOrFindSubfolder($periodeFolder['id'], $this->prodi);
+        if (!$prodiFolder || !isset($prodiFolder['id'])) {
+            \Log::warning("AMI: Gagal membuat/menemukan Folder Prodi '{$this->prodi}' di dalam periode '{$this->periode}'");
+            return null;
+        }
+
+        return $prodiFolder['id'];
+    }
 
     public function beforeSave()
     {
@@ -142,7 +260,7 @@ class Ami_documents extends Model
                 $this->isUploadingToGoogleDrive = false;
 
                 // Hapus cache Google Drive supaya data baru langsung tampil
-                \Cache::forget('gdrive_structure_' . md5(\Agus\Tabler\Classes\GoogleDriveReader::FOLDER_IDS['ROOT_AMI']));
+                $this->flushAmiCache();
 
                 // Hapus relasi file lokal dan relasi setelah upload sukses
                 $this->deleteLocalFileRelation($file, $filePath);
@@ -204,6 +322,19 @@ class Ami_documents extends Model
         }
     }
 
+    /**
+     * Flush Google Drive cache for all AMI level folders
+     */
+    protected function flushAmiCache()
+    {
+        $keys = ['ROOT_AMI', 'AMI_LEVEL_PRODI', 'AMI_LEVEL_FAKULTAS', 'AMI_LEVEL_UNIVERSITAS'];
+        foreach ($keys as $key) {
+            if (!empty(GoogleDriveReader::FOLDER_IDS[$key])) {
+                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS[$key]));
+            }
+        }
+    }
+
     public function afterDelete()
     {
         // Saat record dihapus, hapus juga file dari Google Drive menggunakan file_name dari database
@@ -220,7 +351,7 @@ class Ami_documents extends Model
                 }
 
                 // Hapus cache supaya daftar file ter-update
-                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS['ROOT_AMI']));
+                $this->flushAmiCache();
             } catch (\Exception $e) {
                 \Log::error('Google Drive delete failed: ' . $e->getMessage());
             }

@@ -300,3 +300,9 @@ v1.0.100:
 v1.0.101:
     - 'Add periode, prodi, periode_name, prodi_name to Monev table'
     - add_periode_prodi_to_monev.php
+v1.0.102:
+    - 'Add level (Prodi/Fakultas/Universitas) to AMI table'
+    - add_level_to_ami_table.php
+v1.0.103:
+    - 'Add fakultas column to AMI table'
+    - add_fakultas_to_ami_table.php

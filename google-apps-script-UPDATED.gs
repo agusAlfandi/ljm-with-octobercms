@@ -55,12 +55,58 @@ function doGet(e) {
     return listNestedStructure(e.parameter.folderId, depth);
   } else if (action === 'delete') {
     return deleteFile(e.parameter.id);
+  } else if (action === 'createFolder') {
+    return createFolderInParent(e.parameter.parentId, e.parameter.name);
   }
 
   return ContentService.createTextOutput(JSON.stringify({
     success: false,
     error: 'Invalid action'
   })).setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Create a subfolder inside a parent folder (or return existing one with same name)
+ *
+ * @param {string} parentId - Parent folder ID
+ * @param {string} name     - Folder name to create or find
+ * @return {TextOutput} JSON response with folderId and created flag
+ */
+function createFolderInParent(parentId, name) {
+  try {
+    if (!parentId || !name) {
+      throw new Error('parentId and name are required');
+    }
+
+    var parent = DriveApp.getFolderById(parentId);
+
+    // Return existing folder if one with the same name already exists
+    var existingFolders = parent.getFoldersByName(name);
+    if (existingFolders.hasNext()) {
+      var existing = existingFolders.next();
+      return ContentService.createTextOutput(JSON.stringify({
+        success: true,
+        folderId: existing.getId(),
+        folderName: existing.getName(),
+        created: false
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Create new folder
+    var newFolder = parent.createFolder(name);
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      folderId: newFolder.getId(),
+      folderName: newFolder.getName(),
+      created: true
+    })).setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 function listFilesInFolder(folderId) {
@@ -144,7 +190,7 @@ function deleteFile(fileId) {
 /**
  * NEW: Get entire nested folder structure in a single API call
  * This dramatically reduces latency by eliminating multiple round-trips
- * 
+ *
  * @param {string} folderId - Root folder ID
  * @param {number} depth - How many levels deep to traverse (default 2)
  * @return {TextOutput} JSON response with nested structure
@@ -154,18 +200,18 @@ function listNestedStructure(folderId, depth) {
     if (!folderId) {
       throw new Error('Argumen tidak valid: folderId diperlukan');
     }
-    
+
     depth = depth || 2; // Default: Period -> Prodi -> Files
     var folder = DriveApp.getFolderById(folderId);
     var structure = getNestedFolderContents(folder, depth);
-    
+
     return ContentService.createTextOutput(JSON.stringify({
       success: true,
       folderId: folderId,
       folderName: folder.getName(),
       structure: structure
     })).setMimeType(ContentService.MimeType.JSON);
-    
+
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
@@ -176,14 +222,14 @@ function listNestedStructure(folderId, depth) {
 
 /**
  * Recursively get folder contents
- * 
+ *
  * @param {Folder} folder - Google Drive Folder object
  * @param {number} depth - Remaining depth to traverse
  * @return {Array} Array of items with nested children for folders
  */
 function getNestedFolderContents(folder, depth) {
   var items = [];
-  
+
   // Get subfolders
   var subfolders = folder.getFolders();
   while (subfolders.hasNext()) {
@@ -196,15 +242,15 @@ function getNestedFolderContents(folder, depth) {
       createdDate: subfolder.getDateCreated().toISOString(),
       modifiedDate: subfolder.getLastUpdated().toISOString()
     };
-    
+
     // Recursively get children if depth allows
     if (depth > 0) {
       folderItem.children = getNestedFolderContents(subfolder, depth - 1);
     }
-    
+
     items.push(folderItem);
   }
-  
+
   // Get files
   var files = folder.getFiles();
   while (files.hasNext()) {
@@ -219,6 +265,6 @@ function getNestedFolderContents(folder, depth) {
       modifiedDate: file.getLastUpdated().toISOString()
     });
   }
-  
+
   return items;
 }

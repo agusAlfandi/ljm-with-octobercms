@@ -3,6 +3,14 @@ columns:
         label: 'Judul Dokumen'
         type: text
         searchable: true
+    level:
+        label: Level
+        type: text
+        searchable: true
+    fakultas:
+        label: Fakultas
+        type: text
+        searchable: true
     periode_name:
         label: Periode
         type: text

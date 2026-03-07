@@ -20,6 +20,22 @@ fields:
         placeholder: 'Otomatis terisi dari nama file PDF'
         comment: 'Nama file yang akan diupload ke Google Drive (akan otomatis terisi dari file yang diupload, bisa diedit manual)'
         required: true
+    level:
+        label: Level
+        span: left
+        type: dropdown
+        placeholder: '-- Pilih Level --'
+        options: getLevelOptions
+        required: true
+        comment: 'Pilih level AMI: Prodi, Fakultas, atau Universitas'
+    fakultas:
+        label: Fakultas
+        span: right
+        type: dropdown
+        placeholder: '-- Pilih Fakultas --'
+        dependsOn: [level]
+        options: getFakultasOptions
+        comment: 'Pilih Fakultas (hanya untuk level Fakultas)'
     periode:
         label: Periode
         span: left
