@@ -68,6 +68,34 @@
       /* .navbar {
         overflow-x: hidden !important;
       } */
+
+      /* decorative section divider */
+      .section-header-custom {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      .section-header-custom hr {
+        flex: 1;
+        border: none;
+        height: 2px;
+        background: blue;
+        position: relative;
+      }
+      .section-header-custom hr::after {
+        content: '';
+        position: absolute;
+        right: -8px;
+        top: -4px;
+        width: 8px;
+        height: 8px;
+        background: red;
+        border-radius: 50%;
+      }
+      .section-header-custom h2 {
+        margin: 0 0.75rem;
+        white-space: nowrap;
+      }
     </style>
     <!-- END CUSTOM FONT -->
   </head>

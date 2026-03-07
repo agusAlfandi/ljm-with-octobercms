@@ -1,246 +1,179 @@
-<!-- BEGIN NAVBAR  -->
-      <header class="navbar navbar-expand-md d-print-none">
-        <div class="container-xl">
-          <!-- BEGIN NAVBAR TOGGLER -->
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbar-menu"
-            aria-controls="navbar-menu"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <!-- END NAVBAR TOGGLER -->
+<style>
+  /* 1. Area Header Atas (Logo & Nama Lembaga) */
+  .header-logo-area {
+    background-color: #004391;
+    border-bottom: none !important; /* Hapus border bawaan agar gap/garis pembatas hilang */
+    box-shadow: none !important;
+    padding: 15px 0;
+  }
+  .header-logo-area .navbar-brand-image {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+  }
 
-          <!-- BEGIN NAVBAR LOGO -->
-          <div class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3 mx-auto">
-            <a href="." aria-label="Tabler"
-              >
-                <img
-                    src="{{ 'assets/img/logo.png'|theme }}"
-                    alt="Logo Universitas Duta Bangsa Surakarta"
-                    class="navbar-brand-image"
-                    height="40"/>
-            </a>
-          </div>
-          <!-- END NAVBAR LOGO -->
-          <div class="navbar-nav flex-row order-md-last">
-            <div class="nav-item d-none d-md-flex me-3">
-              {# <div class="btn-list">
-                <a href="https://github.com/tabler/tabler" class="btn btn-5" target="_blank" rel="noreferrer">
-                  <!-- Download SVG icon from http://tabler.io/icons/icon/brand-github -->
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="icon icon-2"
-                  >
-                    <path
-                      d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5"
-                    />
-                  </svg>
-                  Source code
+  /* Teks LJM di sebelah kanan logo */
+  .header-title-wrapper {
+    text-align: right;
+  }
+  .header-title-wrapper h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff; /* Diubah menjadi PUTIH agar kontras dengan biru gelap */
+    letter-spacing: 0.5px;
+  }
+  .header-title-wrapper p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #e2e8f0; /* Diubah menjadi putih agak abu-abu/redup untuk sub-judul */
+    font-weight: 500;
+  }
+
+  /* 2. Area Navigasi Bawah (Menu) */
+  .nav-kampus {
+    background-color: #003e7c;
+    border-top: none !important; /* Memastikan tidak ada gap dari sisi bawah */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  /* Styling Menu Utama (Teks Putih) */
+  .nav-kampus .nav-link {
+    color: #ffffff !important;
+    font-weight: 500;
+    padding: 1rem 1.25rem !important;
+    font-size: 0.95rem;
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Efek Hover (Saat Disorot) */
+  .nav-kampus .nav-link:hover,
+  .nav-kampus .nav-item.show .nav-link {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+  }
+
+  /* Styling Sub-menu (Dropdown) */
+  .nav-kampus .dropdown-menu {
+    background-color: #ffffff;
+    border: none;
+    border-top: 3px solid #004391; /* Garis atas dropdown disamakan dengan biru header */
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    margin-top: 0;
+  }
+  .nav-kampus .dropdown-item {
+    padding: 0.6rem 1.5rem;
+    color: #334155;
+    font-weight: 500;
+  }
+  .nav-kampus .dropdown-item:hover {
+    background-color: #f1f5f9;
+    color: #004391;
+  }
+</style>
+
+<header class="navbar navbar-expand-md d-print-none header-logo-area">
+  <div class="container-xl align-items-center">
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="navbar-brand d-none-navbar-horizontal pe-0 pe-md-3 me-auto">
+      <a href="{{ 'home'|page }}">
+        <img src="{{ 'assets/img/logo.png'|theme }}" alt="Logo UDB" class="navbar-brand-image" />
+      </a>
+    </div>
+
+    <div class="navbar-nav flex-row order-md-last d-none d-md-flex header-title-wrapper">
+      <div>
+        <h1>LEMBAGA PENJAMINAN MUTU</h1>
+        <p>Universitas Duta Bangsa Surakarta</p>
+      </div>
+    </div>
+
+  </div>
+</header>
+<header class="navbar-expand-md nav-kampus">
+  <div class="collapse navbar-collapse" id="navbar-menu">
+    <div class="navbar nav-kampus">
+      <div class="container-xl">
+        <div class="row flex-column flex-md-row flex-fill align-items-center">
+          <div class="col-auto w-100">
+
+            <ul class="navbar-nav justify-content-center w-100">
+
+              <li class="nav-item">
+                <a class="nav-link" href="{{ 'home'|page }}">
+                  <span class="nav-link-title"> Home </span>
                 </a>
-                <a href="https://github.com/sponsors/codecalm" class="btn btn-6" target="_blank" rel="noreferrer">
-                  <!-- Download SVG icon from http://tabler.io/icons/icon/heart -->
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="icon text-pink icon-2"
-                  >
-                    <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
-                  </svg>
-                  Sponsor
+              </li>
+
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                  <span class="nav-link-title"> Tentang Kami </span>
                 </a>
-              </div> #}
-            </div>
-            {# <div class="nav-item dropdown">
-              <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
-                <span class="avatar avatar-sm" style="background-image: url(./static/avatars/000m.jpg)"> </span>
-                <div class="d-none d-xl-block ps-2">
-                  <div>Paweł Kuna</div>
-                  <div class="mt-1 small text-secondary">UI Designer</div>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{ 'tentang-kami/profile'|page }}"> Profil </a>
+                  <a class="dropdown-item" href="{{ 'tentang-kami/struktur-organisasi'|page }}"> Struktur Organisasi </a>
+                  <a class="dropdown-item" href="{{ 'tentang-kami/tupoksi'|page }}"> Tupoksi </a>
                 </div>
-              </a>
-              <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <a href="#" class="dropdown-item">Status</a>
-                <a href="./profile.html" class="dropdown-item">Profile</a>
-                <a href="#" class="dropdown-item">Feedback</a>
-                <div class="dropdown-divider"></div>
-                <a href="./settings.html" class="dropdown-item">Settings</a>
-                <a href="./sign-in.html" class="dropdown-item">Logout</a>
-              </div>
-            </div> #}
+              </li>
+
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#navbar-form" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                  <span class="nav-link-title"> Dokumen Formal SPMI </span>
+                </a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/kebijakan-spmi'|page }}"> Kebijakan SPMI </a>
+                  <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/standar-spmi'|page }}"> Standar SPMI </a>
+                  <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/formulir-spmi'|page }}"> Formulir SPMI </a>
+                  <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/manual-mutu'|page }}"> Manual Mutu </a>
+                  <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/sop-spmi'|page }}"> SOP SPMI </a>
+                  <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/standar-lampauan'|page }}"> Standar Lampauan </a>
+                </div>
+              </li>
+
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#navbar-extra" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                  <span class="nav-link-title"> Implementasi SPMI </span>
+                </a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{ 'implementasi-spmi/audit-mutu-internal'|page }}"> Audit Mutu Internal (AMI) </a>
+                  <a class="dropdown-item" href="{{ 'implementasi-spmi/monitoring-dan-evaluasi'|page }}"> Monitoring dan Evaluasi (MONEV) </a>
+                  <a class="dropdown-item" href="{{ 'implementasi-spmi/rapat-tinjauan-manajemen'|page }}"> Rapat Tinjauan Manajemen </a>
+                  <a class="dropdown-item" href="{{ 'implementasi-spmi/laporan-survey-kepuasan'|page }}"> Laporan Survey Kepuasan </a>
+                </div>
+              </li>
+
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#navbar-layout" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                  <span class="nav-link-title"> Akreditasi </span>
+                </a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{ 'akreditasi/akreditasi-program-studi'|page }}"> Akreditasi Program Studi </a>
+                  <a class="dropdown-item" href="{{ 'akreditasi/akreditasi-perguruan-tinggi'|page }}"> Akreditasi Perguruan Tinggi </a>
+                  <a class="dropdown-item" href="{{ 'akreditasi/akreditasi-international-iso'|page }}"> Akreditasi International ISO </a>
+                </div>
+              </li>
+
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#navbar-plugins" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                  <span class="nav-link-title"> Peningkatan </span>
+                </a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{ 'peningkatan/benchmarking'|page }}"> Benchmarking </a>
+                  <a class="dropdown-item" href="{{ 'peningkatan/workshop'|page }}"> Workshop </a>
+                  <a class="dropdown-item" href="{{ 'peningkatan/rekognisi'|page }}"> Rekognisi </a>
+                  <a class="dropdown-item" href="{{ 'peningkatan/auditor'|page }}"> Auditor </a>
+                </div>
+              </li>
+
+            </ul>
           </div>
         </div>
-      </header>
-      <header class="navbar-expand-md">
-        <div class="collapse navbar-collapse" id="navbar-menu">
-          <div class="navbar">
-            <div class="container-xl">
-              <div class="row flex-column flex-md-row flex-fill align-items-center justify-content-center">
-                <div class="col-auto">
-                  <!-- BEGIN NAVBAR MENU -->
-                  <ul class="navbar-nav justify-content-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ 'home'|page }}">
-                          <span class="nav-link-title"> Home </span>
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a
-                          class="nav-link dropdown-toggle"
-                          href="#navbar-base"
-                          data-bs-toggle="dropdown"
-                          data-bs-auto-close="outside"
-                          role="button"
-                          aria-expanded="false"
-                        >
-                          <span class="nav-link-title"> Tentang Kami </span>
-                        </a>
-                      <div class="dropdown-menu">
-                        <div class="dropdown-menu-columns">
-                          <div class="dropdown-menu-column">
-                            <a class="dropdown-item" href="{{ 'tentang-kami/profile'|page }}"> Profil </a>
-                            <a class="dropdown-item" href="{{ 'tentang-kami/struktur-organisasi'|page }}"> Struktur Organisasi </a>
-                            <a class="dropdown-item" href="{{ 'tentang-kami/tupoksi'|page }}"> Tupoksi </a>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                      <a
-                        class="nav-link dropdown-toggle"
-                        href="#navbar-form"
-                        data-bs-toggle="dropdown"
-                        data-bs-auto-close="outside"
-                        role="button"
-                        aria-expanded="false"
-                      >
-                        <span class="nav-link-title"> Dokumen Formal SPMI </span>
-                      </a>
-                      <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/kebijakan-spmi'|page }}"> Kebijakan SPMI </a>
-                        <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/standar-spmi'|page }}"> Standar SPMI </a>
-                        <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/formulir-spmi'|page }}"> Formulir SPMI </a>
-                        <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/manual-mutu'|page }}"> Manual Mutu </a>
-                        <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/sop-spmi'|page }}"> SOP SPMI </a>
-                        <a class="dropdown-item" href="{{ 'dokumen-formal-spmi/standar-lampauan'|page }}"> Standar Lampauan </a>
-                      </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                      <a
-                        class="nav-link dropdown-toggle"
-                        href="#navbar-extra"
-                        data-bs-toggle="dropdown"
-                        data-bs-auto-close="outside"
-                        role="button"
-                        aria-expanded="false"
-                      >
-                        <span class="nav-link-title"> Implementasi SPMI </span>
-                      </a>
-                      <div class="dropdown-menu">
-                        <div class="dropdown-menu-columns">
-                          <div class="dropdown-menu-column">
-                            <a class="dropdown-item" href="{{ 'implementasi-spmi/audit-mutu-internal'|page }}"> Audit Mutu Internal (AMI) </a>
-                            <a class="dropdown-item" href="{{ 'implementasi-spmi/monitoring-dan-evaluasi'|page }}"> Monitoring dan Evaluasi (MONEV) </a>
-                            <a class="dropdown-item" href="{{ 'implementasi-spmi/rapat-tinjauan-manajemen'|page }}"> Rapat Tinjauan Manajemen </a>
-                            <a class="dropdown-item" href="{{ 'implementasi-spmi/laporan-survey-kepuasan'|page }}"> Laporan Survey Kepuasan </a>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                      <a
-                        class="nav-link dropdown-toggle"
-                        href="#navbar-layout"
-                        data-bs-toggle="dropdown"
-                        data-bs-auto-close="outside"
-                        role="button"
-                        aria-expanded="false"
-                      >
-                        <span class="nav-link-title"> Akreditasi </span>
-                      </a>
-                      <div class="dropdown-menu">
-                        <div class="dropdown-menu-columns">
-                          <div class="dropdown-menu-column">
-                            <a class="dropdown-item" href="{{ 'akreditasi/akreditasi-program-studi'|page }}"> Akreditasi Program Studi </a>
-                            <a class="dropdown-item" href="{{ 'akreditasi/akreditasi-perguruan-tinggi'|page }}"> Akreditasi Perguruan Tinggi </a>
-                            <a class="dropdown-item" href="{{ 'akreditasi/akreditasi-international-iso'|page }}"> Akreditasi International ISO </a>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                      <a
-                        class="nav-link dropdown-toggle"
-                        href="#navbar-plugins"
-                        data-bs-toggle="dropdown"
-                        data-bs-auto-close="outside"
-                        role="button"
-                        aria-expanded="false"
-                      >
-                        <span class="nav-link-title"> Peningkatan </span>
-                      </a>
-                      <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{{ 'peningkatan/benchmarking'|page }}"> Benchmarking </a>
-                        <a class="dropdown-item" href="{{ 'peningkatan/workshop'|page }}"> Workshop </a>
-                        <a class="dropdown-item" href="{{ 'peningkatan/rekognisi'|page }}"> Rekognisi </a>
-                        <a class="dropdown-item" href="{{ 'peningkatan/auditor'|page }}"> Auditor </a>
-                      </div>
-                    </li>
-                  </ul>
-                  <!-- END NAVBAR MENU -->
-                </div>
-                {# <div class="col col-md-auto">
-                  <ul class="navbar-nav">
-                    <li class="nav-item">
-                      <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSettings">
-                        <span class="badge badge-sm bg-red text-red-fg">New</span>
-                        <span class="nav-link-icon d-md-none d-lg-inline-block">
-                          <!-- Download SVG icon from http://tabler.io/icons/icon/settings -->
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="icon icon-1"
-                          >
-                            <path
-                              d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"
-                            />
-                            <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
-                          </svg>
-                        </span>
-                        <span class="nav-link-title"> Theme Settings </span>
-                      </a>
-                    </li>
-                  </ul>
-                </div> #}
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-      <!-- END NAVBAR  -->
+      </div>
+    </div>
+  </div>
+</header>

@@ -1,6 +1,6 @@
 <div data-control="toolbar">
     <a
-        href="<?= Backend::url('agus/tabler/standarspmi/create') ?>"
+        href="<?= Backend::url('agus/tabler/standar_spmi/create') ?>"
         class="btn btn-primary oc-icon-plus">
         <?= e(trans('backend::lang.form.create')) ?>
     </a>

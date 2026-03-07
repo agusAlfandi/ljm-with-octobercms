@@ -1,16 +1,28 @@
 {% set header = getPageHeader() %}
-<div id="headerCarousel" class="carousel slide vh-100" data-bs-ride="carousel" style="height:100vh;">
+{#
+   Ubah data-bs-ride="false" agar tidak bergeser otomatis
+   dan hapus class "carousel slide" jika ingin benar-benar statis,
+   tapi di sini saya biarkan agar struktur tetap utuh.
+#}
+<div id="headerCarousel" class="carousel slide vh-100" data-bs-ride="false" style="height:100vh;">
   <div class="carousel-inner h-100">
+
     <div class="carousel-item active h-100">
       <img src="{{ header and header.image_1 ? header.image_1.path : 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80' }}" class="d-block w-100 h-100" alt="Slide 1" style="object-fit:cover;">
     </div>
+
+    {# --- BAGIAN DI BAWAH INI DINONAKTIFKAN SEMENTARA ---
     <div class="carousel-item h-100">
       <img src="{{ header and header.image_2 ? header.image_2.path : 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=1200&q=80' }}" class="d-block w-100 h-100" alt="Slide 2" style="object-fit:cover;">
     </div>
     <div class="carousel-item h-100">
       <img src="{{ header and header.image_3 ? header.image_3.path : 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=1200&q=80' }}" class="d-block w-100 h-100" alt="Slide 3" style="object-fit:cover;">
     </div>
+    #}
+
   </div>
+
+  {# --- TOMBOL NAVIGASI DINONAKTIFKAN ---
   <button class="carousel-control-prev" type="button" data-bs-target="#headerCarousel" data-bs-slide="prev">
     <span class="carousel-control-prev-icon"></span>
     <span class="visually-hidden">Previous</span>
@@ -19,4 +31,5 @@
     <span class="carousel-control-next-icon"></span>
     <span class="visually-hidden">Next</span>
   </button>
+  #}
 </div>

@@ -1,6 +1,6 @@
 <?php Block::put('breadcrumb') ?>
     <ul>
-        <li><a href="<?= Backend::url('agus/tabler/standarspmi') ?>">Standarspmi</a></li>
+        <li><a href="<?= Backend::url('agus/tabler/standar_spmi') ?>">Standarspmi</a></li>
         <li><?= e($this->pageTitle) ?></li>
     </ul>
 <?php Block::endPut() ?>
@@ -16,7 +16,7 @@
 <?php endif ?>
 
 <p>
-    <a href="<?= Backend::url('agus/tabler/standarspmi') ?>" class="btn btn-default oc-icon-chevron-left">
+    <a href="<?= Backend::url('agus/tabler/standar_spmi') ?>" class="btn btn-default oc-icon-chevron-left">
         <?= e(trans('backend::lang.form.return_to_list')) ?>
     </a>
 </p>

@@ -1,10 +1,10 @@
 name: Standarspmi
 form: $/agus/tabler/models/standar_spmi/fields.yaml
 modelClass: Agus\Tabler\Models\Standar_spmi
-defaultRedirect: agus/tabler/standarspmi
+defaultRedirect: agus/tabler/standar_spmi
 create:
-    redirect: 'agus/tabler/standarspmi/update/:id'
-    redirectClose: agus/tabler/standarspmi
+    redirect: 'agus/tabler/standar_spmi/update/:id'
+    redirectClose: agus/tabler/standar_spmi
 update:
-    redirect: agus/tabler/standarspmi
-    redirectClose: agus/tabler/standarspmi
+    redirect: agus/tabler/standar_spmi
+    redirectClose: agus/tabler/standar_spmi
