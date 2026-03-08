@@ -40,6 +40,24 @@ class KepuasanLoader extends ComponentBase
             case 'rtmk':
                 $files = GoogleDriveReader::getAllRtmKpsFiles();
                 break;
+            case 'folder_files':
+                // Lazy-load PDF files from a specific prodi folder ID.
+                $folderId = trim(post('folderId') ?? '');
+                if ($folderId && preg_match('/^[a-zA-Z0-9_-]{20,50}$/', $folderId)) {
+                    $rawFiles = GoogleDriveReader::getFilesFromFolder($folderId);
+                    $pdfs = [];
+                    foreach ($rawFiles as $f) {
+                        if (isset($f['mimeType']) && $f['mimeType'] === 'application/pdf') {
+                            $pdfs[] = [
+                                'fileId'   => $f['id'],
+                                'title'    => pathinfo($f['name'], PATHINFO_FILENAME),
+                                'fileName' => $f['name'],
+                            ];
+                        }
+                    }
+                    return ['section' => $section, 'label' => '', 'data' => $pdfs];
+                }
+                return ['section' => $section, 'label' => '', 'data' => []];
         }
 
         $labels = [

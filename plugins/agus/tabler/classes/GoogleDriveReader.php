@@ -169,9 +169,8 @@ class GoogleDriveReader
     }
 
     /**
-     * Preload commonly used folder structures so that the first web request
-     * doesn't pay for the Google Apps Script roundtrip.  You can call this
-     * from a scheduled task or a console command.
+     * Preload folder structures (shallow: depth=1/2) so the first web request
+     * responds quickly. For full file lists, use warmCacheFull() from a cron job.
      */
     public static function warmCache()
     {
@@ -200,6 +199,57 @@ class GoogleDriveReader
     }
 
     /**
+     * Pre-populate caches with FULL file lists (depth=2 for standard folders,
+     * depth=3 for Fakultas). Run this from a cron job / scheduled artisan command
+     * so that web requests always hit warm caches and files are pre-loaded.
+     */
+    public static function warmCacheFull()
+    {
+        $ttl = self::getCacheTtl();
+
+        // AMI Shallow (depth=1): fast web-request cache — files lazy-loaded per prodi
+        $amiShallowRoots = ['AMI_LEVEL_PRODI', 'AMI_LEVEL_UNIVERSITAS'];
+        foreach ($amiShallowRoots as $key) {
+            $folderId = self::FOLDER_IDS[$key] ?? null;
+            if (!$folderId) continue;
+            $items = self::getNestedStructure($folderId, 1);
+            if (!empty($items)) {
+                $shallowKey = 'gdrive_structure_' . md5($folderId) . '_shallow';
+                \Cache::put($shallowKey, self::formatNestedToGrouped($items), $ttl);
+            }
+        }
+
+        // Standard folders: depth=2 (Periode → Prodi → Files)
+        $standardRoots = [
+            'AMI_LEVEL_PRODI', 'AMI_LEVEL_UNIVERSITAS',
+            'ROOT_MONEV', 'ROOT_RTM',
+            'ROOT_GRAFIK_KEPUASAN', 'ROOT_SURVEI_KEPUASAN',
+            'ROOT_MONEV_SURVEI_KEPUASAN', 'ROOT_RTM_KEPUASAN',
+            'Beban Belajar Mahasiswa', 'Monev Dosen', 'Monev Kehadiran Mahasiswa',
+            'Monev Materi dengan RPS', 'Monev Nilai', 'Monev UTS UAS -- RPS',
+        ];
+        foreach ($standardRoots as $key) {
+            $folderId = self::FOLDER_IDS[$key] ?? null;
+            if (!$folderId) continue;
+            $items = self::getNestedStructure($folderId, 2);
+            if (!empty($items)) {
+                $cacheKey = 'gdrive_structure_' . md5($folderId);
+                \Cache::put($cacheKey, self::formatNestedToGrouped($items), $ttl);
+            }
+        }
+
+        // Fakultas: depth=3 (Fakultas → Periode → Prodi → Files)
+        $fakFolderId = self::FOLDER_IDS['AMI_LEVEL_FAKULTAS'] ?? null;
+        if ($fakFolderId) {
+            $items = self::getNestedStructure($fakFolderId, 3);
+            if (!empty($items)) {
+                $cacheKey = 'gdrive_structure_' . md5($fakFolderId);
+                \Cache::put($cacheKey, self::formatNestedToFakultasGrouped($items), $ttl);
+            }
+        }
+    }
+
+    /**
      * Get entire nested folder structure in ONE API call (much faster!)
      * This eliminates multiple round-trips to Google Apps Script
      *
@@ -211,11 +261,14 @@ class GoogleDriveReader
     {
         $url = self::WEB_APP_URL . '?action=listNested&folderId=' . urlencode($folderId) . '&depth=' . $depth;
 
+        // Scale timeout with depth: depth=1 ~15s, depth=2 ~45s, depth=3 ~75s
+        $curlTimeout = min(90, max(25, $depth * 30));
+
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 120); // Extended timeout: depth=2 traversal can take 60-90s for large folder trees
+        curl_setopt($ch, CURLOPT_TIMEOUT, $curlTimeout);
 
         $result = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -514,8 +567,8 @@ class GoogleDriveReader
             return $cached;
         }
 
-        // Try depth=2: full data (Periode → Prodi → Files)
-        // Large trees (e.g. 4 periods × 26 prodi) can take 60-120 s in GAS
+        // depth=2: full data (Periode → Prodi → Files). Used by Monev, Kepuasan, RTM, etc.
+        // For large AMI trees, use getCategoryNestedStructureShallow() instead.
         $nestedItems = self::getNestedStructure($rootFolderId, 2);
 
         if (!empty($nestedItems)) {
@@ -524,20 +577,8 @@ class GoogleDriveReader
             return $result;
         }
 
-        // depth=2 timed out — try depth=1 (Periode → Prodi folder names, no files)
-        // This is always fast (~5 s) and at least shows the prodi folder structure.
-        \Log::warning('getCategoryNestedStructure: depth=2 timed out, using depth=1 fallback', ['folder' => $rootFolderId]);
-        $shallowItems = self::getNestedStructure($rootFolderId, 1);
-
-        if (!empty($shallowItems)) {
-            $result = self::formatNestedToGrouped($shallowItems);
-            // Short TTL so depth=2 gets a chance on the next cache-miss.
-            \Cache::put($cacheKey, $result, 5);
-            return $result;
-        }
-
-        // Final fallback: legacy sequential API calls
-        \Log::warning('getCategoryNestedStructure: depth=1 also failed, trying legacy', ['folder' => $rootFolderId]);
+        // Fallback: legacy sequential API calls
+        \Log::warning('getCategoryNestedStructure: depth=2 failed, trying legacy', ['folder' => $rootFolderId]);
         $result = self::getCategoryNestedStructureLegacy($rootFolderId);
         if (!empty($result)) {
             \Cache::put($cacheKey, $result, $ttl);
@@ -569,6 +610,37 @@ class GoogleDriveReader
     }
 
     /**
+     * Shallow version of getCategoryNestedStructure for large folder trees (e.g. AMI).
+     * Uses depth=1: returns Periode → Prodi folder names + IDs only (no file lists).
+     * Files must be lazy-loaded on demand via the ami_folder_files AJAX handler.
+     * Uses a separate cache key (_shallow) to avoid colliding with the full depth=2 cache.
+     */
+    public static function getCategoryNestedStructureShallow($rootFolderId)
+    {
+        if (!$rootFolderId) {
+            return [];
+        }
+
+        $cacheKey = 'gdrive_structure_' . md5($rootFolderId) . '_shallow';
+        $ttl      = self::getCacheTtl();
+
+        $cached = \Cache::get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
+
+        $nestedItems = self::getNestedStructure($rootFolderId, 1);
+
+        if (!empty($nestedItems)) {
+            $result = self::formatNestedToGrouped($nestedItems);
+            \Cache::put($cacheKey, $result, $ttl);
+            return $result;
+        }
+
+        return [];
+    }
+
+    /**
      * Get nested structure for Fakultas level (depth=3: Fakultas → Periode → Prodi → Files)
      */
     public static function getCategoryFakultasStructure($rootFolderId)
@@ -580,16 +652,27 @@ class GoogleDriveReader
         $cacheKey = 'gdrive_structure_' . md5($rootFolderId);
         $ttl = self::getCacheTtl();
 
-        return \Cache::remember($cacheKey, $ttl, function () use ($rootFolderId) {
-            $nestedItems = self::getNestedStructure($rootFolderId, 3);
+        $cached = \Cache::get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
 
-            if (empty($nestedItems)) {
-                \Log::info('AMI Fakultas: depth=3 empty, falling back to 2-level');
-                return self::getCategoryNestedStructureLegacy($rootFolderId);
-            }
+        // Use depth=2 on cache-miss: Fakultas → Periode → Prodi folder names + IDs (~10-20s).
+        // Files are lazy-loaded per prodi on demand via the ami_folder_files AJAX handler.
+        $nestedItems = self::getNestedStructure($rootFolderId, 2);
 
-            return self::formatNestedToFakultasGrouped($nestedItems);
-        });
+        if (!empty($nestedItems)) {
+            $result = self::formatNestedToFakultasGrouped($nestedItems);
+            \Cache::put($cacheKey, $result, $ttl);
+            return $result;
+        }
+
+        \Log::warning('getCategoryFakultasStructure: depth=2 failed, trying legacy', ['folder' => $rootFolderId]);
+        $result = self::getCategoryNestedStructureLegacy($rootFolderId);
+        if (!empty($result)) {
+            \Cache::put($cacheKey, $result, $ttl);
+        }
+        return $result;
     }
 
     /**
@@ -613,6 +696,8 @@ class GoogleDriveReader
                 $periodeName = $periodeItem['name'];
                 $prodiGroups = [];
 
+                $folderIds = [];
+
                 foreach ($periodeItem['children'] ?? [] as $child) {
                     if (isset($child['mimeType']) && $child['mimeType'] === 'application/vnd.google-apps.folder') {
                         $prodiName = $child['name'];
@@ -627,6 +712,10 @@ class GoogleDriveReader
                             }
                         }
                         $prodiGroups[$prodiName] = $files;
+                        // Store folder ID for lazy-loading when files aren't pre-loaded
+                        if (!empty($child['id'])) {
+                            $folderIds[$prodiName] = $child['id'];
+                        }
                     } elseif (isset($child['mimeType']) && $child['mimeType'] === 'application/pdf') {
                         if (!isset($prodiGroups['Umum'])) {
                             $prodiGroups['Umum'] = [];
@@ -637,6 +726,10 @@ class GoogleDriveReader
                             'fileName' => $child['name'],
                         ];
                     }
+                }
+
+                if (!empty($folderIds)) {
+                    $prodiGroups['_folderIds'] = $folderIds;
                 }
 
                 $periodeData[$periodeName] = $prodiGroups;
@@ -667,7 +760,7 @@ class GoogleDriveReader
      */
     public static function getAllMonevBebanBelajarFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['Beban Belajar Mahasiswa'] ?? null);
+        return self::getCategoryNestedStructureShallow(self::FOLDER_IDS['Beban Belajar Mahasiswa'] ?? null);
     }
 
     /**
@@ -677,7 +770,7 @@ class GoogleDriveReader
      */
     public static function getAllMonevDosenFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['Monev Dosen'] ?? null);
+        return self::getCategoryNestedStructureShallow(self::FOLDER_IDS['Monev Dosen'] ?? null);
     }
 
     /**
@@ -687,7 +780,7 @@ class GoogleDriveReader
      */
     public static function getAllMonevKehadiranFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['Monev Kehadiran Mahasiswa'] ?? null);
+        return self::getCategoryNestedStructureShallow(self::FOLDER_IDS['Monev Kehadiran Mahasiswa'] ?? null);
     }
 
     /**
@@ -697,7 +790,7 @@ class GoogleDriveReader
      */
     public static function getAllMonevMateriRpsFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['Monev Materi dengan RPS'] ?? null);
+        return self::getCategoryNestedStructureShallow(self::FOLDER_IDS['Monev Materi dengan RPS'] ?? null);
     }
 
     /**
@@ -707,7 +800,7 @@ class GoogleDriveReader
      */
     public static function getAllMonevNilaiFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['Monev Nilai'] ?? null);
+        return self::getCategoryNestedStructureShallow(self::FOLDER_IDS['Monev Nilai'] ?? null);
     }
 
     /**
@@ -717,7 +810,7 @@ class GoogleDriveReader
      */
     public static function getAllMonevUtsUasFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['Monev UTS UAS -- RPS'] ?? null);
+        return self::getCategoryNestedStructureShallow(self::FOLDER_IDS['Monev UTS UAS -- RPS'] ?? null);
     }
 
     public static function getAllAmiFiles()
@@ -759,9 +852,10 @@ class GoogleDriveReader
 
         $cfg      = $map[$level];
         $folderId = self::FOLDER_IDS[$cfg['key']] ?? null;
+        // Use shallow (depth=1) fetch for Prodi/Universitas AMI tabs — files are lazy-loaded per prodi.
         $data     = $cfg['fakultas']
             ? self::getCategoryFakultasStructure($folderId)
-            : self::getCategoryNestedStructure($folderId);
+            : self::getCategoryNestedStructureShallow($folderId);
 
         return [
             $level => [
@@ -810,7 +904,7 @@ class GoogleDriveReader
      */
     public static function getAllGrfKpsFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_GRAFIK_KEPUASAN'] ?? null);
+        return self::getCategoryNestedStructureShallow(self::FOLDER_IDS['ROOT_GRAFIK_KEPUASAN'] ?? null);
     }
 
     /**
@@ -820,7 +914,7 @@ class GoogleDriveReader
      */
     public static function getAllSvrKpsFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_SURVEI_KEPUASAN'] ?? null);
+        return self::getCategoryNestedStructureShallow(self::FOLDER_IDS['ROOT_SURVEI_KEPUASAN'] ?? null);
     }
 
     /**
@@ -830,7 +924,7 @@ class GoogleDriveReader
      */
     public static function getAllMnvSvrKpsFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_MONEV_SURVEI_KEPUASAN'] ?? null);
+        return self::getCategoryNestedStructureShallow(self::FOLDER_IDS['ROOT_MONEV_SURVEI_KEPUASAN'] ?? null);
     }
 
     /**
@@ -840,7 +934,7 @@ class GoogleDriveReader
      */
     public static function getAllRtmKpsFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_RTM_KEPUASAN'] ?? null);
+        return self::getCategoryNestedStructureShallow(self::FOLDER_IDS['ROOT_RTM_KEPUASAN'] ?? null);
     }
 
     /**

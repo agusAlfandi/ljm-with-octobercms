@@ -36,6 +36,11 @@ fields:
         dependsOn: [level]
         options: getFakultasOptions
         comment: 'Pilih Fakultas (hanya untuk level Fakultas)'
+        cssClass: hide
+        trigger:
+            action: show
+            field: level
+            condition: value[Fakultas]
     periode:
         label: Periode
         span: left

@@ -120,6 +120,7 @@ class Survei_kepuasan extends Model
                 $this->isUploadingToGoogleDrive = false;
 
                 \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS['ROOT_SURVEI_KEPUASAN']));
+                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS['ROOT_SURVEI_KEPUASAN']) . '_shallow');
 
                 $this->deleteLocalFileRelation($file, $filePath);
             } else {
@@ -183,6 +184,7 @@ class Survei_kepuasan extends Model
                     }
                 }
                 \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS['ROOT_SURVEI_KEPUASAN']));
+                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS['ROOT_SURVEI_KEPUASAN']) . '_shallow');
             } catch (\Exception $e) {
                 \Log::error('Survei Kepuasan Google Drive delete failed: ' . $e->getMessage());
             }

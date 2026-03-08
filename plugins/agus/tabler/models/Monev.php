@@ -170,6 +170,7 @@ class Monev extends Model
                 $categoryFolderId = GoogleDriveReader::FOLDER_IDS[$this->category_label] ?? null;
                 if ($categoryFolderId) {
                     \Cache::forget('gdrive_structure_' . md5($categoryFolderId));
+                    \Cache::forget('gdrive_structure_' . md5($categoryFolderId) . '_shallow');
                 }
 
                 $this->deleteLocalFileRelation($file, $filePath);
@@ -264,6 +265,7 @@ class Monev extends Model
                 $categoryFolderId = GoogleDriveReader::FOLDER_IDS[$this->category_label] ?? null;
                 if ($categoryFolderId) {
                     \Cache::forget('gdrive_structure_' . md5($categoryFolderId));
+                    \Cache::forget('gdrive_structure_' . md5($categoryFolderId) . '_shallow');
                 }
             } catch (\Exception $e) {
                 \Log::error('Google Drive delete failed: ' . $e->getMessage());
