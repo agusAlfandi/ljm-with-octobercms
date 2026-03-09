@@ -90,58 +90,183 @@ layout = "app"
 (function () {
     var HANDLER_URL = window.location.pathname;
 
-    function buildPaneHtml(label, data) {
-        var keys = Object.keys(data);
-        if (keys.length === 0) {
-            return '<div class="card-header"><h3 class="card-title">Dokumen PDF ' + label + '</h3></div>'
-                 + '<div class="card-body"><div class="text-muted text-center py-4">Belum ada data dokumen ' + label + '.</div></div>';
-        }
-        var cardsHtml = '';
-        keys.forEach(function (category, catIdx) {
-            var prodiGroups = data[category];
-            var prodiKeys = Object.keys(prodiGroups);
-            var innerHtml = '';
-            if (prodiKeys.length === 0) {
-                innerHtml = '<div class="text-muted text-center py-3">Belum ada data Prodi atau file PDF untuk periode ini.</div>';
-            } else {
-                var pills = '', panes = '';
-                prodiKeys.forEach(function (prodi, prodiIdx) {
-                    var files = prodiGroups[prodi];
-                    var paneId = 'drive-pills-' + catIdx + '-' + prodiIdx;
-                    var badge = files.length > 0 ? ' <span class="badge bg-primary ms-1">' + files.length + '</span>' : '';
-                    pills += '<li class="nav-item" role="presentation">'
-                           + '<button class="nav-link' + (prodiIdx === 0 ? ' active' : '') + (files.length > 0 ? ' text-primary fw-bold' : '') + '"'
-                           + ' data-drive-toggle="pill" data-drive-target="#' + paneId + '" type="button" role="tab">'
-                           + escHtml(prodi) + badge + '</button></li>';
-                    var items = files.length === 0
-                        ? '<li class="list-group-item text-muted">Belum ada file PDF.</li>'
-                        : files.map(function (file) {
-                            return '<li class="list-group-item d-flex justify-content-between align-items-center">'
-                                 + '<span>' + escHtml(file.title) + '</span>'
-                                 + '<a href="https://drive.google.com/file/d/' + escHtml(file.fileId) + '/view" target="_blank" class="btn btn-outline-primary btn-sm">'
-                                 + '<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
-                                 + '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>'
-                                 + '<polyline points="7 10 12 15 17 10"></polyline>'
-                                 + '<line x1="12" y1="15" x2="12" y2="3"></line></svg> Lihat PDF</a></li>';
-                          }).join('');
-                    panes += '<div class="drive-tab-pane' + (prodiIdx === 0 ? ' drive-active' : '') + '" id="' + paneId + '"'
-                           + ' style="display:' + (prodiIdx === 0 ? 'block' : 'none') + '">'
-                           + '<ul class="list-group">' + items + '</ul></div>';
-                });
-                innerHtml = '<ul class="nav nav-pills mb-3 flex-wrap" role="tablist">' + pills + '</ul>'
-                          + '<div class="drive-tab-content">' + panes + '</div>';
-            }
-            cardsHtml += '<div class="col-md-6"><div class="card h-100">'
-                       + '<div class="card-header fw-semibold">' + escHtml(category) + '</div>'
-                       + '<div class="card-body">' + innerHtml + '</div>'
-                       + '</div></div>';
-        });
-        return '<div class="card-header"><h3 class="card-title">Dokumen PDF ' + escHtml(label) + '</h3></div>'
-             + '<div class="card-body"><div class="row g-4">' + cardsHtml + '</div></div>';
-    }
-
     function escHtml(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function countFiles(data, numLevels) {
+        var total = 0;
+        if (numLevels === 3) {
+            Object.keys(data).forEach(function (f) {
+                Object.keys(data[f]).forEach(function (p) {
+                    Object.keys(data[f][p]).filter(function(k){return k!=='_folderIds';}).forEach(function (pr) {
+                        total += (data[f][p][pr] || []).length;
+                    });
+                });
+            });
+        } else {
+            Object.keys(data).forEach(function (p) {
+                Object.keys(data[p]).filter(function(k){return k!=='_folderIds';}).forEach(function (pr) {
+                    total += (data[p][pr] || []).length;
+                });
+            });
+        }
+        return total;
+    }
+
+    function buildProdiPills(prodiGroups, uid) {
+        var folderIds = prodiGroups['_folderIds'] || {};
+        var prodiKeys = Object.keys(prodiGroups).filter(function (k) { return k !== '_folderIds'; });
+        if (prodiKeys.length === 0) {
+            return '<div class="text-muted text-center py-3">Belum ada data Prodi atau file PDF untuk periode ini.</div>';
+        }
+        var pills = '', panes = '';
+        prodiKeys.forEach(function (prodi, i) {
+            var files    = prodiGroups[prodi];
+            var folderId = folderIds[prodi] || '';
+            var paneId   = 'dp-' + uid + '-' + i;
+            var badge    = files.length > 0 ? ' <span class="badge bg-primary ms-1">' + files.length + '</span>' : '';
+            pills += '<li class="nav-item" role="presentation">'
+                   + '<button class="nav-link' + (i === 0 ? ' active' : '') + (files.length > 0 ? ' text-primary fw-bold' : '') + '"'
+                   + ' data-drive-toggle="pill" data-drive-target="#' + paneId + '" type="button" role="tab">'
+                   + escHtml(prodi) + badge + '</button></li>';
+
+            var paneContent;
+            if (files.length > 0) {
+                paneContent = '<ul class="list-group">'
+                            + files.map(function (f) {
+                                return '<li class="list-group-item d-flex justify-content-between align-items-center">'
+                                     + '<span>' + escHtml(f.title) + '</span>'
+                                     + '<a href="https://drive.google.com/file/d/' + escHtml(f.fileId) + '/view" target="_blank" class="btn btn-outline-primary btn-sm">'
+                                     + '<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+                                     + '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>'
+                                     + '<polyline points="7 10 12 15 17 10"></polyline>'
+                                     + '<line x1="12" y1="15" x2="12" y2="3"></line></svg> Lihat PDF</a></li>';
+                              }).join('')
+                            + '</ul>';
+            } else if (folderId) {
+                paneContent = '<div class="drive-lazy-load text-center py-3 text-muted small"'
+                            + ' data-folder-id="' + escHtml(folderId) + '">'
+                            + 'Klik untuk memuat daftar file&hellip;</div>';
+            } else {
+                paneContent = '<ul class="list-group"><li class="list-group-item text-muted">Belum ada file PDF.</li></ul>';
+            }
+
+            panes += '<div class="drive-tab-pane' + (i === 0 ? ' drive-active' : '') + '" id="' + paneId + '"'
+                   + ' style="display:' + (i === 0 ? 'block' : 'none') + '">'
+                   + paneContent + '</div>';
+        });
+        return '<ul class="nav nav-pills mb-3 flex-wrap" role="tablist">' + pills + '</ul>'
+             + '<div class="drive-tab-content">' + panes + '</div>';
+    }
+
+    function buildPeriodePanes(periodeData, uid) {
+        var keys = Object.keys(periodeData).filter(function (k) { return k !== '_folderIds'; });
+        if (keys.length === 0) {
+            return '<div class="text-muted text-center py-3">Belum ada data untuk level ini.</div>';
+        }
+        var cards = '';
+        keys.forEach(function (periode, i) {
+            cards += '<div class="col-md-6"><div class="card h-100">'
+                   + '<div class="card-header fw-semibold">' + escHtml(periode) + '</div>'
+                   + '<div class="card-body">' + buildProdiPills(periodeData[periode], uid + '-' + i) + '</div>'
+                   + '</div></div>';
+        });
+        return '<div class="row g-4">' + cards + '</div>';
+    }
+
+    function buildFakultasTabs(fakultasData, uid) {
+        var fakKeys = Object.keys(fakultasData);
+        if (fakKeys.length === 0) {
+            return '<div class="text-muted text-center py-3">Belum ada data untuk level ini.</div>';
+        }
+        var nav = '<ul class="nav nav-tabs mb-3 flex-wrap" role="tablist">';
+        var panes = '<div class="tab-content">';
+        fakKeys.forEach(function (fak, i) {
+            var paneId   = 'fak-' + uid + '-' + i;
+            var isActive = i === 0;
+            nav += '<li class="nav-item" role="presentation">'
+                 + '<button class="nav-link' + (isActive ? ' active' : '') + '" id="' + paneId + '-tab"'
+                 + ' data-bs-toggle="tab" data-bs-target="#' + paneId + '" type="button" role="tab">'
+                 + escHtml(fak) + '</button></li>';
+            panes += '<div class="tab-pane fade' + (isActive ? ' show active' : '') + '" id="' + paneId + '"'
+                  + ' role="tabpanel" aria-labelledby="' + paneId + '-tab">'
+                  + buildPeriodePanes(fakultasData[fak], uid + '-' + i)
+                  + '</div>';
+        });
+        nav += '</ul>';
+        panes += '</div>';
+        return nav + panes;
+    }
+
+    function buildLevelPane(levelName, meta) {
+        var numLevels = meta.levels || 2;
+        var levelData = meta.data   || {};
+        var total     = countFiles(levelData, numLevels);
+
+        // var tabBtn = document.querySelector('[data-rtm-level="' + levelName + '"]');
+        // if (tabBtn) {
+        //     var badge = tabBtn.querySelector('.badge');
+        //     if (badge) badge.textContent = total;
+        // }
+
+        return numLevels === 3
+            ? buildFakultasTabs(levelData, levelName)
+            : buildPeriodePanes(levelData, levelName);
+    }
+
+    function tabSpinner() {
+        return '<div class="text-center py-5">'
+             + '<div class="spinner-border text-primary" role="status"></div>'
+             + '<div class="mt-2 text-muted small">Memuat data...</div>'
+             + '</div>';
+    }
+
+    function buildFileList(files) {
+        if (!files || files.length === 0) {
+            return '<ul class="list-group"><li class="list-group-item text-muted">Belum ada file PDF.</li></ul>';
+        }
+        return '<ul class="list-group">'
+             + files.map(function (f) {
+                 return '<li class="list-group-item d-flex justify-content-between align-items-center">'
+                      + '<span>' + escHtml(f.title) + '</span>'
+                      + '<a href="https://drive.google.com/file/d/' + escHtml(f.fileId) + '/view" target="_blank" class="btn btn-outline-primary btn-sm">'
+                      + '<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+                      + '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>'
+                      + '<polyline points="7 10 12 15 17 10"></polyline>'
+                      + '<line x1="12" y1="15" x2="12" y2="3"></line></svg> Lihat PDF</a></li>';
+               }).join('')
+             + '</ul>';
+    }
+
+    function lazyLoadProdiFiles(lazyEl) {
+        if (lazyEl.dataset.loading) return;
+        var folderId = lazyEl.getAttribute('data-folder-id');
+        if (!folderId) return;
+
+        lazyEl.dataset.loading = '1';
+        lazyEl.innerHTML = '<div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>'
+                         + '<span class="text-muted small">Memuat file&hellip;</span>';
+
+        var fd = new FormData();
+        fd.append('type', 'ami_folder_files');
+        fd.append('folderId', folderId);
+        fd.append('_token', CSRF);
+
+        fetch(HANDLER_URL, {
+            method: 'POST',
+            headers: { 'X-OCTOBER-REQUEST-HANDLER': 'driveLoader::onGetData', 'X-Requested-With': 'XMLHttpRequest' },
+            body: fd
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (resp) {
+            var html = buildFileList(resp.data || []);
+            lazyEl.outerHTML = html;
+        })
+        .catch(function () {
+            delete lazyEl.dataset.loading;
+            lazyEl.innerHTML = '<span class="text-muted small">Gagal memuat. Klik ulang untuk mencoba lagi.</span>';
+        });
     }
 
     function bindPills(root) {
@@ -154,34 +279,95 @@ layout = "app"
                 var tc = target.closest('.drive-tab-content');
                 tc.querySelectorAll('.drive-tab-pane').forEach(function (p) { p.classList.remove('drive-active'); p.style.display = 'none'; });
                 target.classList.add('drive-active'); target.style.display = 'block';
+
+                var lazyEl = target.querySelector('.drive-lazy-load[data-folder-id]');
+                if (lazyEl) lazyLoadProdiFiles(lazyEl);
             });
         });
+
+        root.querySelectorAll('.drive-tab-pane.drive-active .drive-lazy-load[data-folder-id]').forEach(lazyLoadProdiFiles);
     }
+
+    var CSRF = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+    var loaded = {};
+
+    function fetchLevel(levelName, paneEl) {
+        if (loaded[levelName]) return;
+        loaded[levelName] = true;
+
+        paneEl.innerHTML = tabSpinner();
+
+        var fd = new FormData();
+        fd.append('type', 'rtm');
+        fd.append('level', levelName);
+        fd.append('_token', CSRF);
+
+        fetch(HANDLER_URL, {
+            method: 'POST',
+            headers: { 'X-OCTOBER-REQUEST-HANDLER': 'driveLoader::onGetData', 'X-Requested-With': 'XMLHttpRequest' },
+            body: fd
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (resp) {
+            var data = resp.data || {};
+            var meta = data[levelName];
+            if (!meta) {
+                paneEl.innerHTML = '<div class="alert alert-warning m-3">Data tidak tersedia untuk level ini.</div>';
+                return;
+            }
+            paneEl.innerHTML = buildLevelPane(levelName, meta);
+            bindPills(paneEl);
+        })
+        .catch(function () {
+            loaded[levelName] = false;
+            paneEl.innerHTML = '<div class="alert alert-danger m-3">Gagal memuat data. Klik tab ini lagi untuk mencoba ulang.</div>';
+        });
+    }
+
+    var RTM_LEVELS = ['Prodi', 'Fakultas', 'Universitas'];
 
     var card    = document.querySelector('.drive-loading').closest('.card');
     var loading = card.querySelector('.drive-loading');
     var content = card.querySelector('.drive-content');
 
-    var fd = new FormData();
-    fd.append('type', 'rtm');
-    fd.append('_token', (document.querySelector('meta[name="csrf-token"]') || {}).content || '');
+    loading.style.display = 'none';
+    content.style.display = 'block';
 
-    fetch(HANDLER_URL, {
-        method: 'POST',
-        headers: { 'X-OCTOBER-REQUEST-HANDLER': 'driveLoader::onGetData', 'X-Requested-With': 'XMLHttpRequest' },
-        body: fd
-    })
-    .then(function (r) { return r.json(); })
-    .then(function (resp) {
-        loading.style.display = 'none';
-        content.innerHTML = buildPaneHtml(resp.label, resp.data || {});
-        content.style.display = 'block';
-        bindPills(content);
-    })
-    .catch(function () {
-        loading.style.display = 'none';
-        content.innerHTML = '<div class="alert alert-danger m-3">Gagal memuat data. Silakan coba lagi.</div>';
-        content.style.display = 'block';
+    var navHtml = '<div class="card-header">'
+                + '<ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">';
+    var panesHtml = '<div class="card-body"><div class="tab-content">';
+
+    RTM_LEVELS.forEach(function (level, idx) {
+        var paneId   = 'rtm-tab-' + idx;
+        var isActive = idx === 0;
+        navHtml += '<li class="nav-item" role="presentation">'
+                 + '<a href="#' + paneId + '" class="nav-link' + (isActive ? ' active' : '') + '"'
+                 + ' data-bs-toggle="tab" aria-selected="' + (isActive ? 'true' : 'false') + '" role="tab"'
+                 + ' data-rtm-level="' + level + '">'
+                 + escHtml(level)
+                //  + ' <span class="badge bg-secondary ms-1">...</span>'
+                 + '</a></li>';
+
+        panesHtml += '<div class="tab-pane' + (isActive ? ' active show' : '') + '" id="' + paneId + '"'
+                   + ' role="tabpanel" data-rtm-pane="' + level + '">'
+                   + tabSpinner()
+                   + '</div>';
+    });
+
+    navHtml   += '</ul></div>';
+    panesHtml += '</div></div>';
+
+    content.innerHTML = navHtml + panesHtml;
+
+    var prodiPane = content.querySelector('[data-rtm-pane="Prodi"]');
+    fetchLevel('Prodi', prodiPane);
+
+    content.querySelectorAll('[data-rtm-level]').forEach(function (tabLink) {
+        tabLink.addEventListener('shown.bs.tab', function (e) {
+            var level = e.target.getAttribute('data-rtm-level');
+            var pane  = content.querySelector('[data-rtm-pane="' + level + '"]');
+            if (pane) fetchLevel(level, pane);
+        });
     });
 })();
 </script>

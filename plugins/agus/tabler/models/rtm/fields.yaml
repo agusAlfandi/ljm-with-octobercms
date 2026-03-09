@@ -20,6 +20,27 @@ fields:
         placeholder: 'Otomatis terisi dari nama file PDF'
         comment: 'Nama file yang akan diupload ke Google Drive (akan otomatis terisi dari file yang diupload, bisa diedit manual)'
         required: true
+    level:
+        label: Level
+        span: left
+        type: dropdown
+        placeholder: '-- Pilih Level --'
+        options: getLevelOptions
+        required: true
+        comment: 'Pilih level RTM: Prodi, Fakultas, atau Universitas'
+    fakultas:
+        label: Fakultas
+        span: right
+        type: dropdown
+        placeholder: '-- Pilih Fakultas --'
+        dependsOn: [level]
+        options: getFakultasOptions
+        comment: 'Pilih Fakultas (hanya untuk level Fakultas)'
+        cssClass: hide
+        trigger:
+            action: show
+            field: level
+            condition: value[Fakultas]
     periode:
         label: Periode
         span: left
@@ -33,7 +54,7 @@ fields:
         span: right
         type: dropdown
         placeholder: '-- Pilih Prodi --'
-        dependsOn: [periode]
+        dependsOn: [periode, level, fakultas]
         options: getProdiOptions
         required: true
         comment: 'Pilih prodi dokumen RTM. Daftar prodi diambil otomatis dari folder periode yang dipilih.'

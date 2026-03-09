@@ -22,6 +22,7 @@ class Rtm extends Model
      */
     public $rules = [
         'title'   => 'required',
+        'level'   => 'required',
         'periode' => 'required',
         'prodi'   => 'required',
         'file'    => 'required'
@@ -32,6 +33,8 @@ class Rtm extends Model
      */
     protected $fillable = [
         'title',
+        'level',
+        'fakultas',
         'periode',
         'prodi',
         'periode_name',
@@ -55,6 +58,177 @@ class Rtm extends Model
         return $this->prodi_name ?: $this->prodi;
     }
 
+    /**
+     * Get level options (Prodi, Fakultas, Universitas)
+     */
+    public function getLevelOptions()
+    {
+        return [
+            'Prodi'       => 'Prodi',
+            'Fakultas'    => 'Fakultas',
+            'Universitas' => 'Universitas',
+        ];
+    }
+
+    /**
+     * Get Fakultas options — only shown when level = Fakultas
+     */
+    public function getFakultasOptions()
+    {
+        if ($this->level !== 'Fakultas') {
+            return [];
+        }
+
+        return [
+            'Fakultas Hukum dan Bisnis'              => 'Fakultas Hukum dan Bisnis',
+            'Fakultas Ilmu Kesehatan'                => 'Fakultas Ilmu Kesehatan',
+            'Fakultas Ilmu Komputer'                 => 'Fakultas Ilmu Komputer',
+            'Fakultas Kedokteran'                    => 'Fakultas Kedokteran',
+            'Fakultas Keguruan dan Ilmu Pendidikan'  => 'Fakultas Keguruan dan Ilmu Pendidikan',
+            'Fakultas Sains dan Teknologi'           => 'Fakultas Sains dan Teknologi',
+        ];
+    }
+
+    /**
+     * Override getProdiOptions to filter by fakultas when level = Fakultas
+     */
+    public function getProdiOptions()
+    {
+        $prodiByFakultas = [
+            'Fakultas Ilmu Komputer' => [
+                'D3 Manajemen Informatika'              => 'D3 Manajemen Informatika',
+                'D3 Teknik Komputer'                    => 'D3 Teknik Komputer',
+                'D4 Teknologi Rekayasa Perangkat Lunak' => 'D4 Teknologi Rekayasa Perangkat Lunak',
+                'S1 Sistem Informasi'                   => 'S1 Sistem Informasi',
+                'S1 Teknik Informatika'                 => 'S1 Teknik Informatika',
+            ],
+            'Fakultas Ilmu Kesehatan' => [
+                'D3 Kebidanan'                           => 'D3 Kebidanan',
+                'D3 Keperawatan'                         => 'D3 Keperawatan',
+                'D3 Rekam Medik dan Informasi Kesehatan' => 'D3 Rekam Medik dan Informasi Kesehatan',
+                'D4 TLM'                                 => 'D4 TLM',
+                'S1 ARS'                                 => 'S1 ARS (Administrasi Rumah Sakit)',
+                'S1 Farmasi'                             => 'S1 Farmasi',
+                'S1 Kebidanan'                           => 'S1 Kebidanan',
+                'S1 Keperawatan'                         => 'S1 Keperawatan',
+                'Pendidikan Profesi Ners'                => 'Pendidikan Profesi Ners',
+                'SK Profesi Kebidanan'                   => 'SK Profesi Kebidanan',
+            ],
+            'Fakultas Hukum dan Bisnis' => [
+                'S1 Akuntansi'       => 'S1 Akuntansi',
+                'S1 Bahasa Inggris'  => 'S1 Bahasa Inggris',
+                'S1 Hukum'           => 'S1 Hukum',
+                'S1 Ilmu Komunikasi' => 'S1 Ilmu Komunikasi',
+                'S1 Manajemen'       => 'S1 Manajemen',
+            ],
+            'Fakultas Sains dan Teknologi' => [
+                'D4 Kimia Industri'            => 'D4 Kimia Industri',
+                'D4 Teknologi Rekayasa Pangan' => 'D4 Teknologi Rekayasa Pangan',
+                'S1 Agribisnis'                => 'S1 Agribisnis',
+                'S1 Teknik Industri'           => 'S1 Teknik Industri',
+            ],
+            'Fakultas Keguruan dan Ilmu Pendidikan' => [
+                'S1 PGSD'                     => 'S1 PGSD',
+                'S1 Pendidikan Bahasa Inggris' => 'S1 Pendidikan Bahasa Inggris',
+            ],
+        ];
+
+        if ($this->level === 'Fakultas' && $this->fakultas && isset($prodiByFakultas[$this->fakultas])) {
+            return $prodiByFakultas[$this->fakultas];
+        }
+
+        $all = [];
+        foreach ($prodiByFakultas as $list) {
+            $all = array_merge($all, $list);
+        }
+        ksort($all);
+        return $all;
+    }
+
+    /**
+     * Map fakultas name to its Google Drive folder ID
+     */
+    protected function getFakultasFolderId($fakultasName)
+    {
+        $map = [
+            'Fakultas Hukum dan Bisnis'             => GoogleDriveReader::FOLDER_IDS['RTM_FAK_HUKUM_BISNIS'],
+            'Fakultas Ilmu Kesehatan'               => GoogleDriveReader::FOLDER_IDS['RTM_FAK_ILMU_KESEHATAN'],
+            'Fakultas Ilmu Komputer'                => GoogleDriveReader::FOLDER_IDS['RTM_FAK_ILMU_KOMPUTER'],
+            'Fakultas Kedokteran'                   => GoogleDriveReader::FOLDER_IDS['RTM_FAK_KEDOKTERAN'],
+            'Fakultas Keguruan dan Ilmu Pendidikan' => GoogleDriveReader::FOLDER_IDS['RTM_FAK_KEGURUAN_ILMU_PEND'],
+            'Fakultas Sains dan Teknologi'          => GoogleDriveReader::FOLDER_IDS['RTM_FAK_SAINS_TEKNOLOGI'],
+        ];
+
+        return $map[$fakultasName] ?? null;
+    }
+
+    /**
+     * Override getTargetFolderId to navigate through RTM level folder
+     * Prodi/Universitas path : level folder → Periode → Prodi
+     * Fakultas path          : level folder → Fakultas → Periode → Prodi
+     */
+    protected function getTargetFolderId($rootKey)
+    {
+        if (!$this->periode || !$this->prodi || !$this->level) {
+            return null;
+        }
+
+        // --- Fakultas: 3-level path ---
+        if ($this->level === 'Fakultas') {
+            if (!$this->fakultas) {
+                \Log::warning('RTM: level Fakultas dipilih tapi fakultas kosong');
+                return null;
+            }
+
+            $fakultasId = $this->getFakultasFolderId($this->fakultas);
+            if (!$fakultasId) {
+                \Log::warning("RTM: Folder Fakultas '{$this->fakultas}' tidak dikenali");
+                return null;
+            }
+
+            $periodeFolder = GoogleDriveReader::createOrFindSubfolder($fakultasId, $this->periode);
+            if (!$periodeFolder || !isset($periodeFolder['id'])) {
+                \Log::warning("RTM: Gagal membuat/menemukan Folder Periode '{$this->periode}' di fakultas '{$this->fakultas}'");
+                return null;
+            }
+
+            $prodiFolder = GoogleDriveReader::createOrFindSubfolder($periodeFolder['id'], $this->prodi);
+            if (!$prodiFolder || !isset($prodiFolder['id'])) {
+                \Log::warning("RTM: Gagal membuat/menemukan Folder Prodi '{$this->prodi}' di periode '{$this->periode}'");
+                return null;
+            }
+
+            return $prodiFolder['id'];
+        }
+
+        // --- Prodi / Universitas: 2-level path ---
+        $levelFolderIds = [
+            'Prodi'       => GoogleDriveReader::FOLDER_IDS['RTM_LEVEL_PRODI'],
+            'Universitas' => GoogleDriveReader::FOLDER_IDS['RTM_LEVEL_UNIVERSITAS'],
+        ];
+
+        if (!isset($levelFolderIds[$this->level])) {
+            \Log::warning('RTM: level tidak valid: ' . $this->level);
+            return null;
+        }
+
+        $levelId = $levelFolderIds[$this->level];
+
+        $periodeFolder = GoogleDriveReader::createOrFindSubfolder($levelId, $this->periode);
+        if (!$periodeFolder || !isset($periodeFolder['id'])) {
+            \Log::warning("RTM: Gagal membuat/menemukan Folder Periode '{$this->periode}' di level '{$this->level}'");
+            return null;
+        }
+
+        $prodiFolder = GoogleDriveReader::createOrFindSubfolder($periodeFolder['id'], $this->prodi);
+        if (!$prodiFolder || !isset($prodiFolder['id'])) {
+            \Log::warning("RTM: Gagal membuat/menemukan Folder Prodi '{$this->prodi}' di dalam periode '{$this->periode}'");
+            return null;
+        }
+
+        return $prodiFolder['id'];
+    }
+
     public function beforeSave()
     {
         // keep copies of the selected names
@@ -69,7 +243,7 @@ class Rtm extends Model
         'file' => 'System\Models\File'
     ];
 
-  
+
      /**
      * @var bool Flag to prevent recursive afterSave calls
      */
@@ -131,7 +305,7 @@ class Rtm extends Model
                 $this->isUploadingToGoogleDrive = false;
 
                 // clear cache so list updates immediately
-                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS['ROOT_RTM']));
+                $this->flushRtmCache();
 
                 $this->deleteLocalFileRelation($file, $filePath);
             } else {
@@ -183,6 +357,19 @@ class Rtm extends Model
         }
     }
 
+    /**
+     * Flush Google Drive cache for all RTM level folders
+     */
+    protected function flushRtmCache()
+    {
+        $keys = ['ROOT_RTM', 'RTM_LEVEL_PRODI', 'RTM_LEVEL_FAKULTAS', 'RTM_LEVEL_UNIVERSITAS'];
+        foreach ($keys as $key) {
+            if (!empty(GoogleDriveReader::FOLDER_IDS[$key])) {
+                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS[$key]));
+            }
+        }
+    }
+
     public function afterDelete()
     {
         if ($this->file_name) {
@@ -194,7 +381,7 @@ class Rtm extends Model
                         GoogleDriveUploader::delete($existingFile['id']);
                     }
                 }
-                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS['ROOT_RTM']));
+                $this->flushRtmCache();
             } catch (\Exception $e) {
                 \Log::error('Google Drive delete failed: ' . $e->getMessage());
             }

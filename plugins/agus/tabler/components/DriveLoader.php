@@ -59,7 +59,11 @@ class DriveLoader extends ComponentBase
                 }
                 return ['type' => $type, 'label' => '', 'data' => []];
             case 'rtm':
-                $files = GoogleDriveReader::getAllRtmFiles();
+                @set_time_limit(0);
+                $level = post('level');
+                $files = $level
+                    ? GoogleDriveReader::getRtmFilesByLevel($level)
+                    : GoogleDriveReader::getAllRtmFiles();
                 break;
             case 'monev_beban':
                 $files = GoogleDriveReader::getAllMonevBebanBelajarFiles();

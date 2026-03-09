@@ -54,10 +54,14 @@ fields:
         span: right
         type: dropdown
         placeholder: '-- Pilih Prodi --'
-        dependsOn: [periode]
+        dependsOn: [periode, level, fakultas]
         options: getProdiOptions
-        required: true
-        comment: 'Pilih prodi dokumen AMI. Daftar prodi diambil otomatis dari folder periode yang dipilih.'
+        comment: 'Pilih prodi dokumen AMI (tidak perlu untuk level Universitas).'
+        cssClass: hide
+        trigger:
+            action: hide
+            field: level
+            condition: value[Universitas]
     file_name:
         label: 'File yang Sudah Diupload'
         span: full

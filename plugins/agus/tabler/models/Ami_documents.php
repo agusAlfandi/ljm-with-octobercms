@@ -26,9 +26,18 @@ class Ami_documents extends Model
         'title' => 'required',
         'level' => 'required',
         'periode' => 'required',
-        'prodi' => 'required',
         'file' => 'required'
     ];
+
+    /**
+     * Conditionally require prodi for non-Universitas levels.
+     */
+    public function beforeValidate()
+    {
+        if ($this->level !== 'Universitas') {
+            $this->rules['prodi'] = 'required';
+        }
+    }
 
     /**
      *@var array
@@ -72,6 +81,67 @@ class Ami_documents extends Model
      */
     protected $isUploadingToGoogleDrive = false;
 
+
+    /**
+     * Override getProdiOptions to filter by fakultas when level = Fakultas
+     */
+    public function getProdiOptions()
+    {
+        $prodiByFakultas = [
+            'Fakultas Ilmu Komputer' => [
+                'D3 Manajemen Informatika'              => 'D3 Manajemen Informatika',
+                'D3 Teknik Komputer'                    => 'D3 Teknik Komputer',
+                'D4 Teknologi Rekayasa Perangkat Lunak' => 'D4 Teknologi Rekayasa Perangkat Lunak',
+                'S1 Sistem Informasi'                   => 'S1 Sistem Informasi',
+                'S1 Teknik Informatika'                 => 'S1 Teknik Informatika',
+            ],
+            'Fakultas Ilmu Kesehatan' => [
+                'D3 Kebidanan'                           => 'D3 Kebidanan',
+                'D3 Keperawatan'                         => 'D3 Keperawatan',
+                'D3 Rekam Medik dan Informasi Kesehatan' => 'D3 Rekam Medik dan Informasi Kesehatan',
+                'D4 TLM'                                 => 'D4 TLM',
+                'S1 ARS'                                 => 'S1 ARS (Administrasi Rumah Sakit)',
+                'S1 Farmasi'                             => 'S1 Farmasi',
+                'S1 Kebidanan'                           => 'S1 Kebidanan',
+                'S1 Keperawatan'                         => 'S1 Keperawatan',
+                'Pendidikan Profesi Ners'                => 'Pendidikan Profesi Ners',
+                'SK Profesi Kebidanan'                   => 'SK Profesi Kebidanan',
+            ],
+            'Fakultas Hukum dan Bisnis' => [
+                'S1 Akuntansi'      => 'S1 Akuntansi',
+                'S1 Bahasa Inggris' => 'S1 Bahasa Inggris',
+                'S1 Hukum'          => 'S1 Hukum',
+                'S1 Ilmu Komunikasi'=> 'S1 Ilmu Komunikasi',
+                'S1 Manajemen'      => 'S1 Manajemen',
+            ],
+            'Fakultas Sains dan Teknologi' => [
+                'D4 Kimia Industri'              => 'D4 Kimia Industri',
+                'D4 Teknologi Rekayasa Pangan'   => 'D4 Teknologi Rekayasa Pangan',
+                'S1 Agribisnis'                  => 'S1 Agribisnis',
+                'S1 Teknik Industri'             => 'S1 Teknik Industri',
+            ],
+            'Fakultas Keguruan dan Ilmu Pendidikan' => [
+                'S1 PGSD'                    => 'S1 PGSD',
+                'S1 Pendidikan Bahasa Inggris'=> 'S1 Pendidikan Bahasa Inggris',
+            ],
+        ];
+
+        if ($this->level === 'Universitas') {
+            return [];
+        }
+
+        if ($this->level === 'Fakultas' && $this->fakultas && isset($prodiByFakultas[$this->fakultas])) {
+            return $prodiByFakultas[$this->fakultas];
+        }
+
+        // Prodi level — return merged flat list sorted alphabetically
+        $all = [];
+        foreach ($prodiByFakultas as $list) {
+            $all = array_merge($all, $list);
+        }
+        ksort($all);
+        return $all;
+    }
 
     /**
      * Get level options (Prodi, Fakultas, Universitas)
@@ -128,7 +198,22 @@ class Ami_documents extends Model
      */
     protected function getTargetFolderId($rootKey)
     {
-        if (!$this->periode || !$this->prodi || !$this->level) {
+        if (!$this->periode || !$this->level) {
+            return null;
+        }
+
+        // --- Universitas: files go directly inside the Periode folder (no Prodi subfolder) ---
+        if ($this->level === 'Universitas') {
+            $levelId = GoogleDriveReader::FOLDER_IDS['AMI_LEVEL_UNIVERSITAS'];
+            $periodeFolder = GoogleDriveReader::createOrFindSubfolder($levelId, $this->periode);
+            if (!$periodeFolder || !isset($periodeFolder['id'])) {
+                \Log::warning("AMI: Gagal membuat/menemukan Folder Periode '{$this->periode}' di level Universitas");
+                return null;
+            }
+            return $periodeFolder['id'];
+        }
+
+        if (!$this->prodi) {
             return null;
         }
 
@@ -192,7 +277,7 @@ class Ami_documents extends Model
     {
         // Tetapkan nama periode dan prodi dari value yang dipilih (karena key = name sekarang)
         $this->periode_name = $this->periode;
-        $this->prodi_name = $this->prodi;
+        $this->prodi_name = $this->level === 'Universitas' ? null : $this->prodi;
     }
 
     /**
@@ -205,18 +290,21 @@ class Ami_documents extends Model
             return;
         }
 
+        $hasRequiredFields = $this->periode && $this->title &&
+            ($this->level === 'Universitas' || $this->prodi);
+
         // Gunakan deferred binding untuk memastikan file sudah attached
         if ($this->file()->withDeferred($this->sessionKey)->count() > 0) {
             $file = $this->file()->withDeferred($this->sessionKey)->first();
 
-            if ($file && $this->periode && $this->prodi && $this->title) {
+            if ($file && $hasRequiredFields) {
                 // Hapus file lama jika ada sebelum upload file baru
                 $this->deleteOldFileIfExists();
                 $this->uploadFileToGoogleDrive($file);
             }
         }
         // Jika file sudah committed (bukan deferred)
-        elseif ($this->file && $this->periode && $this->prodi && $this->title) {
+        elseif ($this->file && $hasRequiredFields) {
             // Hapus file lama jika ada sebelum upload file baru
             $this->deleteOldFileIfExists();
             $this->uploadFileToGoogleDrive($this->file);
@@ -330,7 +418,9 @@ class Ami_documents extends Model
         $keys = ['ROOT_AMI', 'AMI_LEVEL_PRODI', 'AMI_LEVEL_FAKULTAS', 'AMI_LEVEL_UNIVERSITAS'];
         foreach ($keys as $key) {
             if (!empty(GoogleDriveReader::FOLDER_IDS[$key])) {
-                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS[$key]));
+                $hash = md5(GoogleDriveReader::FOLDER_IDS[$key]);
+                \Cache::forget('gdrive_structure_' . $hash);
+                \Cache::forget('gdrive_structure_' . $hash . '_shallow');
             }
         }
     }

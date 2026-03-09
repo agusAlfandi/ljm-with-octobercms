@@ -306,3 +306,9 @@ v1.0.102:
 v1.0.103:
     - 'Add fakultas column to AMI table'
     - add_fakultas_to_ami_table.php
+v1.0.104:
+    - 'Add level (Prodi/Fakultas/Universitas) to RTM table'
+    - add_level_to_rtm_table.php
+v1.0.105:
+    - 'Add fakultas column to RTM table'
+    - add_fakultas_to_rtm_table.php

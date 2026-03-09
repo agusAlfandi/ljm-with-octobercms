@@ -38,6 +38,21 @@ class GoogleDriveReader
         'AMI_FAK_SAINS_TEKNOLOGI'       => '1nKKis3dcd3IP2-KQHdYEGGgfzKlUehlW',
         'ROOT_MONEV' => '1QUyXBU-v1Rpej3c11KHKtfzQEeOU7HXB',
         'ROOT_RTM' => '14geE5fwAKq-WccSByexh5y4io_NhKly0',
+
+        // RTM Level Folders (sub-folder of ROOT_RTM: Prodi, Fakultas, Universitas)
+        // TODO: isi dengan Folder ID Google Drive yang sesuai
+        'RTM_LEVEL_PRODI'       => '1Upfqd_3WAorRRO-Y22KoBG-gF47KyDPv',
+        'RTM_LEVEL_FAKULTAS'    => '1PXe0HusC8VDSxLjt3J_5zy_mcfZAMbCe',
+        'RTM_LEVEL_UNIVERSITAS' => '1NFBZ99n6fQBMuMJbjQWuxmy5Ldlfkljk',
+
+        // RTM Fakultas sub-folders (inside RTM_LEVEL_FAKULTAS)
+        // TODO: isi dengan Folder ID Google Drive yang sesuai
+        'RTM_FAK_HUKUM_BISNIS'          => '1IRLH7JhiSGsJjez-ps9Na64hEN7lx14p',
+        'RTM_FAK_ILMU_KESEHATAN'        => '1IfFFYBoaFxa2Il3WuAl6e5lIrw30tFwn',
+        'RTM_FAK_ILMU_KOMPUTER'         => '1UXfq-0U-QOdymCfvnKX4f9qBgJv9Hps-',
+        'RTM_FAK_KEDOKTERAN'            => '1-GmqAHBPCoWpWCvBcycR9OeMb8-j_jdf',
+        'RTM_FAK_KEGURUAN_ILMU_PEND'    => '17OO8_t9iyHc3pYtRas17njTwuUdmlCR8',
+        'RTM_FAK_SAINS_TEKNOLOGI'       => '1ZVoHGD61VMa5yQ1Cohb7NM3q3cKfJuxd',
         'ROOT_SURVEY_KEPUASAN' => '1c3zdOeRZ0oHiOgIwP6fySjHqGLF7Gwht',
         'ROOT_GRAFIK_KEPUASAN' => '1r9HT0OU_qFel9Opxag-Udu-BG_5_KtBC',
         'ROOT_SURVEI_KEPUASAN' => '1x62AJbGPXo66gCpAxp73LMW5r9WxdDfN',
@@ -348,6 +363,10 @@ class GoogleDriveReader
                         }
                     }
                 }
+
+                // Store the Periode folder ID so the frontend can lazy-load files
+                // directly from it (needed for Universitas which has no Prodi subfolder).
+                $prodiGroups['_periodeId'] = $item['id'];
 
                 $result[$periodName] = $prodiGroups;
             }
@@ -852,10 +871,14 @@ class GoogleDriveReader
 
         $cfg      = $map[$level];
         $folderId = self::FOLDER_IDS[$cfg['key']] ?? null;
-        // Use shallow (depth=1) fetch for Prodi/Universitas AMI tabs — files are lazy-loaded per prodi.
-        $data     = $cfg['fakultas']
-            ? self::getCategoryFakultasStructure($folderId)
-            : self::getCategoryNestedStructureShallow($folderId);
+        // All non-Fakultas levels use shallow (depth=1) fetch; files are lazy-loaded per folder.
+        // _periodeId stored in each period entry allows the frontend to lazy-load Universitas files
+        // directly from the Periode folder (no Prodi subfolder for Universitas).
+        if ($cfg['fakultas']) {
+            $data = self::getCategoryFakultasStructure($folderId);
+        } else {
+            $data = self::getCategoryNestedStructureShallow($folderId);
+        }
 
         return [
             $level => [
@@ -872,7 +895,52 @@ class GoogleDriveReader
      */
     public static function getAllRtmFiles()
     {
-        return self::getCategoryNestedStructure(self::FOLDER_IDS['ROOT_RTM'] ?? null);
+        return [
+            'Prodi' => [
+                'levels' => 2,
+                'data'   => self::getCategoryNestedStructure(self::FOLDER_IDS['RTM_LEVEL_PRODI'] ?? null),
+            ],
+            'Fakultas' => [
+                'levels' => 3,
+                'data'   => self::getCategoryFakultasStructure(self::FOLDER_IDS['RTM_LEVEL_FAKULTAS'] ?? null),
+            ],
+            'Universitas' => [
+                'levels' => 2,
+                'data'   => self::getCategoryNestedStructure(self::FOLDER_IDS['RTM_LEVEL_UNIVERSITAS'] ?? null),
+            ],
+        ];
+    }
+
+    /**
+     * Load RTM data for a single level only (used for tab-by-tab lazy loading).
+     *
+     * @param string $level  'Prodi', 'Fakultas', or 'Universitas'
+     * @return array Single-key array with the same structure as getAllRtmFiles()
+     */
+    public static function getRtmFilesByLevel($level)
+    {
+        $map = [
+            'Prodi'       => ['key' => 'RTM_LEVEL_PRODI',       'levels' => 2, 'fakultas' => false],
+            'Universitas' => ['key' => 'RTM_LEVEL_UNIVERSITAS',  'levels' => 2, 'fakultas' => false],
+            'Fakultas'    => ['key' => 'RTM_LEVEL_FAKULTAS',     'levels' => 3, 'fakultas' => true],
+        ];
+
+        if (!isset($map[$level])) {
+            return [];
+        }
+
+        $cfg      = $map[$level];
+        $folderId = self::FOLDER_IDS[$cfg['key']] ?? null;
+        $data     = $cfg['fakultas']
+            ? self::getCategoryFakultasStructure($folderId)
+            : self::getCategoryNestedStructureShallow($folderId);
+
+        return [
+            $level => [
+                'levels' => $cfg['levels'],
+                'data'   => $data,
+            ],
+        ];
     }
 
     private static function getSurveyStructure($prefix)

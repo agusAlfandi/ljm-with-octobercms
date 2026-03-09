@@ -22,21 +22,6 @@ title = "Audit Mutu Internal"
                         Audit Mutu Internal (AMI)
                     </a>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <a href="#tabs-tujuan" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">
-                        <!-- Icon Target/Goal (Target) -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24"
-                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <circle cx="12" cy="12" r="9" />
-                            <circle cx="12" cy="12" r="6" />
-                            <circle cx="12" cy="12" r="3" />
-                            <path d="M12 7v5l3 3" />
-                        </svg>
-                        Tujuan
-                    </a>
-                </li>
             </ul>
         </div>
         <div class="card-body">
@@ -99,7 +84,7 @@ title = "Audit Mutu Internal"
     // produced when depth=1 fallback is in effect (files not pre-loaded).
     function buildProdiPills(prodiGroups, uid) {
         var folderIds = prodiGroups['_folderIds'] || {};
-        var prodiKeys = Object.keys(prodiGroups).filter(function (k) { return k !== '_folderIds'; });
+        var prodiKeys = Object.keys(prodiGroups).filter(function (k) { return k !== '_folderIds' && k !== '_periodeId'; });
         if (prodiKeys.length === 0) {
             return '<div class="text-muted text-center py-3">Belum ada data Prodi atau file PDF untuk periode ini.</div>';
         }
@@ -162,6 +147,46 @@ title = "Audit Mutu Internal"
         return '<div class="row g-4">' + cards + '</div>';
     }
 
+    // Universitas: Periode cards → flat file list (no Prodi layer), lazy-loaded per Periode
+    function buildUniversitasPanes(periodeData, uid) {
+        var keys = Object.keys(periodeData).filter(function (k) { return k !== '_folderIds'; });
+        if (keys.length === 0) {
+            return '<div class="text-muted text-center py-3">Belum ada data untuk level ini.</div>';
+        }
+        var cards = '';
+        keys.forEach(function (periode, i) {
+            var entry     = periodeData[periode] || {};
+            var periodeId = entry['_periodeId'] || '';
+            var prodiKeys = Object.keys(entry).filter(function (k) { return k !== '_folderIds' && k !== '_periodeId'; });
+
+            // Flatten any pre-loaded files (depth=2 case)
+            var allFiles = [];
+            prodiKeys.forEach(function (prodi) {
+                var files = entry[prodi];
+                if (Array.isArray(files)) allFiles = allFiles.concat(files);
+            });
+
+            var content;
+            if (allFiles.length > 0) {
+                content = buildFileList(allFiles);
+            } else if (periodeId) {
+                // Lazy-load: files live directly inside the Periode folder (no Prodi subfolder)
+                content = '<div class="drive-lazy-load text-center py-3 text-muted small"'
+                        + ' data-folder-id="' + escHtml(periodeId) + '">'
+                        + '<div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>'
+                        + 'Memuat file&hellip;</div>';
+            } else {
+                content = buildFileList([]);
+            }
+
+            cards += '<div class="col-md-6"><div class="card h-100">'
+                   + '<div class="card-header fw-semibold">' + escHtml(periode) + '</div>'
+                   + '<div class="card-body">' + content + '</div>'
+                   + '</div></div>';
+        });
+        return '<div class="row g-4">' + cards + '</div>';
+    }
+
     // Fakultas sub-tabs → Periode cards (3-level)
     function buildFakultasTabs(fakultasData, uid) {
         var fakKeys = Object.keys(fakultasData);
@@ -194,12 +219,15 @@ title = "Audit Mutu Internal"
         var total     = countFiles(levelData, numLevels);
 
         // Update badge on the tab button
-        var tabBtn = document.querySelector('[data-ami-level="' + levelName + '"]');
-        if (tabBtn) {
-            var badge = tabBtn.querySelector('.badge');
-            if (badge) badge.textContent = total;
-        }
+        // var tabBtn = document.querySelector('[data-ami-level="' + levelName + '"]');
+        // if (tabBtn) {
+        //     var badge = tabBtn.querySelector('.badge');
+        //     if (badge) badge.textContent = total;
+        // }
 
+        if (levelName === 'Universitas') {
+            return buildUniversitasPanes(levelData, levelName);
+        }
         return numLevels === 3
             ? buildFakultasTabs(levelData, levelName)
             : buildPeriodePanes(levelData, levelName);
@@ -278,8 +306,14 @@ title = "Audit Mutu Internal"
             });
         });
 
-        // Also trigger for the first (auto-active) pane on render
-        root.querySelectorAll('.drive-tab-pane.drive-active .drive-lazy-load[data-folder-id]').forEach(lazyLoadProdiFiles);
+        // Trigger lazy loads for all visible lazy-load elements:
+        // inside an active prodi pane, or directly in the layout (e.g. Universitas flat view)
+        root.querySelectorAll('.drive-lazy-load[data-folder-id]').forEach(function (el) {
+            var pane = el.closest('.drive-tab-pane');
+            if (!pane || pane.classList.contains('drive-active')) {
+                lazyLoadProdiFiles(el);
+            }
+        });
     }
 
     var CSRF = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
@@ -342,7 +376,7 @@ title = "Audit Mutu Internal"
                  + ' data-bs-toggle="tab" aria-selected="' + (isActive ? 'true' : 'false') + '" role="tab"'
                  + ' data-ami-level="' + level + '">'
                  + escHtml(level)
-                 + ' <span class="badge bg-secondary ms-1">...</span>'
+                //  + ' <span class="badge bg-secondary ms-1">...</span>'
                  + '</a></li>';
 
         panesHtml += '<div class="tab-pane' + (isActive ? ' active show' : '') + '" id="' + paneId + '"'
