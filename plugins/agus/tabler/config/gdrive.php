@@ -13,5 +13,5 @@ return [
      * also delays the appearance of newly-uploaded documents.  You can set it
      * in your .env file using GDRIVE_CACHE_TTL.
      */
-    'cache_ttl' => env('GDRIVE_CACHE_TTL', 60),
+    'cache_ttl' => env('GDRIVE_CACHE_TTL', 1440),
 ];

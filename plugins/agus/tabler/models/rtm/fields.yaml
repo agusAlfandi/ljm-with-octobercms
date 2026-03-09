@@ -56,8 +56,11 @@ fields:
         placeholder: '-- Pilih Prodi --'
         dependsOn: [periode, level, fakultas]
         options: getProdiOptions
-        required: true
         comment: 'Pilih prodi dokumen RTM. Daftar prodi diambil otomatis dari folder periode yang dipilih.'
+        trigger:
+            action: hide
+            field: level
+            condition: value[Universitas]
     file_name:
         label: 'File yang Sudah Diupload'
         span: full

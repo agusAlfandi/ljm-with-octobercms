@@ -24,9 +24,18 @@ class Rtm extends Model
         'title'   => 'required',
         'level'   => 'required',
         'periode' => 'required',
-        'prodi'   => 'required',
         'file'    => 'required'
     ];
+
+    /**
+     * Conditionally require prodi for non-Universitas levels.
+     */
+    public function beforeValidate()
+    {
+        if ($this->level !== 'Universitas') {
+            $this->rules['prodi'] = 'required';
+        }
+    }
 
     /**
      * @var array
@@ -94,6 +103,10 @@ class Rtm extends Model
      */
     public function getProdiOptions()
     {
+        if ($this->level === 'Universitas') {
+            return [];
+        }
+
         $prodiByFakultas = [
             'Fakultas Ilmu Komputer' => [
                 'D3 Manajemen Informatika'              => 'D3 Manajemen Informatika',
@@ -164,12 +177,29 @@ class Rtm extends Model
 
     /**
      * Override getTargetFolderId to navigate through RTM level folder
-     * Prodi/Universitas path : level folder → Periode → Prodi
+     * Universitas path       : level folder → Periode (no Prodi subfolder)
+     * Prodi path             : level folder → Periode → Prodi
      * Fakultas path          : level folder → Fakultas → Periode → Prodi
      */
     protected function getTargetFolderId($rootKey)
     {
-        if (!$this->periode || !$this->prodi || !$this->level) {
+        if (!$this->periode || !$this->level) {
+            return null;
+        }
+
+        // --- Universitas: files go directly inside the Periode folder (no Prodi subfolder) ---
+        if ($this->level === 'Universitas') {
+            $levelId = GoogleDriveReader::FOLDER_IDS['RTM_LEVEL_UNIVERSITAS'] ?? null;
+            if (!$levelId) return null;
+            $periodeFolder = GoogleDriveReader::createOrFindSubfolder($levelId, $this->periode);
+            if (!$periodeFolder || !isset($periodeFolder['id'])) {
+                \Log::warning("RTM: Gagal membuat/menemukan Folder Periode '{$this->periode}' di level Universitas");
+                return null;
+            }
+            return $periodeFolder['id'];
+        }
+
+        if (!$this->prodi) {
             return null;
         }
 
@@ -201,18 +231,12 @@ class Rtm extends Model
             return $prodiFolder['id'];
         }
 
-        // --- Prodi / Universitas: 2-level path ---
-        $levelFolderIds = [
-            'Prodi'       => GoogleDriveReader::FOLDER_IDS['RTM_LEVEL_PRODI'],
-            'Universitas' => GoogleDriveReader::FOLDER_IDS['RTM_LEVEL_UNIVERSITAS'],
-        ];
-
-        if (!isset($levelFolderIds[$this->level])) {
-            \Log::warning('RTM: level tidak valid: ' . $this->level);
+        // --- Prodi: 2-level path ---
+        $levelId = GoogleDriveReader::FOLDER_IDS['RTM_LEVEL_PRODI'] ?? null;
+        if (!$levelId) {
+            \Log::warning('RTM: level tidak valid atau folder ID tidak ditemukan: ' . $this->level);
             return null;
         }
-
-        $levelId = $levelFolderIds[$this->level];
 
         $periodeFolder = GoogleDriveReader::createOrFindSubfolder($levelId, $this->periode);
         if (!$periodeFolder || !isset($periodeFolder['id'])) {
@@ -233,7 +257,7 @@ class Rtm extends Model
     {
         // keep copies of the selected names
         $this->periode_name = $this->periode;
-        $this->prodi_name   = $this->prodi;
+        $this->prodi_name   = $this->level === 'Universitas' ? null : $this->prodi;
     }
 
     /**
@@ -260,14 +284,17 @@ class Rtm extends Model
             return;
         }
 
+        $hasRequiredFields = $this->periode && $this->title &&
+            ($this->level === 'Universitas' || $this->prodi);
+
         // handle deferred binding or immediate file
         if ($this->file()->withDeferred($this->sessionKey)->count() > 0) {
             $file = $this->file()->withDeferred($this->sessionKey)->first();
-            if ($file && $this->periode && $this->prodi && $this->title) {
+            if ($file && $hasRequiredFields) {
                 $this->deleteOldFileIfExists();
                 $this->uploadFileToGoogleDrive($file);
             }
-        } elseif ($this->file && $this->periode && $this->prodi && $this->title) {
+        } elseif ($this->file && $hasRequiredFields) {
             $this->deleteOldFileIfExists();
             $this->uploadFileToGoogleDrive($this->file);
         }
@@ -365,7 +392,9 @@ class Rtm extends Model
         $keys = ['ROOT_RTM', 'RTM_LEVEL_PRODI', 'RTM_LEVEL_FAKULTAS', 'RTM_LEVEL_UNIVERSITAS'];
         foreach ($keys as $key) {
             if (!empty(GoogleDriveReader::FOLDER_IDS[$key])) {
-                \Cache::forget('gdrive_structure_' . md5(GoogleDriveReader::FOLDER_IDS[$key]));
+                $hash = md5(GoogleDriveReader::FOLDER_IDS[$key]);
+                \Cache::forget('gdrive_structure_' . $hash);
+                \Cache::forget('gdrive_structure_' . $hash . '_shallow');
             }
         }
     }

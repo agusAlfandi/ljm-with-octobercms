@@ -23,35 +23,6 @@ layout = "app"
                         Rapat Tinjauan Manajemen (RTM)
                     </a>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <a href="#tabs-tujuan" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">
-                        <!-- Icon Target/Goal (Target) -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24"
-                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <circle cx="12" cy="12" r="9" />
-                            <circle cx="12" cy="12" r="6" />
-                            <circle cx="12" cy="12" r="3" />
-                        </svg>
-                        Tujuan
-                    </a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a href="#tabs-ruang-lingkup" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">
-                        <!-- Icon Scope (Globe) -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24"
-                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <circle cx="12" cy="12" r="9" />
-                            <line x1="2.1" y1="12" x2="21.9" y2="12" />
-                            <path d="M12 2.1a9 9 0 0 1 0 19.8" />
-                            <path d="M12 2.1a9 9 0 0 0 0 19.8" />
-                        </svg>
-                        Ruang Lingkup
-                    </a>
-                </li>
             </ul>
         </div>
         <div class="card-body">
@@ -116,7 +87,7 @@ layout = "app"
 
     function buildProdiPills(prodiGroups, uid) {
         var folderIds = prodiGroups['_folderIds'] || {};
-        var prodiKeys = Object.keys(prodiGroups).filter(function (k) { return k !== '_folderIds'; });
+        var prodiKeys = Object.keys(prodiGroups).filter(function (k) { return k !== '_folderIds' && k !== '_periodeId'; });
         if (prodiKeys.length === 0) {
             return '<div class="text-muted text-center py-3">Belum ada data Prodi atau file PDF untuk periode ini.</div>';
         }
@@ -125,11 +96,10 @@ layout = "app"
             var files    = prodiGroups[prodi];
             var folderId = folderIds[prodi] || '';
             var paneId   = 'dp-' + uid + '-' + i;
-            var badge    = files.length > 0 ? ' <span class="badge bg-primary ms-1">' + files.length + '</span>' : '';
             pills += '<li class="nav-item" role="presentation">'
-                   + '<button class="nav-link' + (i === 0 ? ' active' : '') + (files.length > 0 ? ' text-primary fw-bold' : '') + '"'
+                   + '<button class="nav-link' + (i === 0 ? ' active' : '') + '"'
                    + ' data-drive-toggle="pill" data-drive-target="#' + paneId + '" type="button" role="tab">'
-                   + escHtml(prodi) + badge + '</button></li>';
+                   + escHtml(prodi) + '</button></li>';
 
             var paneContent;
             if (files.length > 0) {
@@ -175,6 +145,46 @@ layout = "app"
         return '<div class="row g-4">' + cards + '</div>';
     }
 
+    // Universitas: Periode cards → flat file list (no Prodi layer), lazy-loaded per Periode
+    function buildUniversitasPanes(periodeData, uid) {
+        var keys = Object.keys(periodeData).filter(function (k) { return k !== '_folderIds'; });
+        if (keys.length === 0) {
+            return '<div class="text-muted text-center py-3">Belum ada data untuk level ini.</div>';
+        }
+        var cards = '';
+        keys.forEach(function (periode, i) {
+            var entry     = periodeData[periode] || {};
+            var periodeId = entry['_periodeId'] || '';
+            var prodiKeys = Object.keys(entry).filter(function (k) { return k !== '_folderIds' && k !== '_periodeId'; });
+
+            // Flatten any pre-loaded files
+            var allFiles = [];
+            prodiKeys.forEach(function (prodi) {
+                var files = entry[prodi];
+                if (Array.isArray(files)) allFiles = allFiles.concat(files);
+            });
+
+            var content;
+            if (allFiles.length > 0) {
+                content = buildFileList(allFiles);
+            } else if (periodeId) {
+                // Lazy-load directly from Periode folder (no Prodi subfolder for Universitas)
+                content = '<div class="drive-lazy-load text-center py-3 text-muted small"'
+                        + ' data-folder-id="' + escHtml(periodeId) + '">'
+                        + '<div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>'
+                        + 'Memuat file&hellip;</div>';
+            } else {
+                content = buildFileList([]);
+            }
+
+            cards += '<div class="col-md-6"><div class="card h-100">'
+                   + '<div class="card-header fw-semibold">' + escHtml(periode) + '</div>'
+                   + '<div class="card-body">' + content + '</div>'
+                   + '</div></div>';
+        });
+        return '<div class="row g-4">' + cards + '</div>';
+    }
+
     function buildFakultasTabs(fakultasData, uid) {
         var fakKeys = Object.keys(fakultasData);
         if (fakKeys.length === 0) {
@@ -210,6 +220,9 @@ layout = "app"
         //     if (badge) badge.textContent = total;
         // }
 
+        if (levelName === 'Universitas') {
+            return buildUniversitasPanes(levelData, levelName);
+        }
         return numLevels === 3
             ? buildFakultasTabs(levelData, levelName)
             : buildPeriodePanes(levelData, levelName);
@@ -285,7 +298,14 @@ layout = "app"
             });
         });
 
-        root.querySelectorAll('.drive-tab-pane.drive-active .drive-lazy-load[data-folder-id]').forEach(lazyLoadProdiFiles);
+        // Trigger lazy loads for all visible lazy-load elements:
+        // inside an active prodi pane, or directly in the layout (e.g. Universitas flat view)
+        root.querySelectorAll('.drive-lazy-load[data-folder-id]').forEach(function (el) {
+            var pane = el.closest('.drive-tab-pane');
+            if (!pane || pane.classList.contains('drive-active')) {
+                lazyLoadProdiFiles(el);
+            }
+        });
     }
 
     var CSRF = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';

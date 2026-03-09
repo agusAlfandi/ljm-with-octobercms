@@ -93,11 +93,10 @@ title = "Audit Mutu Internal"
             var files    = prodiGroups[prodi];
             var folderId = folderIds[prodi] || '';
             var paneId   = 'dp-' + uid + '-' + i;
-            var badge    = files.length > 0 ? ' <span class="badge bg-primary ms-1">' + files.length + '</span>' : '';
             pills += '<li class="nav-item" role="presentation">'
-                   + '<button class="nav-link' + (i === 0 ? ' active' : '') + (files.length > 0 ? ' text-primary fw-bold' : '') + '"'
+                   + '<button class="nav-link' + (i === 0 ? ' active' : '') + '"'
                    + ' data-drive-toggle="pill" data-drive-target="#' + paneId + '" type="button" role="tab">'
-                   + escHtml(prodi) + badge + '</button></li>';
+                   + escHtml(prodi) + '</button></li>';
 
             var paneContent;
             if (files.length > 0) {
